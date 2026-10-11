@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<title>Ômega</title>
+<style>
+:root{
+  --bg:#000;--bg2:#111113;--bg3:#1c1c1e;--tx:#f5f5f7;--tx2:#98989f;--ln:#2c2c2e;--ac:#0a84ff;
+  --r:#ff453a;--g:#30d158;--b:#0a84ff;--c:#8e8e93;
+}
+:root[data-tema="claro"]{
+  --bg:#fff;--bg2:#f5f5f7;--bg3:#e8e8ed;--tx:#1d1d1f;--tx2:#6e6e73;--ln:#d2d2d7;--ac:#0071e3;
+  --r:#e0281d;--g:#1f9d3f;--b:#0071e3;--c:#8e8e93;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;padding-bottom:90px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.topo{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--ln);padding:8px 14px;padding-top:max(8px,env(safe-area-inset-top))}
+.topo-l{display:flex;align-items:center;gap:8px;max-width:760px;margin:0 auto;flex-wrap:wrap}
+.logo{font-weight:700;font-size:20px;letter-spacing:.5px;margin-right:4px}
+.abas{display:flex;gap:2px;background:var(--bg3);border-radius:10px;padding:2px}
+.aba{border:0;background:none;padding:5px 12px;border-radius:8px;font-size:14px;color:var(--tx2)}
+.aba.on{background:var(--bg);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.esp{flex:1}
+.mini{border:1px solid var(--ln);background:var(--bg2);border-radius:999px;padding:5px 12px;font-size:13px}
+.mini:active{opacity:.6}
+main{max-width:760px;margin:0 auto;padding:16px 14px}
+h1{font-size:26px;margin:8px 0 4px;letter-spacing:-.3px}
+h2{font-size:18px;margin:0}
+p{margin:.4em 0}
+.just{text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.sub{color:var(--tx2);font-size:14px}
+.btn{border:0;background:var(--ac);color:#fff;border-radius:12px;padding:10px 16px;font-weight:600}
+.btn.sec{background:var(--bg3);color:var(--tx)}
+.btn:active{opacity:.7}
+.linha{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.card{background:var(--bg2);border:1px solid var(--ln);border-radius:16px;padding:14px;margin:10px 0}
+.rel{display:flex;align-items:center;gap:12px;cursor:pointer}
+.rel .tt{flex:1;min-width:0}
+.rel .tt b{display:block;overflow:hidden;text-overflow:ellipsis}
+.cont{font-size:13px;color:var(--tx2);white-space:nowrap}
+.del{border:0;background:none;color:var(--tx2);font-size:20px;padding:4px 8px}
+.dot{width:26px;height:26px;border-radius:50%;border:0;flex:none;background:var(--r);box-shadow:0 0 0 4px color-mix(in srgb,var(--r) 22%,transparent);margin-top:2px}
+.dot.s-liberado{background:var(--g);box-shadow:0 0 0 4px color-mix(in srgb,var(--g) 22%,transparent)}
+.dot.s-ajustar{background:var(--b);box-shadow:0 0 0 4px color-mix(in srgb,var(--b) 22%,transparent)}
+.dot.s-ignorar{background:var(--c);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 22%,transparent)}
+.dot.s-pendente{background:var(--r)}
+.dot.p{width:14px;height:14px;box-shadow:none;margin:0;flex:none;display:inline-block;vertical-align:middle}
+.bloco{margin:22px 0}
+.sec-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.item{display:flex;gap:12px;padding:14px 0;border-top:1px solid var(--ln)}
+.item.alvo{animation:pisca 1.6s}
+@keyframes pisca{0%,60%{background:color-mix(in srgb,var(--ac) 22%,transparent)}100%{background:transparent}}
+.item .corpo{flex:1;min-width:0}
+.item .cab{display:flex;gap:8px;align-items:baseline}
+.item .num{color:var(--tx2);font-size:13px;font-variant-numeric:tabular-nums}
+.item .tit{font-weight:600}
+.cat{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--tx2);border:1px solid var(--ln);border-radius:6px;padding:0 6px}
+.aviso{font-size:13px;color:var(--tx2);background:color-mix(in srgb,#ff9f0a 14%,transparent);border-radius:8px;padding:5px 9px;margin-top:6px}
+.antes a{color:var(--ac);cursor:pointer;text-decoration:none;font-size:14px}
+.opc label{display:flex;gap:9px;align-items:flex-start;padding:7px 0;cursor:pointer}
+.opc input{margin-top:5px;accent-color:var(--ac)}
+select,textarea,input[type=text]{width:100%;background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:6px}
+textarea{min-height:90px;resize:vertical}
+.menu{position:fixed;z-index:50;background:var(--bg3);border:1px solid var(--ln);border-radius:14px;padding:6px;box-shadow:0 10px 40px rgba(0,0,0,.5);min-width:170px}
+.menu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:10px 12px;border-radius:10px;text-align:left}
+.menu button:active,.menu button:hover{background:var(--bg2)}
+.rodape{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--ln);padding:10px 14px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+.rodape>div{max-width:760px;margin:0 auto;display:flex;gap:8px;align-items:center}
+.rodape .btn{flex:1}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:999px;z-index:80;font-size:14px;max-width:90vw;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+.toast button{border:0;background:none;color:inherit;font-weight:700;text-decoration:underline;margin-left:8px}
+.ctr{font-variant-numeric:tabular-nums;font-weight:600}
+.barra{height:5px;border-radius:3px;background:var(--bg3);overflow:hidden;margin:6px 0 2px}
+.barra i{display:block;height:100%;background:var(--g);transition:width .3s}
+.barra.az i{background:var(--b)}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px;margin:8px 0;cursor:pointer}
+.sel{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);z-index:70;background:var(--bg3);border:1px solid var(--ln);border-radius:999px;padding:6px 8px;display:none;gap:6px;align-items:center;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.sel span{font-size:12px;color:var(--tx2);padding:0 6px}
+.sel button{border:0;background:var(--ac);color:#fff;border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600}
+#conf{background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:12px;margin-top:10px;white-space:pre-wrap;word-wrap:break-word;min-height:60px;text-align:left}
+.err{text-decoration:underline wavy var(--r);text-underline-offset:3px;cursor:pointer}
+.bal{position:fixed;z-index:60;background:var(--bg3);border:1px solid var(--ln);border-radius:14px;padding:8px;box-shadow:0 10px 40px rgba(0,0,0,.5);max-width:300px;display:flex;flex-direction:column;gap:2px}
+.bal button{border:0;background:none;text-align:left;padding:8px 10px;border-radius:8px}
+.bal button:hover,.bal button:active{background:var(--bg2)}
+.bal .sug{color:var(--ac);font-weight:600}
+pre.copia{white-space:pre-wrap;background:var(--bg2);border:1px solid var(--ln);border-radius:12px;padding:12px;font-size:13px}
+.oculto{display:none!important}
+@media(max-width:480px){.logo{font-size:18px}.topo{padding:6px 10px}main{padding:12px 10px}}
+</style>
+</head>
+<body>
+
+<div class="topo"><div class="topo-l">
+  <span class="logo">Ômega</span>
+  <div class="abas">
+    <button class="aba" data-aba="rel">Relatórios</button>
+    <button class="aba" data-aba="rev">Revisor</button>
+    <button class="aba" data-aba="est">Estado</button>
+  </div>
+  <span class="esp"></span>
+  <button class="mini" id="b-claude">Claude</button>
+  <button class="mini" id="b-gemini">Gemini</button>
+  <button class="mini" id="b-tema" title="Trocar tema">◐</button>
+</div></div>
+
+<main id="main"></main>
+
+<div class="sel" id="sel"><span>Levar trecho:</span><button data-ia="claude">Claude</button><button data-ia="gemini">Gemini</button></div>
+<input type="file" id="arq" accept=".json,application/json" class="oculto">
+<script src="dicionario-ptbr.js" defer></script>
+<script>
+"use strict";
+/* ===== utilidades ===== */
+const $ = (s, r = document) => r.querySelector(s);
+function h(tag, attrs, ...filhos) {
+  const e = document.createElement(tag);
+  for (const k in (attrs || {})) {
+    const v = attrs[k];
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "value") e.value = v;
+    else if (v === true) e.setAttribute(k, "");
+    else e.setAttribute(k, v);
+  }
+  for (const f of filhos.flat()) if (f != null && f !== false) e.append(f.nodeType ? f : document.createTextNode(String(f)));
+  return e;
+}
+function aviso(msg, desfazer) {
+  document.querySelectorAll(".toast").forEach(t => t.remove());
+  const t = h("div", { class: "toast" }, msg);
+  if (desfazer) t.append(h("button", { onclick: () => { desfazer(); t.remove(); } }, "Desfazer"));
+  document.body.append(t);
+  setTimeout(() => t.remove(), desfazer ? 7000 : 3500);
+}
+async function copiar(texto) {
+  try { await navigator.clipboard.writeText(texto); return true; } catch (e) {}
+  try {
+    const ta = h("textarea", { style: "position:fixed;top:0;left:0;opacity:0" });
+    ta.value = texto; document.body.append(ta); ta.focus(); ta.select();
+    const ok = document.execCommand("copy"); ta.remove(); return ok;
+  } catch (e) { return false; }
+}
+function caixaCopia(texto, titulo) {
+  const pre = h("pre", { class: "copia" }, texto);
+  const fundo = h("div", { style: "position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:14px" },
+    h("div", { class: "card", style: "max-width:600px;width:100%;max-height:85vh;overflow:auto;background:var(--bg)" },
+      h("b", {}, titulo || "Copie à mão"),
+      h("p", { class: "sub" }, "O navegador não deixou copiar sozinho. O texto abaixo já está selecionado: use Copiar do seu aparelho."),
+      pre, h("div", { class: "linha" }, h("button", { class: "btn", onclick: () => fundo.remove() }, "Fechar"))));
+  document.body.append(fundo);
+  const r = document.createRange(); r.selectNodeContents(pre);
+  const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+}
+
+/* ===== armazenamento ===== */
+const CHAVE = "omega.v1";
+let DB = { relatorios: {}, tema: "escuro", atual: null, dic: [] };
+function carregar() {
+  try { const x = JSON.parse(localStorage.getItem(CHAVE)); if (x && x.relatorios) DB = Object.assign(DB, x); } catch (e) {}
+}
+function salvar() {
+  try { localStorage.setItem(CHAVE, JSON.stringify(DB)); } catch (e) { aviso("Não consegui salvar neste navegador."); }
+}
+carregar();
+
+/* ===== modelo ===== */
+const ESTADOS = [["pendente", "Pendente"], ["liberado", "Liberado"], ["ajustar", "Ajustar"], ["ignorar", "Ignorar"]];
+function itens(rel) { return rel.dados.secoes.flatMap(s => s.itens || []); }
+function est(rel, id) { return rel.st[id] || (rel.st[id] = { s: "pendente", escolha: "", obs: "" }); }
+function resolvido(rel, it) { const s = est(rel, it.id).s; return s === "liberado" || s === "ignorar"; }
+function corGrupo(rel, lista) {
+  if (lista.some(i => est(rel, i.id).s === "ajustar")) return "ajustar";
+  if (lista.length && lista.every(i => resolvido(rel, i))) return "liberado";
+  return "pendente";
+}
+function contar(rel) {
+  const l = itens(rel); return { feitos: l.filter(i => resolvido(rel, i)).length, total: l.length, verm: l.filter(i => est(rel, i.id).s === "pendente").length };
+}
+function validar(d) {
+  if (!d || typeof d !== "object" || !Array.isArray(d.secoes)) throw new Error("O arquivo não parece um relatório do Ômega (faltam as seções).");
+  d.id = String(d.id || ("rel-" + Date.now()));
+  d.titulo = String(d.titulo || "Sem título");
+  d.rodada = d.rodada || 1;
+  d.secoes.forEach((s, si) => {
+    s.id = String(s.id ?? si + 1); s.titulo = String(s.titulo || "");
+    s.itens = Array.isArray(s.itens) ? s.itens : [];
+    s.itens.forEach((it, ii) => {
+      it.id = String(it.id ?? `${s.id}.${ii + 1}`);
+      it.opcoes = Array.isArray(it.opcoes) ? it.opcoes.map(String) : [];
+      it.requer = (Array.isArray(it.requer) ? it.requer : it.requer ? [it.requer] : []).map(String);
+    });
+  });
+  return d;
+}
+function adicionar(dados) {
+  dados = validar(dados);
+  const ja = DB.relatorios[dados.id];
+  if (ja && !confirm(`Já existe o relatório ${dados.id}. Substituir o conteúdo mantendo suas marcações onde os números dos itens coincidirem?`)) return null;
+  DB.relatorios[dados.id] = { dados, st: ja ? ja.st : {}, opts: ja ? ja.opts : { tratarIgnorar: false }, verLib: false, desfazer: [], atualizado: Date.now() };
+  DB.atual = dados.id; salvar(); return dados.id;
+}
+
+/* ===== telas ===== */
+let aba = "rel";
+function montar() {
+  document.documentElement.dataset.tema = DB.tema === "claro" ? "claro" : "escuro";
+  document.querySelectorAll(".aba").forEach(b => b.classList.toggle("on", b.dataset.aba === aba));
+  const m = $("#main"); m.replaceChildren();
+  if (aba === "rel") { if (DB.atual && DB.relatorios[DB.atual]) telaRelatorio(m, DB.relatorios[DB.atual]); else telaInicio(m); }
+  else if (aba === "rev") telaRevisor(m);
+  else telaEstado(m);
+}
+document.querySelectorAll(".aba").forEach(b => b.onclick = () => { aba = b.dataset.aba; if (aba === "rel") DB.atual = null; montar(); window.scrollTo(0, 0); });
+$("#b-tema").onclick = () => { DB.tema = DB.tema === "claro" ? "escuro" : "claro"; salvar(); montar(); };
+
+const EXEMPLO_URL = "relatorio.exemplo.json";
+function telaInicio(m) {
+  m.append(h("h1", {}, "Relatórios"),
+    h("p", { class: "sub just" }, "Abra o relatório que o Claude gerou (arquivo .json) ou cole o texto dele. Tudo fica guardado só neste aparelho."),
+    h("div", { class: "linha" },
+      h("button", { class: "btn", onclick: () => $("#arq").click() }, "Abrir relatório"),
+      h("button", { class: "btn sec", onclick: telaColar }, "Colar relatório"),
+      h("button", { class: "btn sec", onclick: abrirExemplo }, "Ver exemplo")));
+  const ids = Object.keys(DB.relatorios).sort((a, b) => DB.relatorios[b].atualizado - DB.relatorios[a].atualizado);
+  if (!ids.length) m.append(h("p", { class: "sub" }, "Nenhum relatório ainda."));
+  ids.forEach(id => {
+    const r = DB.relatorios[id], c = contar(r), cor = corGrupo(r, itens(r));
+    m.append(h("div", { class: "card rel", onclick: () => { DB.atual = id; salvar(); montar(); window.scrollTo(0, 0); } },
+      h("span", { class: "dot p s-" + cor }),
+      h("div", { class: "tt" }, h("b", {}, r.dados.titulo), h("span", { class: "sub" }, `${id} · rodada ${r.dados.rodada}`)),
+      h("span", { class: "cont" }, c.verm ? `${c.verm} vermelhos` : "sem vermelhos"),
+      h("button", { class: "del", title: "Apagar", onclick: e => { e.stopPropagation(); if (confirm("Apagar este relatório deste aparelho?")) { delete DB.relatorios[id]; salvar(); montar(); } } }, "×")));
+  });
+}
+$("#arq").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try { if (adicionar(JSON.parse(await f.text()))) montar(); } catch (er) { aviso("Erro: " + er.message); }
+};
+function telaColar() {
+  const m = $("#main"); m.replaceChildren();
+  const ta = h("textarea", { placeholder: "Cole aqui o texto do relatório (começa com {)", style: "min-height:260px" });
+  m.append(h("h1", {}, "Colar relatório"), ta, h("div", { class: "linha" },
+    h("button", { class: "btn", onclick: () => { try { if (adicionar(JSON.parse(ta.value))) montar(); } catch (er) { aviso("Não entendi o texto: " + er.message); } } }, "Abrir"),
+    h("button", { class: "btn sec", onclick: montar }, "Voltar")));
+}
+async function abrirExemplo() {
+  try {
+    let d;
+    if (location.protocol === "file:") d = JSON.parse($("#ex").textContent);
+    else try { d = await (await fetch(EXEMPLO_URL)).json(); } catch (e) { d = JSON.parse($("#ex").textContent); }
+    if (adicionar(d)) montar();
+  } catch (e) { aviso("Não consegui abrir o exemplo."); }
+}
+
+function telaRelatorio(m, rel) {
+  const d = rel.dados, c = contar(rel), cor = corGrupo(rel, itens(rel)), pct = c.total ? Math.round(100 * c.feitos / c.total) : 0;
+  const atualizar = () => { rel.atualizado = Date.now(); salvar(); const y = scrollY; montar(); scrollTo(0, y); };
+  const empilhar = id => { rel.desfazer.push({ id, antes: JSON.stringify(est(rel, id)) }); if (rel.desfazer.length > 50) rel.desfazer.shift(); };
+  const desfazer = () => { const u = rel.desfazer.pop(); if (!u) { aviso("Nada para desfazer."); return; } rel.st[u.id] = JSON.parse(u.antes); atualizar(); };
+  const mudar = (id, campo, valor, comAviso) => {
+    empilhar(id); const e = est(rel, id); if (typeof campo === "object") Object.assign(e, campo); else e[campo] = valor; atualizar();
+    if (comAviso) aviso(comAviso, desfazer);
+  };
+
+  m.append(h("div", { class: "linha", style: "margin:0" }, h("button", { class: "mini", onclick: () => { DB.atual = null; salvar(); montar(); } }, "← Relatórios")),
+    h("h1", {}, d.titulo),
+    h("p", { class: "sub" }, `${d.id}${d.processo ? " · processo " + d.processo : ""} · rodada ${d.rodada}${d.tipo ? " · " + d.tipo : ""}`),
+    h("div", { class: "card", style: "display:flex;align-items:center;gap:12px" },
+      h("span", { class: "dot p s-" + cor }), h("span", { class: "ctr" }, `${c.feitos}/${c.total} resolvidos`),
+      h("span", { class: "esp" }), h("span", { class: "sub" }, cor === "liberado" ? "Tudo certo" : cor === "ajustar" ? "Há itens para ajustar" : `${c.verm} em vermelho`)),
+    h("div", { class: "barra " + (cor === "ajustar" ? "az" : "") }, h("i", { style: `width:${pct}%` })),
+    h("div", { class: "linha" },
+      h("button", { class: "mini", onclick: () => { rel.verLib = !rel.verLib; atualizar(); } }, rel.verLib ? "esconder liberados" : "ver liberados"),
+      h("button", { class: "mini", onclick: desfazer }, "desfazer"),
+      h("button", { class: "mini", onclick: () => {
+        const p = itens(rel).filter(i => est(rel, i.id).s === "pendente"); if (!p.length) { aviso("Não há pendentes."); return; }
+        if (!confirm(`Ignorar os ${p.length} itens pendentes?`)) return;
+        const salvo = JSON.stringify(rel.st); p.forEach(i => est(rel, i.id).s = "ignorar"); atualizar();
+        aviso(`${p.length} itens ignorados.`, () => { rel.st = JSON.parse(salvo); atualizar(); });
+      } }, "Ignorar todos os pendentes")));
+
+  const todos = itens(rel), porId = {}; todos.forEach(i => porId[i.id] = i);
+  d.secoes.forEach(sec => {
+    const sc = corGrupo(rel, sec.itens), vis = sec.itens.filter(i => rel.verLib || est(rel, i.id).s !== "liberado");
+    const bloco = h("section", { class: "bloco" }, h("div", { class: "sec-h" }, h("span", { class: "dot p s-" + sc }), h("h2", {}, `${sec.id}. ${sec.titulo}`)));
+    if (!vis.length) bloco.append(h("p", { class: "sub" }, sec.itens.length ? "Tudo liberado nesta seção." : "Sem itens."));
+    vis.forEach(it => bloco.append(itemEl(rel, it, porId, mudar)));
+    m.append(bloco);
+  });
+
+  const trat = h("input", { type: "checkbox", onchange: e => { rel.opts.tratarIgnorar = e.target.checked; salvar(); } });
+  trat.checked = !!rel.opts.tratarIgnorar;
+  m.append(h("label", { class: "chk" }, trat, "Tratar pendentes como ignorar (ao copiar)"));
+  m.append(h("div", { class: "rodape" }, h("div", {}, h("button", { class: "btn", onclick: () => copiarDecisoes(rel) }, "Copiar decisões"))));
+}
+
+function itemEl(rel, it, porId, mudar) {
+  const e = est(rel, it.id);
+  const dot = h("button", { class: "dot s-" + e.s, "aria-label": "Estado: " + e.s, onclick: ev => menuEstado(ev.currentTarget, s => mudar(it.id, "s", s, s === "liberado" ? `Item ${it.id} liberado.` : null)) });
+  const corpo = h("div", { class: "corpo" },
+    h("div", { class: "cab" }, h("span", { class: "num" }, it.id), h("span", { class: "tit" }, it.titulo || "(sem título)"), it.categoria ? h("span", { class: "cat" }, it.categoria) : null));
+  if (it.texto) corpo.append(h("p", { class: "just" }, it.texto));
+  if (it.requer.length) {
+    const links = it.requer.map(r => h("a", { onclick: () => irPara(rel, r) }, "Antes: " + r));
+    const caixa = h("div", { class: "antes" });
+    links.forEach((l, i) => { if (i) caixa.append(" · "); caixa.append(l); });
+    corpo.append(caixa);
+    const abertos = it.requer.filter(r => porId[r] && !resolvido(rel, porId[r]));
+    if (abertos.length && !resolvido(rel, it)) corpo.append(h("div", { class: "aviso" }, `Atenção: ${abertos.join(", ")} ainda não ${abertos.length > 1 ? "foram resolvidos" : "foi resolvido"}. Você pode seguir assim mesmo.`));
+  }
+  if (it.opcoes.length) {
+    const nome = "op-" + it.id, op = h("div", { class: "opc" });
+    const escolher = v => mudar(it.id, e.s === "pendente" ? { escolha: v, s: "liberado" } : { escolha: v }, e.s === "pendente" ? `Escolha registrada no item ${it.id}.` : null);
+    if (it.opcoes.length > 6) {
+      const sel = h("select", { onchange: ev => { if (ev.target.value) escolher(ev.target.value); } }, h("option", { value: "" }, "Escolha uma opção…"), it.opcoes.map(o => h("option", { value: o }, o)));
+      sel.value = e.escolha; op.append(sel);
+    } else it.opcoes.forEach(o => {
+      const r = h("input", { type: "radio", name: nome, value: o, onchange: () => escolher(o) }); r.checked = e.escolha === o;
+      op.append(h("label", {}, r, h("span", { class: "just" }, o)));
+    });
+    corpo.append(op);
+  }
+  if (e.s === "ajustar") {
+    const ta = h("textarea", { placeholder: "Escreva (ou dite pelo teclado) o que ajustar…", oninput: ev => { e.obs = ev.target.value; salvar(); } });
+    ta.value = e.obs; corpo.append(ta);
+  }
+  return h("div", { class: "item", id: "it-" + it.id.replace(/[^\w-]/g, "_") }, dot, corpo);
+}
+function irPara(rel, id) {
+  const alvo = () => document.getElementById("it-" + id.replace(/[^\w-]/g, "_"));
+  let el = alvo();
+  if (!el) { rel.verLib = true; salvar(); montar(); el = alvo(); }
+  if (!el) { aviso("Item " + id + " não encontrado."); return; }
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.classList.remove("alvo"); void el.offsetWidth; el.classList.add("alvo");
+}
+function menuEstado(ancora, escolher) {
+  document.querySelectorAll(".menu").forEach(x => x.remove());
+  const r = ancora.getBoundingClientRect();
+  const menu = h("div", { class: "menu", style: `left:${Math.min(r.left, innerWidth - 190)}px;top:${Math.min(r.bottom + 6, innerHeight - 220)}px` },
+    ESTADOS.map(([k, nome]) => h("button", { onclick: () => { menu.remove(); escolher(k); } }, h("span", { class: "dot p s-" + k }), nome)));
+  document.body.append(menu);
+  setTimeout(() => document.addEventListener("click", function f(ev) { if (!menu.contains(ev.target)) { menu.remove(); document.removeEventListener("click", f); } }), 0);
+}
+
+/* ===== copiar decisões ===== */
+function textoDecisoes(rel) {
+  const d = rel.dados, linhas = [], pend = [];
+  itens(rel).forEach(it => {
+    const e = est(rel, it.id), t = it.titulo || "(sem título)";
+    if (e.s === "pendente") { if (it.opcoes.length && e.escolha) linhas.push(`${it.id} [ESCOLHA] ${t} — Opção: ${e.escolha}`); else pend.push(it.id); return; }
+    if (e.s === "liberado") linhas.push(it.opcoes.length && e.escolha ? `${it.id} [ESCOLHA] ${t} — Opção: ${e.escolha}` : `${it.id} [LIBERADO] ${t}`);
+    else if (e.s === "ajustar") linhas.push(`${it.id} [AJUSTAR] ${t}` + (e.escolha ? ` — Opção: ${e.escolha}` : "") + (e.obs && e.obs.trim() ? ` — Observação: ${e.obs.trim()}` : ""));
+    else if (e.s === "ignorar") linhas.push(`${it.id} [IGNORAR] ${t} — seguir sem este ponto`);
+  });
+  let fim;
+  if (!pend.length) fim = "Pendentes não decididos: nenhum";
+  else if (rel.opts.tratarIgnorar) fim = `Pendentes tratados como IGNORAR: ${pend.join(", ")} — escrever da melhor forma possível, sem inventar nada e sem apontar o defeito no texto`;
+  else fim = `Pendentes não decididos: ${pend.join(", ")}`;
+  return `ÔMEGA · Relatório ${d.id} · Rodada ${d.rodada} · ${d.titulo}\nDecisões (somente itens decididos):\n\n${linhas.join("\n")}${linhas.length ? "\n" : ""}\n${fim}\n`;
+}
+async function copiarDecisoes(rel) {
+  const t = textoDecisoes(rel);
+  if (await copiar(t)) aviso("Copiado. Cole na conversa com o Claude."); else caixaCopia(t, "Decisões");
+}
+
+/* ===== atalhos Claude / Gemini (6.1) ===== */
+const URLS = { claude: "https://claude.ai/new", gemini: "https://gemini.google.com/app" };
+$("#b-claude").onclick = () => window.open(URLS.claude, "_blank", "noopener");
+$("#b-gemini").onclick = () => window.open(URLS.gemini, "_blank", "noopener");
+function trechoSelecionado() {
+  const a = document.activeElement;
+  if (a && (a.tagName === "TEXTAREA" || a.tagName === "INPUT") && a.selectionEnd > a.selectionStart) return a.value.slice(a.selectionStart, a.selectionEnd).trim();
+  return getSelection().toString().trim();
+}
+let trechoGuardado = "";
+function checarSelecao() {
+  const t = trechoSelecionado();
+  if (t) trechoGuardado = t;
+  $("#sel").style.display = t ? "flex" : "none";
+}
+document.addEventListener("selectionchange", () => setTimeout(checarSelecao, 50));
+document.addEventListener("mouseup", () => setTimeout(checarSelecao, 50));
+document.addEventListener("keyup", () => setTimeout(checarSelecao, 50));
+document.querySelectorAll("#sel button").forEach(b => {
+  b.addEventListener("mousedown", e => e.preventDefault());
+  b.addEventListener("click", async () => {
+    const t = trechoGuardado, ia = b.dataset.ia; if (!t) return;
+    let url = URLS[ia];
+    if (ia === "claude" && t.length <= 1500) url += "?q=" + encodeURIComponent(t);
+    const ok = await copiar(t);
+    window.open(url, "_blank", "noopener");
+    if (ok) aviso("Copiado, cole na conversa"); else caixaCopia(t, "Trecho");
+  });
+});
+
+/* ===== revisor de português (6.2) ===== */
+const PERGUNTA = "Revise apenas o português (ortografia, acentuação, concordância e pontuação) do texto abaixo. Não mude o sentido nem o vocabulário jurídico. Devolva o texto corrigido e, depois, uma lista curta das alterações.";
+let STEMS = null, SUF = null, PRE = null, maxS = 0, maxP = 0, DICSTATE = "nao"; // nao | carregando | ok | erro
+function carregarDic(cb) {
+  if (DICSTATE === "ok") return cb();
+  if (DICSTATE === "carregando") return;
+  if (!window.OMEGA_DIC) { DICSTATE = "erro"; return cb(); }
+  DICSTATE = "carregando";
+  setTimeout(() => {
+    STEMS = new Map(); SUF = new Map(); PRE = new Map();
+    for (const l of window.OMEGA_DIC.split("\n")) { const i = l.indexOf("/"), w = i < 0 ? l : l.slice(0, i); STEMS.set(w, (STEMS.get(w) || "") + (i < 0 ? "" : l.slice(i + 1))); }
+    for (const [flag, tipo, cross, regras] of window.OMEGA_AFF) {
+      const mapa = tipo === "S" ? SUF : PRE;
+      for (const [strip, add, cond] of regras) {
+        if (!mapa.has(add)) mapa.set(add, []);
+        mapa.get(add).push({ flag, cross, strip, cond, re: null });
+        if (tipo === "S") maxS = Math.max(maxS, add.length); else maxP = Math.max(maxP, add.length);
+      }
+    }
+    DICSTATE = "ok"; cb();
+  }, 30);
+}
+function condOk(r, s, tipo) {
+  if (r.cond === ".") return true;
+  if (!r.re) { try { r.re = new RegExp(tipo === "S" ? r.cond + "$" : "^" + r.cond); } catch (e) { r.re = /^/; } }
+  return r.re.test(s);
+}
+function existe(w) {
+  if (STEMS.has(w)) return true;
+  for (let k = 0; k <= Math.min(maxS, w.length); k++) {
+    const L = SUF.get(w.slice(w.length - k)); if (!L) continue;
+    for (const r of L) { const stem = w.slice(0, w.length - k) + r.strip, f = STEMS.get(stem); if (f !== undefined && f.includes(r.flag) && condOk(r, stem, "S")) return true; }
+  }
+  for (let k = 1; k <= Math.min(maxP, w.length); k++) {
+    const L = PRE.get(w.slice(0, k)); if (!L) continue;
+    for (const r of L) {
+      const w2 = r.strip + w.slice(k); if (!condOk(r, w2, "P")) continue;
+      const f0 = STEMS.get(w2); if (f0 !== undefined && f0.includes(r.flag)) return true;
+      if (!r.cross) continue;
+      for (let j = 1; j <= Math.min(maxS, w2.length); j++) {
+        const L2 = SUF.get(w2.slice(w2.length - j)); if (!L2) continue;
+        for (const q of L2) { if (!q.cross) continue; const stem = w2.slice(0, w2.length - j) + q.strip, f = STEMS.get(stem); if (f !== undefined && f.includes(r.flag) && f.includes(q.flag) && condOk(q, stem, "S")) return true; }
+      }
+    }
+  }
+  return false;
+}
+const CLITICOS = new Set("o a os as lo la los las lhe lhes me te se nos vos ia ias íamos íeis iam ei ás á emos eis ão".split(" "));
+function certa(p) {
+  const min = p.toLowerCase();
+  if ((DB.dic || []).includes(min)) return true;
+  if (existe(min)) return true;
+  if (min.includes("-")) {
+    const ps = min.split("-").filter(Boolean);
+    if (ps.length && ps.every(x => existe(x) || (DB.dic || []).includes(x))) return true;
+    if (existe(ps[0]) && ps.slice(1).every(x => CLITICOS.has(x))) return true;
+  }
+  return false;
+}
+const LETRAS = "abcdefghijklmnopqrstuvwxyzáàâãéêíóôõúüç";
+function edicoes(p) {
+  const r = new Set();
+  for (let i = 0; i <= p.length; i++) {
+    const a = p.slice(0, i), b = p.slice(i);
+    if (b) r.add(a + b.slice(1));
+    if (b.length > 1) r.add(a + b[1] + b[0] + b.slice(2));
+    for (const c of LETRAS) { if (b) r.add(a + c + b.slice(1)); r.add(a + c + b); }
+  }
+  return r;
+}
+const SEMACENTO = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+function sugestoes(pal) {
+  const min = pal.toLowerCase(), cap = pal[0] !== min[0], saida = [];
+  const add = w => { if (!saida.includes(w) && w !== min) saida.push(w); };
+  const e1 = edicoes(min), v = [...e1].filter(w => w.length > 1 && existe(w));
+  const sa = SEMACENTO(min);
+  v.sort((x, y) => (SEMACENTO(y) === sa) - (SEMACENTO(x) === sa) || Math.abs(x.length - min.length) - Math.abs(y.length - min.length));
+  v.forEach(add);
+  if (saida.length < 3 && min.length < 11) {
+    for (const w of e1) { if (saida.length >= 5) break; if (w.length < 3) continue; for (const w2 of edicoes(w)) if (w2.length > 1 && existe(w2)) { add(w2); if (saida.length >= 5) break; } }
+  }
+  return saida.slice(0, 5).map(w => cap ? w[0].toUpperCase() + w.slice(1) : w);
+}
+function ehIgnoravel(p, texto, pos) {
+  if (/\d/.test(p)) return true;
+  if (p.length > 1 && p === p.toUpperCase()) return true; // siglas
+  if (p.length === 1) return true;
+  return false;
+}
+function telaRevisor(m) {
+  const ta = h("textarea", { placeholder: "Escreva ou cole o texto aqui…", style: "min-height:180px", oninput: () => { sessionStorage.setItem("omega.rev", ta.value); agendar(); } });
+  ta.value = sessionStorage.getItem("omega.rev") || "";
+  const conf = h("div", { id: "conf" });
+  const status = h("p", { class: "sub" });
+  let ignoradas = new Set(), tmr;
+  const agendar = () => { clearTimeout(tmr); tmr = setTimeout(pintar, 400); };
+  function pintar() {
+    fechar();
+    if (DICSTATE === "erro") { status.textContent = "Dicionário não encontrado (arquivo dicionario-ptbr.js). Deixe-o na mesma pasta do index.html."; conf.replaceChildren(); return; }
+    if (DICSTATE !== "ok") { status.textContent = "Carregando o dicionário…"; carregarDic(pintar); return; }
+    status.textContent = "Palavras sublinhadas não estão no dicionário. Toque numa delas.";
+    const t = ta.value, re = /[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ'’-]*/g;
+    conf.replaceChildren(); let ult = 0, mm;
+    while ((mm = re.exec(t))) {
+      let p = mm[0].replace(/[-'’]+$/, ""); const ini = mm.index, fim = ini + p.length;
+      const antes = t.slice(Math.max(0, ini - 6), ini);
+      const colado = /\d[\d./-]*$/.test(t.slice(Math.max(0, ini - 2), ini)) || t[fim] && /\d/.test(t[fim]);
+      const meio = /^[A-ZÀ-Ý]/.test(p) && /[^\s.!?:;\n"“(]\s+$/.test(t.slice(Math.max(0, ini - 4), ini));
+      let ok = meio || ehIgnoravel(p) || colado || ignoradas.has(p.toLowerCase()) || certa(p);
+      if (!ok && /^(art|inc|par|al)$/i.test(p)) ok = true;
+      conf.append(t.slice(ult, ini));
+      if (ok) conf.append(p); else conf.append(h("span", { class: "err", onclick: ev => balao(ev.currentTarget, p, ini, fim) }, p));
+      ult = fim;
+    }
+    conf.append(t.slice(ult));
+  }
+  function fechar() { document.querySelectorAll(".bal").forEach(x => x.remove()); }
+  function balao(el, p, ini, fim) {
+    fechar();
+    const r = el.getBoundingClientRect(), s = sugestoes(p);
+    const b = h("div", { class: "bal", style: `left:${Math.max(8, Math.min(r.left, innerWidth - 310))}px;top:${Math.min(r.bottom + 6, innerHeight - 280)}px` },
+      s.length ? s.map(w => h("button", { class: "sug", onclick: () => { ta.value = ta.value.slice(0, ini) + w + ta.value.slice(fim); sessionStorage.setItem("omega.rev", ta.value); pintar(); } }, w)) : h("span", { class: "sub", style: "padding:6px 10px" }, "Sem sugestões"),
+      h("button", { onclick: () => { ignoradas.add(p.toLowerCase()); pintar(); } }, "Ignorar"),
+      h("button", { onclick: () => { const w = p.toLowerCase(); (DB.dic = DB.dic || []).push(w); salvar(); pintar(); aviso(`“${w}” adicionada ao seu dicionário.`); } }, "Adicionar ao meu dicionário"));
+    document.body.append(b);
+    setTimeout(() => document.addEventListener("click", function f(ev) { if (!b.contains(ev.target)) { b.remove(); document.removeEventListener("click", f); } }), 0);
+  }
+  m.append(h("h1", {}, "Revisor"), h("p", { class: "sub just" }, "Confere a ortografia neste aparelho, sem enviar o texto a ninguém."),
+    ta, status, conf,
+    h("div", { class: "linha" },
+      h("button", { class: "btn", onclick: async () => { (await copiar(ta.value)) ? aviso("Texto copiado.") : caixaCopia(ta.value, "Texto corrigido"); } }, "Copiar texto corrigido"),
+      h("button", { class: "btn sec", onclick: async () => {
+        const t = PERGUNTA + "\n\n" + ta.value, ok = await copiar(t);
+        window.open(URLS.gemini, "_blank", "noopener");
+        if (ok) aviso("Copiado, cole no Gemini"); else caixaCopia(t, "Texto para o Gemini");
+      } }, "Revisar texto final"),
+      h("button", { class: "btn sec", onclick: () => { ta.value = ""; sessionStorage.removeItem("omega.rev"); pintar(); } }, "Limpar")),
+    h("p", { class: "sub" }, `Meu dicionário: ${(DB.dic || []).length} palavra(s). `, (DB.dic || []).length ? h("a", { style: "color:var(--ac);cursor:pointer", onclick: () => { if (confirm("Esvaziar seu dicionário pessoal?")) { DB.dic = []; salvar(); montar(); } } }, "esvaziar") : null));
+  if (ta.value) pintar(); else { status.textContent = "Dicionário carrega ao começar a digitar."; setTimeout(() => carregarDic(() => {}), 200); }
+}
+
+/* ===== levar estado entre aparelhos (6.3) ===== */
+function telaEstado(m) {
+  const ta = h("textarea", { placeholder: "Cole aqui o estado copiado do outro aparelho", style: "min-height:160px" });
+  m.append(h("h1", {}, "Levar para outro aparelho"),
+    h("p", { class: "sub just" }, "No aparelho de origem toque em “Copiar estado”. No outro, cole o texto abaixo e toque em “Colar estado”. Isso substitui o que estiver neste aparelho."),
+    h("div", { class: "linha" }, h("button", { class: "btn", onclick: async () => {
+      const t = "OMEGA-ESTADO:" + JSON.stringify(DB);
+      (await copiar(t)) ? aviso("Estado copiado. Cole no outro aparelho.") : caixaCopia(t, "Estado");
+    } }, "Copiar estado")),
+    ta, h("div", { class: "linha" }, h("button", { class: "btn sec", onclick: () => {
+      try {
+        const x = JSON.parse(ta.value.trim().replace(/^OMEGA-ESTADO:/, ""));
+        if (!x || typeof x.relatorios !== "object") throw new Error("não é um estado do Ômega");
+        if (!confirm("Substituir tudo o que está neste aparelho pelo estado colado?")) return;
+        DB = Object.assign({ relatorios: {}, tema: "escuro", atual: null, dic: [] }, x); salvar(); aba = "rel"; DB.atual = null; montar(); aviso("Estado colado.");
+      } catch (e) { aviso("Não entendi o texto: " + e.message); }
+    } }, "Colar estado")));
+}
+
+montar();
+if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+<script type="application/json" id="ex">{"id": "2026-000", "titulo": "Relatório de exemplo (dados fictícios)", "processo": "EXEMPLO-0000/0000", "tipo": "licitacao", "rodada": 1, "secoes": [{"id": "1", "titulo": "Pendências técnicas", "itens": [{"id": "1.1", "titulo": "Planilha de quantitativos sem a unidade de medida", "texto": "EXEMPLO FICTÍCIO. Na planilha orçamentária, três linhas do capítulo de pavimentação não trazem a unidade de medida. Recomenda-se completar antes de seguir.", "categoria": "tecnica", "opcoes": [], "requer": []}, {"id": "1.2", "titulo": "Prazo de execução diverge entre o termo de referência e o cronograma", "texto": "EXEMPLO FICTÍCIO. O termo de referência fala em 180 dias e o cronograma físico-financeiro em 150 dias.", "categoria": "tecnica", "opcoes": ["Adotar 180 dias", "Adotar 150 dias", "Pedir esclarecimento à engenharia"], "requer": []}, {"id": "1.3", "titulo": "Local da obra descrito de forma genérica", "texto": "EXEMPLO FICTÍCIO. O endereço indica apenas o bairro, sem o trecho da via.", "categoria": "tecnica", "opcoes": [], "requer": []}, {"id": "1.4", "titulo": "Memorial descritivo cita norma revogada", "texto": "EXEMPLO FICTÍCIO. O memorial menciona uma norma técnica que foi substituída. Atualizar a referência.", "categoria": "tecnica", "opcoes": [], "requer": ["1.1"]}]}, {"id": "2", "titulo": "Pendências jurídicas", "itens": [{"id": "2.1", "titulo": "Fundamento legal da modalidade", "texto": "EXEMPLO FICTÍCIO. A minuta indica a modalidade sem citar o dispositivo legal que a fundamenta.", "categoria": "juridica", "opcoes": [], "requer": []}, {"id": "2.2", "titulo": "Critério de julgamento", "texto": "EXEMPLO FICTÍCIO. Há divergência entre o critério citado no edital e o citado na justificativa.", "categoria": "juridica", "opcoes": ["Menor preço", "Maior desconto", "Técnica e preço"], "requer": ["1.2"]}, {"id": "2.3", "titulo": "Cláusula de reajuste", "texto": "EXEMPLO FICTÍCIO. A cláusula de reajuste não indica o índice nem a data-base.", "categoria": "juridica", "opcoes": [], "requer": ["2.1"]}, {"id": "2.4", "titulo": "Garantia contratual", "texto": "EXEMPLO FICTÍCIO. Definir se haverá exigência de garantia e em qual percentual.", "categoria": "juridica", "opcoes": ["Sem garantia", "Garantia de 2%", "Garantia de 5%"], "requer": []}]}, {"id": "3", "titulo": "Decisões da autoridade", "itens": [{"id": "3.1", "titulo": "Divulgar o orçamento estimado?", "texto": "EXEMPLO FICTÍCIO. Decidir se o orçamento será divulgado no edital ou mantido em sigilo até o julgamento.", "categoria": "decisao", "opcoes": ["Divulgar", "Manter sigiloso"], "requer": []}, {"id": "3.2", "titulo": "Visita técnica", "texto": "EXEMPLO FICTÍCIO. Definir se a visita técnica será obrigatória ou facultativa.", "categoria": "decisao", "opcoes": ["Obrigatória", "Facultativa", "Dispensada com declaração"], "requer": []}, {"id": "3.3", "titulo": "Assinatura do despacho", "texto": "EXEMPLO FICTÍCIO. Indicar quem assina o despacho de encaminhamento.", "categoria": "decisao", "opcoes": [], "requer": ["2.1", "2.2"]}, {"id": "3.4", "titulo": "Data prevista para a abertura", "texto": "EXEMPLO FICTÍCIO. Confirmar a data após a resolução dos itens anteriores.", "categoria": "decisao", "opcoes": [], "requer": ["3.3"]}]}]}</script>
+</body>
+</html>
