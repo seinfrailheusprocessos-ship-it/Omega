@@ -1,17 +1,65 @@
 {
   "id": "exemplo-geral",
   "rev": 1,
+  "numero": 1,
   "titulo": "Relatório de exemplo (dados fictícios)",
+  "autor": "@Morrão",
+  "pasta": {
+    "rotulo": "Exemplo Geral",
+    "caminho": "C:\\Exemplo",
+    "drive": ""
+  },
   "atualizado": "2026-10-11T14:30:00-03:00",
   "secoes": [
     {
       "num": "1",
       "titulo": "Layout",
       "itens": [
-        { "num": "1.6", "tipo": "acao", "titulo": "Instalar o programa de exemplo", "texto": "EXEMPLO FICTÍCIO. Baixar e instalar o programa na pasta indicada e abrir uma vez para criar os arquivos de configuração.", "dependeDe": [], "bloqueia": ["1.7"], "caminhos": ["C:\\Exemplo\\Programa"], "valor": "A fazer" },
-        { "num": "1.7", "tipo": "acao", "titulo": "Reiniciar o computador", "texto": "EXEMPLO FICTÍCIO. Conferir se os atalhos de teclado, a barra de tarefas e os widgets voltaram como esperado.", "dependeDe": ["1.6"], "bloqueia": [], "caminhos": [], "valor": "A fazer" },
-        { "num": "1.8", "tipo": "info", "titulo": "Aviso importante", "texto": "EXEMPLO FICTÍCIO. Este item é só leitura: não tem chip de escolha." },
-        { "num": "1.9", "tipo": "acao", "titulo": "Organizar a pasta de modelos", "texto": "EXEMPLO FICTÍCIO. Mover os modelos antigos para a pasta de arquivo.", "dependeDe": [], "bloqueia": [], "caminhos": ["C:\\Exemplo\\Modelos", "C:\\Exemplo\\Arquivo"], "valor": "A fazer" }
+        {
+          "num": "1.6",
+          "tipo": "acao",
+          "titulo": "Instalar o programa de exemplo",
+          "texto": "EXEMPLO FICTÍCIO. Baixar e instalar o programa na pasta indicada e abrir uma vez para criar os arquivos de configuração.",
+          "dependeDe": [],
+          "bloqueia": [
+            "1.7"
+          ],
+          "caminhos": [
+            "C:\\Exemplo\\Programa"
+          ],
+          "valor": "A fazer"
+        },
+        {
+          "num": "1.7",
+          "tipo": "acao",
+          "titulo": "Reiniciar o computador",
+          "texto": "EXEMPLO FICTÍCIO. Conferir se os atalhos de teclado, a barra de tarefas e os widgets voltaram como esperado.",
+          "dependeDe": [
+            "1.6"
+          ],
+          "bloqueia": [],
+          "caminhos": [],
+          "valor": "A fazer"
+        },
+        {
+          "num": "1.8",
+          "tipo": "info",
+          "titulo": "Aviso importante",
+          "texto": "EXEMPLO FICTÍCIO. Este item é só leitura: não tem chip de escolha."
+        },
+        {
+          "num": "1.9",
+          "tipo": "acao",
+          "titulo": "Organizar a pasta de modelos",
+          "texto": "EXEMPLO FICTÍCIO. Mover os modelos antigos para a pasta de arquivo.",
+          "dependeDe": [],
+          "bloqueia": [],
+          "caminhos": [
+            "C:\\Exemplo\\Modelos",
+            "C:\\Exemplo\\Arquivo"
+          ],
+          "valor": "A fazer"
+        }
       ]
     },
     {
@@ -19,24 +67,90 @@
       "titulo": "Contratos",
       "itens": [
         {
-          "num": "2.1", "tipo": "decisao", "titulo": "Prazo de vigência do contrato de exemplo",
+          "num": "2.1",
+          "tipo": "decisao",
+          "titulo": "Prazo de vigência do contrato de exemplo",
           "texto": "EXEMPLO FICTÍCIO. O termo de referência fala em 12 meses e a minuta em 24 meses. Como seguir?",
-          "opcoes": ["Adotar 12 meses", "Adotar 24 meses", "Pedir esclarecimento à área técnica", "Ignorar"], "valor": "Aguardando"
+          "opcoes": [
+            "Adotar 12 meses",
+            "Adotar 24 meses",
+            "Pedir esclarecimento à área técnica",
+            "Ignorar"
+          ],
+          "valor": "Aguardando"
         },
         {
-          "num": "2.2", "tipo": "decisao", "titulo": "Publicação do aditivo",
+          "num": "2.2",
+          "tipo": "decisao",
+          "titulo": "Publicação do aditivo",
           "texto": "EXEMPLO FICTÍCIO. Não encontrei a publicação no diário oficial de exemplo; como seguir?",
-          "opcoes": ["Buscar outros termos", "Pedir o endereço do outro meio", "Ignorar"], "valor": "Aguardando", "dependeDe": ["2.1"]
+          "opcoes": [
+            "Buscar outros termos",
+            "Pedir o endereço do outro meio",
+            "Ignorar"
+          ],
+          "valor": "Aguardando",
+          "dependeDe": [
+            "2.1"
+          ]
         },
         {
-          "num": "2.3", "tipo": "acao", "titulo": "Conferir os contratos em vigor",
+          "num": "2.3",
+          "tipo": "acao",
+          "titulo": "Conferir os contratos em vigor",
           "texto": "EXEMPLO FICTÍCIO. A tabela abaixo é inventada. Cada situação tem a sua escolha.",
           "tabela": {
-            "colunas": [ { "nome": "Contrato" }, { "nome": "Objeto" }, { "nome": "Vigência até" }, { "nome": "Situação" } ],
+            "colunas": [
+              {
+                "nome": "Contrato"
+              },
+              {
+                "nome": "Objeto"
+              },
+              {
+                "nome": "Vigência até"
+              },
+              {
+                "nome": "Situação"
+              }
+            ],
             "linhas": [
-              ["001/2026", "Serviço de exemplo de limpeza de vias", "31/12/2026", { "chip": { "valor": "A fazer" } }],
-              ["002/2026", "Fornecimento de exemplo de material de sinalização", "15/03/2027", { "chip": { "valor": "A fazer" } }],
-              ["003/2026", "Obra de exemplo de drenagem em bairro fictício, com prazo estendido por aditivo", "30/09/2027", { "chip": { "valor": "A fazer", "opcoes": ["A fazer", "Feito", "Ignorar", "Não consegui"] } }]
+              [
+                "001/2026",
+                "Serviço de exemplo de limpeza de vias",
+                "31/12/2026",
+                {
+                  "chip": {
+                    "valor": "A fazer"
+                  }
+                }
+              ],
+              [
+                "002/2026",
+                "Fornecimento de exemplo de material de sinalização",
+                "15/03/2027",
+                {
+                  "chip": {
+                    "valor": "A fazer"
+                  }
+                }
+              ],
+              [
+                "003/2026",
+                "Obra de exemplo de drenagem em bairro fictício, com prazo estendido por aditivo",
+                "30/09/2027",
+                {
+                  "chip": {
+                    "valor": "A fazer",
+                    "opcoes": [
+                      "A fazer",
+                      "Feito",
+                      "Ignorar",
+                      "Não consegui"
+                    ]
+                  }
+                }
+              ]
             ]
           },
           "valor": "A fazer"
@@ -48,19 +162,65 @@
       "titulo": "Orçamento",
       "itens": [
         {
-          "num": "3.1", "tipo": "acao", "titulo": "Revisar a planilha de exemplo",
+          "num": "3.1",
+          "tipo": "acao",
+          "titulo": "Revisar a planilha de exemplo",
           "texto": "EXEMPLO FICTÍCIO. Valores inventados só para testar o alinhamento de números e datas.",
           "tabela": {
-            "colunas": [ { "nome": "Item" }, { "nome": "Quantidade" }, { "nome": "Valor (R$)" }, { "nome": "Data-base" } ],
+            "colunas": [
+              {
+                "nome": "Item"
+              },
+              {
+                "nome": "Quantidade"
+              },
+              {
+                "nome": "Valor (R$)"
+              },
+              {
+                "nome": "Data-base"
+              }
+            ],
             "linhas": [
-              ["Concreto usinado (exemplo)", "120", "1.250,00", "01/08/2026"],
-              ["Aço CA-50 (exemplo)", "3.400", "8,75", "01/08/2026"],
-              ["Mão de obra (exemplo)", "960", "42,10", "01/08/2026"]
+              [
+                "Concreto usinado (exemplo)",
+                "120",
+                "1.250,00",
+                "01/08/2026"
+              ],
+              [
+                "Aço CA-50 (exemplo)",
+                "3.400",
+                "8,75",
+                "01/08/2026"
+              ],
+              [
+                "Mão de obra (exemplo)",
+                "960",
+                "42,10",
+                "01/08/2026"
+              ]
             ]
           },
-          "caminhos": ["C:\\Exemplo\\Planilhas\\orcamento-exemplo.xlsx"], "valor": "A fazer"
+          "caminhos": [
+            "C:\\Exemplo\\Planilhas\\orcamento-exemplo.xlsx"
+          ],
+          "valor": "A fazer"
         },
-        { "num": "3.2", "tipo": "decisao", "titulo": "Divulgar o orçamento estimado?", "texto": "EXEMPLO FICTÍCIO. Decidir se o orçamento será divulgado no edital.", "opcoes": ["Divulgar", "Manter sigiloso"], "valor": "Aguardando", "dependeDe": ["3.1"] }
+        {
+          "num": "3.2",
+          "tipo": "decisao",
+          "titulo": "Divulgar o orçamento estimado?",
+          "texto": "EXEMPLO FICTÍCIO. Decidir se o orçamento será divulgado no edital.",
+          "opcoes": [
+            "Divulgar",
+            "Manter sigiloso"
+          ],
+          "valor": "Aguardando",
+          "dependeDe": [
+            "3.1"
+          ]
+        }
       ]
     },
     {
@@ -72,17 +232,37 @@
           "num": "2",
           "titulo": "Descrição da necessidade da contratação",
           "paragrafos": [
-            { "id": "2.1", "texto": "EXEMPLO FICTÍCIO. A Secretaria precisa contratar o serviço de exemplo para manter as vias do município em condições adequadas de uso.", "situacao": "vermelho" },
-            { "id": "2.2", "texto": "EXEMPLO FICTÍCIO. A empresa contratada deverá apresentar relatório mensal  das atividades executadas , com registro fotográfico.", "situacao": "vermelho" },
-            { "id": "2.3", "texto": "EXEMPLO FICTÍCIO. O pagamento será efetuado após o atesto da fiscalizção, conforme o cronograma de exemplo.", "situacao": "vermelho" }
+            {
+              "id": "2.1",
+              "texto": "EXEMPLO FICTÍCIO. A Secretaria precisa contratar o serviço de exemplo para manter as vias do município em condições adequadas de uso.",
+              "situacao": "vermelho"
+            },
+            {
+              "id": "2.2",
+              "texto": "EXEMPLO FICTÍCIO. A empresa contratada deverá apresentar relatório mensal  das atividades executadas , com registro fotográfico.",
+              "situacao": "vermelho"
+            },
+            {
+              "id": "2.3",
+              "texto": "EXEMPLO FICTÍCIO. O pagamento será efetuado após o atesto da fiscalizção, conforme o cronograma de exemplo.",
+              "situacao": "vermelho"
+            }
           ]
         },
         {
           "num": "3",
           "titulo": "Requisitos da contratação",
           "paragrafos": [
-            { "id": "3.1", "texto": "EXEMPLO FICTÍCIO. A contratada deverá manter equipe mínima, com equipamentos de proteção individual.", "situacao": "verde" },
-            { "id": "3.2", "texto": "EXEMPLO FICTÍCIO. Assinado por Nome do Signatário, Cargo do Signatário.", "situacao": "vermelho" }
+            {
+              "id": "3.1",
+              "texto": "EXEMPLO FICTÍCIO. A contratada deverá manter equipe mínima, com equipamentos de proteção individual.",
+              "situacao": "verde"
+            },
+            {
+              "id": "3.2",
+              "texto": "EXEMPLO FICTÍCIO. Assinado por Nome do Signatário, Cargo do Signatário.",
+              "situacao": "vermelho"
+            }
           ]
         }
       ]

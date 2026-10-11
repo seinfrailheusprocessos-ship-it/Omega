@@ -7,7 +7,14 @@ Exemplo completo e fictício: `dados/relatorio.exemplo.json`.
 {
   "id": "organizacao-geral",          // identifica o relatório (não mude entre levas)
   "rev": 38,                           // número da leva; subiu = "novo relatório carregado"
+  "numero": 1,                         // número do relatório na lateral
   "titulo": "Relatório de Organização Geral",
+  "autor": "@Morrão",                  // aparece como chip sob o título (padrão: @Morrão)
+  "pasta": {                           // a "pasta/conversa" deste relatório
+    "rotulo": "Organização Geral",     // nome mostrado na lateral (padrão: o título)
+    "caminho": "C:\\CL\\Organizacao",   // atalho 📁 no computador (abre no Explorador pelo servidor local)
+    "drive": "https://drive.google.com/..."  // atalho 📁 no celular (opcional)
+  },
   "atualizado": "2026-10-11T14:30:00-03:00",
   "secoes": [ ...seções de itens... , ...seções de texto... ]
 }
