@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Teste do Ômega</title>
+<style>body{font:16px/1.5 system-ui,sans-serif;max-width:720px;margin:0 auto;padding:20px}a.b{display:inline-block;background:#4A5D78;color:#fff;padding:10px 18px;border-radius:12px;text-decoration:none;margin:4px 6px 4px 0}li{margin:.4em 0}</style></head>
+<body>
+<h1>Tela de teste do Ômega</h1>
+<p>Abre o app já com o relatório de exemplo (dados fictícios).</p>
+<p><a class="b" href="index.html?exemplo=1">Abrir com o exemplo</a> <a class="b" href="index.html?exemplo=1" target="_blank">Em outra aba</a></p>
+<h2>O que conferir (critérios de aceite)</h2>
+<ol>
+<li>Seções recolhem e expandem; itens numerados; “Depende de 1.6” rola até o item e o destaca.</li>
+<li>Toque no chip ( A fazer ▾ ): o painel abre sempre no mesmo lugar (borda direita no computador, folha de baixo no celular) com as opções já visíveis; escolher avança para o próximo pendente. Teclas 1 a 4, N, setas, Enter, Esc.</li>
+<li>Item 3.1: botões de alinhamento por coluna (esquerda, centro, direita, justificado). No celular a tabela vira cartões.</li>
+<li>Seção T1 (modo Texto): bolinha vermelho → verde → azul; capítulo só fica verde com todos verdes; duplo toque edita; um toque não abre teclado.</li>
+<li>Barra de cima: Claude, Gemini, Revisar texto (sublinha “fiscalizção”, espaços duplos), Áudio (🎙), Copiar relatório, tema (Claro / Escuro / Mais escuro).</li>
+<li>Copiar relatório: cole num bloco de notas e compare com o formato da seção 10 do memorial.</li>
+<li>Feche e abra: tudo continua como deixou.</li>
+</ol>
+<p>Teste automático (para quem tem Node + Playwright): <code>node teste/aceite.js</code></p>
+</body></html>
