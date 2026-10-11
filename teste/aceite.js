@@ -14,7 +14,10 @@ const ok = (c, m) => { console.log((c ? "OK    " : "FALHA ") + m); if (!c) falha
     p.on("pageerror", e => erros.push(e.message)); p.on("console", m => m.type() === "error" && !/Failed to load resource/.test(m.text()) && erros.push(m.text()));
     await p.goto(URL + "?exemplo=1");
     await p.waitForSelector(".item");
-    const abrirLateral = async () => { if (nome === "celular") await p.click("#b-lat"); };
+    const mobile = nome === "celular";
+    const latAberta = () => p.evaluate(() => document.body.classList.contains("lat"));
+    const lat = async () => { if (mobile && !(await latAberta())) { await p.click("#b-lat"); await p.waitForTimeout(250); } };
+    const fechaLat = async () => { if (mobile && (await latAberta())) { await p.click("#fundo", { position: { x: 380, y: 400 } }); await p.waitForTimeout(250); } };
     ok(await p.locator(".sec-h").count() >= 4, "seções aparecem");
     // recolher/expandir
     await p.locator(".sec-h").first().click(); ok(await p.locator(".sec:not(.bloco-feito).rec").count() === 1, "seção recolhe");
@@ -78,20 +81,57 @@ const ok = (c, m) => { console.log((c ? "OK    " : "FALHA ") + m); if (!c) falha
     // persistência
     await p.reload(); await p.waitForSelector(".item");
     ok(await p.locator(".bloco-feito .item").count() >= 1 && await p.locator(".alt").count() === 1, "fechar e abrir mantém as escolhas");
+    // ---- v3: lateral no lugar da barra de cima ----
+    ok(await p.locator("#barra").count() === 0, "não há barra superior (tudo foi para a lateral)");
+    await lat();
+    ok((await p.locator(".caixa-l .caixinha .n").first().innerText()) === "1 Exemplo Geral", "lateral lista só relatórios: número e rótulo da pasta");
+    ok(await p.locator(".caixa-l .ico").count() === 2, "dois atalhos por relatório (arquivos e conversa)");
+    let todas = true; for (const x of ["Claude", "Gemini", "Revisar texto", "Áudio", "Copiar relatório (decisões)", "Copiar item em foco", "Copiar relatório inteiro", "Copiar tudo e enviar"]) if (!(await p.locator("#lateral .lat-bt", { hasText: x }).count())) { todas = false; console.log("  falta: " + x); }
+    ok(todas, "opções da antiga barra de cima estão na lateral");
+    ok(await p.locator("#lateral .seg button").count() === 3 && (await p.locator("#cont").innerText()).includes("pendentes"), "tema e contador estão na lateral");
+    await p.fill("#in-conv", "https://claude.ai/chat/exemplo-123"); await p.press("#in-conv", "Enter"); await p.waitForTimeout(150);
+    ok((await p.evaluate(() => relAtual().conversa)) === "https://claude.ai/chat/exemplo-123", "link da conversa fica salvo");
+    await p.locator(".caixa-l .ico").first().click(); await p.waitForTimeout(250);
+    ok(/C:\\Exemplo/.test(await p.evaluate(() => navigator.clipboard.readText())), "atalho de arquivos (sem servidor): copia o caminho da pasta");
+    { const [pop] = await Promise.all([ctx.waitForEvent("page"), p.locator(".caixa-l .ico").nth(1).click()]); ok(pop.url().startsWith("https://claude.ai/chat/exemplo-123") || pop.url().startsWith("chrome-error"), "atalho da conversa abre o link salvo (" + pop.url().slice(0, 40) + ")"); await pop.close(); }
+    await fechaLat();
+    // copiar em partes
+    const par = p.locator("table.tex tbody tr").first();
+    await par.getByText("Copiar parágrafo").click(); await p.waitForTimeout(150);
+    ok((await p.evaluate(() => navigator.clipboard.readText())).includes("Acrescentei isto."), "copiar parágrafo");
+    await p.getByText("Copiar capítulo").first().click(); await p.waitForTimeout(150);
+    ok((await p.evaluate(() => navigator.clipboard.readText())).startsWith("2 Descrição da necessidade da contratação\n\n"), "copiar capítulo");
+    await p.getByText("Copiar texto inteiro").click(); await p.waitForTimeout(150);
+    { const tx = await p.evaluate(() => navigator.clipboard.readText()); ok(tx.startsWith("DFD (exemplo)\n\n2 Descrição") && tx.includes("3 Requisitos"), "copiar texto inteiro"); }
+    await lat(); await p.locator("#lateral .lat-bt", { hasText: "Copiar relatório inteiro" }).click(); await p.waitForTimeout(150);
+    { const tx = await p.evaluate(() => navigator.clipboard.readText()); ok(tx.startsWith("Relatório de exemplo") && tx.includes("1.6") && tx.includes("T1 DFD"), "copiar relatório inteiro"); }
+    await lat();
+    { const [pop] = await Promise.all([ctx.waitForEvent("page"), p.locator("#b-env").click()]); await p.waitForTimeout(200);
+      const tx = await p.evaluate(() => navigator.clipboard.readText()); ok(tx.startsWith("[ÔMEGA]") && tx.includes("RELATÓRIO COMPLETO") && (pop.url().startsWith("https://claude.ai/chat/exemplo-123") || pop.url().startsWith("chrome-error")), "copiar tudo e enviar: copia e abre a conversa"); await pop.close(); }
+    await fechaLat();
+    ok(await p.locator("#it-2_3 tbody tr").first().locator("td").nth(1).evaluate(e => getComputedStyle(e).textAlign) === "left", "células de texto das tabelas ficam alinhadas à esquerda");
+    ok(await p.locator(".item .tx").first().evaluate(e => getComputedStyle(e).textAlign) === "justify", "parágrafos continuam justificados");
+    if (mobile) {
+      const cdp = await ctx.newCDPSession(p);
+      const arrasta = async (x0, x1) => { await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: x0, y: 400 }] }); for (let x = x0; Math.abs(x - x1) > 5; x += (x1 > x0 ? 12 : -12)) await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: 400 }] }); await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] }); await p.waitForTimeout(250); };
+      ok(!(await latAberta()), "lateral fechada antes do gesto");
+      await arrasta(5, 150); ok(await latAberta(), "deslizar da borda esquerda para a direita abre a lateral");
+      await arrasta(200, 40); ok(!(await latAberta()), "deslizar para a esquerda fecha e volta ao relatório");
+    }
     // saída
     await p.evaluate(() => { const r = relAtual(); r.foco = { t: "I", num: "1.9" }; });
-    await p.locator("#b-cop").click(); await p.waitForTimeout(200);
+    await lat(); await p.locator("#b-cop").click(); await p.waitForTimeout(200);
     const txt = await p.evaluate(() => navigator.clipboard.readText());
     console.log("----- texto copiado -----\n" + txt + "-------------------------");
     ok(/^\[ÔMEGA\] relatório exemplo-geral rev 1 \| \d\d\/\d\d\/\d{4} \d\d:\d\d\n\n## 1 Layout\n\n1\.6 \[Feito\]\n\n1\.9 \[Não consegui\]/.test(txt), "formato da saída (cabeçalho e seção)");
     ok(/2\.1 \[Escolheu\] opção B: "adotar 24 meses"/.test(txt), "decisão com opção sai como [Escolheu] opção B");
     ok(/## Texto: DFD \(exemplo\), capítulo 2\n\n2\.1 \[azul\] texto alterado: "/.test(txt), "parágrafo alterado sai com o texto novo");
     ok(!/1\.7/.test(txt), "itens não tocados não aparecem");
-    await p.locator("#b-copf").click(); await p.waitForTimeout(150);
+    await lat(); await p.locator("#b-copf").click(); await p.waitForTimeout(150);
     ok(/1\.9 \[Não consegui\]/.test(await p.evaluate(() => navigator.clipboard.readText())), "Copiar item em foco");
     // temas
-    for (const t of ["claro", "escuro", "maisescuro"]) { await p.selectOption("#tema", t); const bg = await p.evaluate(() => getComputedStyle(document.body).backgroundColor); console.log("tema " + t + ": " + bg); await p.screenshot({ path: `/tmp/omega-${nome}-${t}.png` }); }
-    await p.selectOption("#tema", "claro");
+    for (const t of ["claro", "escuro", "maisescuro"]) { await lat(); await p.click(`.seg button[data-tema=${t}]`); await fechaLat(); const bg = await p.evaluate(() => getComputedStyle(document.body).backgroundColor); console.log("tema " + t + ": " + bg); await p.screenshot({ path: `/tmp/omega-${nome}-${t}.png` }); }
+    await lat(); await p.click(".seg button[data-tema=claro]"); await fechaLat();
     // sem rolagem horizontal
     ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), "sem rolagem horizontal da página");
     ok(erros.length === 0, "sem erros no console " + erros.join(";"));

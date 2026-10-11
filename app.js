@@ -87,7 +87,8 @@ const OPC_DEC = ["Aguardando", "Seguir", "Ignorar"];
 function arr(x) { return x == null ? [] : Array.isArray(x) ? x.map(String) : [String(x)]; }
 function normalizar(d) {
   if (!d || typeof d !== "object" || !Array.isArray(d.secoes)) throw new Error("O arquivo não parece um relatório do Ômega (faltam as seções).");
-  const r = { id: String(d.id || "relatorio"), rev: Number(d.rev ?? d.rodada ?? 1) || 1, titulo: String(d.titulo || "Sem título"), atualizado: d.atualizado || "", secoes: [] };
+  const pa = d.pasta && typeof d.pasta === "object" ? d.pasta : {};
+  const r = { id: String(d.id || "relatorio"), rev: Number(d.rev ?? d.rodada ?? 1) || 1, titulo: String(d.titulo || "Sem título"), atualizado: d.atualizado || "", autor: String(d.autor || "@Morrão"), numero: d.numero != null ? String(d.numero) : "", pasta: { rotulo: String(pa.rotulo || d.rotulo || ""), caminho: String(pa.caminho || ""), drive: String(pa.drive || "") }, secoes: [] };
   d.secoes.forEach((s, si) => {
     const num = String(s.num ?? s.id ?? si + 1);
     const sec = { num, titulo: String(s.titulo || ""), tipo: s.tipo === "texto" || s.capitulos ? "texto" : "itens" };
@@ -213,11 +214,9 @@ function setFoco(f, rolar) {
 /* ================= montagem ================= */
 function aplicarTema() {
   document.documentElement.dataset.tema = DB.ui.tema;
-  $("#tema").value = DB.ui.tema;
   document.body.classList.toggle("lat", !!DB.ui.lateral);
   $("#fundo").classList.toggle("oculto", !(DB.ui.lateral && innerWidth < 900));
   document.body.classList.toggle("pa", painel.aberto);
-  $("#b-rev").classList.toggle("on", !!DB.ui.revisar);
 }
 function montar() {
   aplicarTema();
@@ -236,35 +235,71 @@ function montar() {
 }
 function temTexto(rel) { return rel.dados.secoes.some(s => s.tipo === "texto"); }
 function atualizarContador() {
-  const rel = relAtual(), c = $("#cont");
-  if (!rel || vista !== "rel") { c.textContent = ""; return; }
+  const rel = relAtual(), c = $("#cont"); if (!c) return;
+  if (!rel || vista !== "rel") { c.textContent = "Abra um relatório para ver o contador."; return; }
   const n = contagens(rel);
-  c.replaceChildren(h("b", {}, n.pend), h("span", { class: "lg" }, " pendentes · "), h("span", {}, " "), h("b", {}, n.feitos), h("span", { class: "lg" }, " decididos · "), h("span", {}, " "), h("b", {}, n.bloq), h("span", { class: "lg" }, " bloqueados"));
+  c.replaceChildren(h("b", {}, n.pend), " pendentes · ", h("b", {}, n.feitos), " decididos · ", h("b", {}, n.bloq), " bloqueados");
 }
-$("#tema").onchange = e => { DB.ui.tema = e.target.value; salvar(); aplicarTema(); };
 $("#b-lat").onclick = () => { DB.ui.lateral = !DB.ui.lateral; salvar(); aplicarTema(); };
 $("#fundo").onclick = () => { DB.ui.lateral = false; salvar(); aplicarTema(); };
-$("#b-rev").onclick = () => { DB.ui.revisar = !DB.ui.revisar; salvar(); remontar(); if (DB.ui.revisar) aviso("Revisão de texto ligada."); };
-
-function desenharLateral() {
-  const L = $("#lateral"); L.replaceChildren();
-  const rel = relAtual();
-  L.append(h("h4", {}, "Relatórios"));
-  const ids = Object.keys(DB.rels).sort((a, b) => DB.rels[b].atualizado - DB.rels[a].atualizado);
-  if (!ids.length) L.append(h("p", { class: "suave", style: "padding:0 8px" }, "Nenhum ainda."));
-  ids.forEach(id => {
-    const r = DB.rels[id], n = contagens(r);
-    L.append(h("button", { class: "caixinha" + (id === DB.atual && vista === "rel" ? " sel" : ""), onclick: () => { DB.atual = id; vista = "rel"; salvar(); montar(); scrollTo(0, 0); fecharLateralPequena(); } },
-      h("span", {}, "▤"), h("span", { class: "n" }, r.dados.titulo), h("span", { class: "c" }, n.pend || "✓")));
-  });
-  if (rel && vista === "rel") {
-    L.append(h("h4", {}, "Seções"));
-    rel.dados.secoes.forEach(s => {
-      const cor = s.tipo === "texto" ? (s.capitulos.every(c => statusCap(rel, s, c).cor === "verde") ? "verde" : s.capitulos.some(c => statusCap(rel, s, c).cor === "azul") ? "azul" : "vermelho") : (s.itens.filter(acionavel).length && s.itens.filter(acionavel).every(i => resolvido(kind(valorItem(rel, i)))) ? "verde" : "vermelho");
-      L.append(h("button", { class: "caixinha", onclick: () => { rel.rec[s.num] = false; salvar(); remontar(); const e = document.getElementById("sec-" + s.num); if (e) e.scrollIntoView({ behavior: "smooth", block: "start" }); fecharLateralPequena(); } },
-        h("span", { class: "bola " + cor }), h("span", { class: "n" }, `${s.num} ${s.titulo}`)));
-    });
+const movel = () => /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+function nomeRel(r, i) { return `${r.dados.numero || i + 1} ${r.dados.pasta.rotulo || r.dados.titulo}`; }
+async function abrirPasta(rel) {
+  const p = rel.dados.pasta || {};
+  if (movel()) { if (p.drive) window.open(p.drive, "_blank", "noopener"); else aviso("Este relatório não tem link do Drive. Peça ao Claude para incluir pasta.drive no relatório."); return; }
+  if (!p.caminho) { aviso("Este relatório não informa a pasta (campo pasta.caminho)."); return; }
+  if (/^https?:$/.test(location.protocol)) {
+    try { const r = await fetch("api/abrir-pasta", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ caminho: p.caminho }) }); if (r.ok) { aviso("Abrindo a pasta no Explorador…"); return; } } catch (e) {}
   }
+  const ok = await copiar(p.caminho);
+  aviso(ok ? "Caminho copiado. No Explorador (Win+E) cole na barra de endereço e tecle Enter. Pelo Iniciar Omega.bat abre direto." : "Caminho: " + p.caminho);
+}
+function abrirConversa(id) {
+  const r = DB.rels[id]; if (!r) return;
+  if (r.conversa) { window.open(r.conversa, "_blank", "noopener"); return; }
+  DB.atual = id; vista = "rel"; DB.ui.lateral = true; salvar(); montar();
+  const i = $("#in-conv"); if (i) i.focus();
+  aviso("Cole o link da conversa deste relatório no campo da lateral e tecle Enter.");
+}
+function desenharLateral() {
+  const L = $("#lateral"), sy = L.scrollTop; L.replaceChildren();
+  const rel = relAtual();
+  L.append(h("div", { class: "lat-topo" }, h("span", { class: "marca" }, "Ômega")));
+  L.append(h("h4", {}, "Relatórios"));
+  const ids = Object.keys(DB.rels).sort((a, b) => (parseFloat(DB.rels[a].dados.numero) || 1e9) - (parseFloat(DB.rels[b].dados.numero) || 1e9) || DB.rels[a].atualizado - DB.rels[b].atualizado);
+  if (!ids.length) L.append(h("p", { class: "suave", style: "padding:0 8px" }, "Nenhum ainda."));
+  ids.forEach((id, i) => {
+    const r = DB.rels[id], n = contagens(r), sel = id === DB.atual && vista === "rel";
+    L.append(h("div", { class: "caixa-l" + (sel ? " sel" : "") },
+      h("button", { class: "caixinha", onclick: () => { DB.atual = id; vista = "rel"; salvar(); montar(); scrollTo(0, 0); fecharLateralPequena(); } }, h("span", { class: "n" }, nomeRel(r, i)), h("span", { class: "c" }, n.pend || "✓")),
+      h("button", { class: "ico", title: "Arquivos: abrir a pasta deste relatório", "aria-label": "Arquivos", onclick: () => abrirPasta(r) }, "📁"),
+      h("button", { class: "ico" + (r.conversa ? " tem" : ""), title: r.conversa ? "Abrir a conversa deste relatório" : "Colar o link da conversa", "aria-label": "Conversa", onclick: () => abrirConversa(id) }, "💬")));
+  });
+  if (rel) {
+    const inp = h("input", { id: "in-conv", type: "url", placeholder: "Link da conversa deste relatório", "aria-label": "Link da conversa", onchange: e => {
+      const v = e.target.value.trim();
+      if (v && !/^https?:\/\//i.test(v)) { aviso("O link precisa começar com https://"); return; }
+      rel.conversa = v; salvar(); aviso(v ? "Link da conversa salvo." : "Link da conversa removido."); desenharLateral();
+    } });
+    inp.value = rel.conversa || "";
+    L.append(h("div", { class: "conv" }, inp, h("button", { class: "mini", onclick: () => { if (rel.conversa) window.open(rel.conversa, "_blank", "noopener"); else { inp.focus(); aviso("Cole o link e tecle Enter."); } } }, "Abrir")));
+  }
+  const acao = (txt, ic, fn, on, attr) => h("button", Object.assign({ class: "lat-bt" + (on ? " on" : ""), onclick: fn }, attr || {}), h("span", { class: "ic" }, ic), txt);
+  const e = fn => () => { fn(); };
+  L.append(h("h4", {}, "Conversa"));
+  L.append(acao("Claude (nova conversa)", "✦", () => { abrirIA("claude"); fecharLateralPequena(); }),
+    acao("Gemini (nova conversa)", "✧", () => { abrirIA("gemini"); fecharLateralPequena(); }));
+  L.append(h("h4", {}, "Texto"));
+  L.append(acao("Revisar texto", "✎", () => { DB.ui.revisar = !DB.ui.revisar; salvar(); remontar(); aviso(DB.ui.revisar ? "Revisão de texto ligada." : "Revisão de texto desligada."); }, DB.ui.revisar, { id: "b-rev" }),
+    acao("Áudio (ditado)", "🎙", alternarAudio, audioOn, { id: "b-aud", "data-aud": "1" }));
+  L.append(h("h4", {}, "Copiar"));
+  L.append(acao("Copiar relatório (decisões)", "⧉", () => { copiarSaida(false); fecharLateralPequena(); }, false, { id: "b-cop" }),
+    acao("Copiar item em foco", "◎", () => { copiarSaida(true); fecharLateralPequena(); }, false, { id: "b-copf" }),
+    acao("Copiar relatório inteiro", "▤", () => { copiarInteiro(); fecharLateralPequena(); }),
+    acao("Copiar tudo e enviar relatório", "➤", () => { copiarTudoEnviar(); fecharLateralPequena(); }, false, { id: "b-env" }));
+  L.append(h("h4", {}, "Iluminação"));
+  L.append(h("div", { class: "seg" }, [["claro", "Claro"], ["escuro", "Escuro"], ["maisescuro", "Mais escuro"]].map(([k, t]) => h("button", { class: DB.ui.tema === k ? "on" : "", "data-tema": k, onclick: () => { DB.ui.tema = k; salvar(); aplicarTema(); desenharLateral(); } }, t))));
+  L.append(h("h4", {}, "Contador"), h("div", { id: "cont", class: "contador" }));
   L.append(h("h4", {}, "Abrir"));
   L.append(h("button", { class: "lat-bt", onclick: () => $("#arq").click() }, "Abrir arquivo .json"),
     h("button", { class: "lat-bt", onclick: telaColar }, "Colar relatório"),
@@ -279,7 +314,18 @@ function desenharLateral() {
     const c = h("input", { type: "checkbox", onchange: e => { DB.ui[k] = e.target.checked; salvar(); if (k === "audioSempre" && e.target.checked && !audioOn) ligarAudio(); if (k === "revisar") remontar(); } });
     c.checked = !!DB.ui[k]; L.append(h("label", { class: "lat-chk" }, c, t));
   });
+  L.scrollTop = sy;
 }
+/* abrir a lateral deslizando da borda esquerda (celular) e fechar deslizando para a esquerda */
+let sw = null;
+document.addEventListener("touchstart", e => { const t = e.touches[0]; sw = { x: t.clientX, y: t.clientY, aberto: !!DB.ui.lateral }; }, { passive: true });
+document.addEventListener("touchmove", e => {
+  if (!sw || innerWidth >= 900) return;
+  const t = e.touches[0], dx = t.clientX - sw.x, dy = t.clientY - sw.y;
+  if (Math.abs(dy) > Math.abs(dx)) return;
+  if (!sw.aberto && sw.x < 30 && dx > 60) { DB.ui.lateral = true; salvar(); aplicarTema(); sw = null; }
+  else if (sw.aberto && dx < -60) { DB.ui.lateral = false; salvar(); aplicarTema(); sw = null; }
+}, { passive: true });
 function fecharLateralPequena() { if (innerWidth < 900) { DB.ui.lateral = false; aplicarTema(); } }
 
 function telaInicio(m) {
@@ -313,14 +359,14 @@ async function abrirExemplo() {
 }
 
 /* ---- relatório ---- */
+function dataExtenso(iso) {
+  const d = iso ? new Date(iso) : new Date();
+  return isNaN(d) ? "sem data" : d.toLocaleDateString("pt-BR", { day: "numeric", month: "short", year: "numeric" }).replace(/^(\d+) (\S+?)\.? de (\d+)$/, "$1 de $2. de $3");
+}
 function telaRelatorio(m, rel) {
   const d = rel.dados;
   m.append(h("h1", {}, d.titulo),
-    h("div", { class: "autoria" },
-      h("span", { class: "pilula" }, d.atualizado ? new Date(d.atualizado).toLocaleDateString("pt-BR") : "sem data"),
-      h("span", { class: "pilula" }, "Claude"),
-      h("span", { class: "pilula" }, `rev ${d.rev}`),
-      h("span", { class: "pilula" }, d.id)));
+    h("div", { class: "autoria" }, "Eu ", h("span", { class: "pilula" }, "▫ " + dataExtenso(d.atualizado)), " · ", h("span", { class: "pilula" }, d.autor), h("span", { class: "pilula suave" }, `rev ${d.rev}`)));
   const feitos = [];
   d.secoes.forEach(sec => {
     const aberto = !rel.rec[sec.num];
@@ -337,14 +383,15 @@ function telaRelatorio(m, rel) {
       if (!corpo.children.length) corpo.append(h("p", { class: "suave" }, tot ? "Tudo feito nesta seção." : "Sem itens."));
     }
     const cor = sec.tipo === "texto" ? "" : (tot && res === tot ? "verde" : "vermelho");
-    el.append(h("button", { class: "sec-h", onclick: () => { rel.rec[sec.num] = aberto; salvar(); remontar(); } },
-      h("span", { class: "seta" }, "▾"), cor ? h("span", { class: "bola " + cor }) : null, h("h2", { class: "n" }, `${sec.num} ${sec.titulo}`)),
+    el.append(h("div", { class: "sec-hl" },
+      h("button", { class: "sec-h", onclick: () => { rel.rec[sec.num] = aberto; salvar(); remontar(); } }, h("span", { class: "seta" }, "▾"), cor ? h("span", { class: "bola " + cor }) : null, h("h2", { class: "n" }, sec.titulo || sec.num)),
+      sec.tipo === "texto" ? h("button", { class: "mini", onclick: () => copiarTexto(textoSecao(rel, sec), "Texto inteiro copiado.") }, "Copiar texto inteiro") : null),
       corpo, h("div", { class: "sec-f sec-b" }, `${res} de ${tot} resolvidos`));
     m.append(el);
   });
   const feitoAberto = !rel.rec.__feito;
   const fe = h("section", { class: "sec bloco-feito" + (feitoAberto ? "" : " rec"), id: "sec-__feito" });
-  fe.append(h("button", { class: "sec-h", onclick: () => { rel.rec.__feito = feitoAberto; salvar(); remontar(); } }, h("span", { class: "seta" }, "▾"), h("span", { class: "bola ok" }), h("h2", { class: "n" }, `Já feito (${feitos.length})`)),
+  fe.append(h("div", { class: "sec-hl" }, h("button", { class: "sec-h", onclick: () => { rel.rec.__feito = feitoAberto; salvar(); remontar(); } }, h("span", { class: "seta" }, "▾"), h("span", { class: "bola ok" }), h("h2", { class: "n" }, `Já feito (${feitos.length})`))),
     h("div", { class: "sec-b" }, feitos.length ? feitos.map(it => itemEl(rel, it)) : h("p", { class: "suave" }, "Nada ainda.")));
   m.append(fe);
 }
@@ -354,25 +401,21 @@ function chipEl(valor, fk, aoClicar) {
 function itemEl(rel, it) {
   const v = valorItem(rel, it), k = kind(v), bloq = acionavel(it) && bloqueado(rel, it);
   const f = { t: "I", num: it.num }, st = rel.st["I:" + it.num] || {};
-  const e = h("div", { class: "item" + (bloq ? " bloq" : "") + (k === "ign" ? " ign" : ""), id: "it-" + it.num.replace(/[^\w-]/g, "_"), "data-fk": chave(f), onclick: ev => { if (!ev.target.closest("button,a,table")) setFoco(f); } },
-    h("div", { class: "cab" }, h("span", { class: "num" }, it.num), h("span", { class: "tit" }, it.titulo || "(sem título)")));
-  if (it.texto) e.append(h("p", { class: "tx just" }, it.texto));
-  if (it.dependeDe.length) {
-    const l = h("div", { class: "rel-l" }, "Depende de ");
-    it.dependeDe.forEach(n => l.append(h("a", { onclick: () => irPara(n) }, n)));
-    e.append(l);
-    if (bloq) e.append(h("div", { class: "aviso-dep" }, "Aguardando o item anterior ficar resolvido."));
+  const lista = nums => { const sp = h("span", { class: "rel-l" }); if (!nums.length) { sp.append("nada"); return sp; } nums.forEach((n, i) => { if (i) sp.append(", "); sp.append(h("a", { onclick: () => irPara(n) }, n)); }); return sp; };
+  const p = h("p", { class: "tx just" }, h("strong", {}, `${it.num} ${it.titulo || "(sem título)"}.`), " ", it.texto ? it.texto + " " : "");
+  if (acionavel(it)) {
+    const dep = h("span", {}, "Depende de: ", lista(it.dependeDe), ". "), blq = h("span", {}, "Bloqueia: ", lista(it.bloqueia), ". ");
+    p.append(dep, blq, "(", chipEl(v, chave(f), () => abrirPainel(f)), ")");
+  } else if (it.dependeDe.length || it.bloqueia.length) {
+    if (it.dependeDe.length) p.append("Depende de: ", lista(it.dependeDe), ". ");
+    if (it.bloqueia.length) p.append("Bloqueia: ", lista(it.bloqueia), ".");
   }
-  if (it.bloqueia.length) {
-    const l = h("div", { class: "rel-l" }, "Bloqueia ");
-    it.bloqueia.forEach(n => l.append(h("a", { onclick: () => irPara(n) }, n)));
-    e.append(l);
-  }
+  const e = h("div", { class: "item" + (bloq ? " bloq" : "") + (k === "ign" ? " ign" : ""), id: "it-" + it.num.replace(/[^\w-]/g, "_"), "data-fk": chave(f), onclick: ev => { if (!ev.target.closest("button,a,table")) setFoco(f); } }, p);
+  if (bloq) e.append(h("div", { class: "aviso-dep" }, "Aguardando o item anterior ficar resolvido."));
   it.caminhos.forEach(c => e.append(h("div", { class: "cam" }, h("code", {}, c), h("button", { class: "mini", onclick: async ev => { ev.stopPropagation(); (await copiar(c)) ? aviso("Caminho copiado.") : caixaCopia(c, "Caminho"); } }, "Copiar"))));
   if (it.tabela) e.append(tabelaEl(rel, it));
   if (st.obs) e.append(h("div", { class: "nota-ob" }, "Anotação: " + st.obs));
   e.append(notasEl(rel, "I:" + it.num));
-  if (acionavel(it)) e.append(h("div", { class: "fim-item" }, "(", chipEl(v, chave(f), () => abrirPainel(f)), ")"));
   return e;
 }
 function notasEl(rel, k) {
@@ -407,7 +450,7 @@ function alinPadrao(it, j) {
   const cel = it.tabela.linhas.map(l => l[j]).filter(x => x != null && x !== "");
   if (cel.length && cel.every(x => typeof x === "object" && x.chip)) return "center";
   if (cel.length && cel.every(x => typeof x !== "object" && (REG_NUM.test(String(x)) || REG_DATA.test(String(x))))) return "right";
-  return "justify";
+  return "left";
 }
 function tabelaEl(rel, it) {
   const t = it.tabela, hs = hashTxt(JSON.stringify(t));
@@ -461,7 +504,9 @@ function capituloEl(rel, sec, cap) {
   const ck = `cap-${sec.num}-${cap.num}`, aberto = !rel.rec[ck], s = statusCap(rel, sec, cap);
   const tb = h("table", { class: "tex" }, h("thead", {}, h("tr", {}, h("th", {}, "Tópico / parágrafo"), h("th", { class: "col-s" }, "Situação"))), h("tbody", {}, cap.paragrafos.map(p => paragrafoEl(rel, sec, p))));
   return h("div", { class: "capitulo" + (aberto ? "" : " rec") },
-    h("button", { class: "cap-h", onclick: () => { rel.rec[ck] = aberto; salvar(); remontar(); } }, h("span", { class: "bola " + s.cor, style: "width:16px;height:16px" }), h("span", { class: "n" }, `${cap.num} ${cap.titulo}`), h("span", { class: "suave", style: "font-size:13px" }, `${s.verdes} de ${s.total}`), h("span", { class: "seta" }, "▾")),
+    h("div", { class: "cap-hl" },
+      h("button", { class: "cap-h", onclick: () => { rel.rec[ck] = aberto; salvar(); remontar(); } }, h("span", { class: "bola " + s.cor, style: "width:16px;height:16px" }), h("span", { class: "n" }, `${cap.num} ${cap.titulo}`), h("span", { class: "suave", style: "font-size:13px" }, `${s.verdes} de ${s.total}`), h("span", { class: "seta" }, "▾")),
+      h("button", { class: "mini", onclick: () => copiarTexto(textoCapitulo(rel, sec, cap), "Capítulo copiado.") }, "Copiar capítulo")),
     h("div", { class: "cap-b" }, tb));
 }
 function paragrafoEl(rel, sec, p) {
@@ -480,7 +525,7 @@ function paragrafoEl(rel, sec, p) {
   }
   dot.append(h("i"));
   const mic = h("button", { class: "mic" + (audioOn && rel.foco && chave(rel.foco) === k ? " gravando" : ""), title: "Ditar uma nota para este parágrafo", onclick: e => { e.stopPropagation(); setFoco(f); alternarAudio(); } }, "🎙");
-  const tdT = h("td", {}, h("div", { class: "pid" }, p.id, st.alterado ? h("span", { class: "alt" }, "alterado por você") : null), alvoTx, notasEl(rel, k));
+  const tdT = h("td", {}, h("div", { class: "pid" }, p.id, st.alterado ? h("span", { class: "alt" }, "alterado por você") : null, h("button", { class: "mini", onclick: ev => { ev.stopPropagation(); copiarTexto(textoDe(rel, sec, p), "Parágrafo copiado."); } }, "Copiar parágrafo")), alvoTx, notasEl(rel, k));
   if (DB.ui.revisar && rel.foco && chave(rel.foco) === k) tdT.append(h("div", { class: "rev-acoes" }, h("a", { onclick: async () => { const t = PERGUNTA + "\n\n" + textoDe(rel, sec, p); const ok = await copiar(t); window.open(URLS.gemini, "_blank", "noopener"); ok ? aviso("Copiado, cole no Gemini") : caixaCopia(t, "Texto para o Gemini"); } }, "Revisar no Gemini")));
   const tr = h("tr", { "data-fk": k, onclick: ev => { if (!ev.target.closest("button,a")) { const antes = rel.foco && chave(rel.foco); setFoco(f); if (DB.ui.revisar && antes !== k) remontar(); } } }, tdT, h("td", { class: "col-s" }, dot, mic));
   alvoTx.addEventListener("dblclick", () => editarPar(alvoTx, rel, sec, p));
@@ -645,8 +690,37 @@ async function copiarSaida(soFoco) {
   const t = montarSaida(rel, soFoco);
   if (await copiar(t)) aviso(soFoco ? "Item copiado. Cole na conversa com o Claude." : "Copiado. Cole na conversa com o Claude."); else caixaCopia(t, "Relatório");
 }
-$("#b-cop").onclick = () => copiarSaida(false);
-$("#b-copf").onclick = () => copiarSaida(true);
+
+/* ================= copiar em partes ================= */
+function textoCapitulo(rel, sec, c) { return `${c.num} ${c.titulo}\n\n` + c.paragrafos.map(p => textoDe(rel, sec, p)).join("\n\n"); }
+function textoSecao(rel, sec) { return `${sec.titulo}\n\n` + sec.capitulos.map(c => textoCapitulo(rel, sec, c)).join("\n\n"); }
+function textoRelatorio(rel) {
+  const d = rel.dados; let t = `${d.titulo}\n[${d.id} rev ${d.rev}]\n`;
+  d.secoes.forEach(s => {
+    t += `\n${s.num} ${s.titulo}\n\n`;
+    if (s.tipo === "texto") t += s.capitulos.map(c => textoCapitulo(rel, s, c)).join("\n\n") + "\n";
+    else s.itens.forEach(it => {
+      const v = valorItem(rel, it);
+      t += `${it.num} ${it.titulo}${v ? ` [${v}]` : ""}${it.texto ? "\n" + it.texto : ""}\n`;
+      if (it.dependeDe.length) t += `Depende de: ${it.dependeDe.join(", ")}\n`;
+      it.caminhos.forEach(c => { t += `Caminho: ${c}\n`; });
+      t += "\n";
+    });
+  });
+  return t;
+}
+async function copiarTexto(t, msg) { (await copiar(t)) ? aviso(msg) : caixaCopia(t, "Texto"); }
+function copiarInteiro() { const rel = relAtual(); if (!rel) { aviso("Abra um relatório primeiro."); return; } copiarTexto(textoRelatorio(rel), "Relatório inteiro copiado."); }
+async function copiarTudoEnviar() {
+  const rel = relAtual(); if (!rel) { aviso("Abra um relatório primeiro."); return; }
+  const t = montarSaida(rel, false) + "\n---\nRELATÓRIO COMPLETO\n\n" + textoRelatorio(rel);
+  const ok = await copiar(t);
+  if (rel.conversa) { window.open(rel.conversa, "_blank", "noopener"); ok ? aviso("Copiado. Na conversa, toque no campo de texto e cole.") : caixaCopia(t, "Tudo"); }
+  else {
+    ok ? aviso("Copiado. Cole o link da conversa deste relatório na lateral para abrir direto da próxima vez.") : caixaCopia(t, "Tudo");
+    DB.ui.lateral = true; salvar(); aplicarTema(); const i = $("#in-conv"); if (i) i.focus();
+  }
+}
 
 /* ================= Claude / Gemini ================= */
 const URLS = { claude: "https://claude.ai/new", gemini: "https://gemini.google.com/app" };
@@ -669,8 +743,6 @@ async function abrirIA(ia) {
   if (t) { const ok = await copiar(t); window.open(url, "_blank", "noopener"); ok ? aviso("Copiado, cole na conversa") : caixaCopia(t, "Trecho"); }
   else window.open(url, "_blank", "noopener");
 }
-$("#b-claude").onclick = () => abrirIA("claude");
-$("#b-gemini").onclick = () => abrirIA("gemini");
 let trechoGuardado = "", quandoGuardado = 0;
 function checarSelecao() {
   const t = trechoSelecionado(); if (t) { trechoGuardado = t; quandoGuardado = Date.now(); }
@@ -720,8 +792,7 @@ function ligarAudio() {
 }
 function desligarAudio() { audioOn = false; try { reconhecedor && reconhecedor.stop(); } catch (e) {} mostrarOuvindo(""); atualizarAudioBt(); }
 function alternarAudio() { audioOn ? desligarAudio() : ligarAudio(); }
-function atualizarAudioBt() { $("#b-aud").classList.toggle("gravando", audioOn); $("#b-aud").classList.toggle("on", audioOn); }
-$("#b-aud").onclick = alternarAudio;
+function atualizarAudioBt() { document.querySelectorAll("[data-aud]").forEach(b => { b.classList.toggle("gravando", audioOn); b.classList.toggle("on", audioOn); }); }
 
 /* ================= revisor de português ================= */
 let STEMS = null, SUF = null, PRE = null, maxS = 0, maxP = 0, DICSTATE = "nao";

@@ -1,4 +1,6 @@
-# Como usar o Ômega
+# Como usar o Ômega (versão 3)
+
+**Novidade da v3:** não há mais barra de cima. Tudo (Claude, Gemini, Revisar texto, Áudio, Copiar, tema, contador) está na **barra lateral**. No celular ela abre **deslizando o dedo da borda esquerda para a direita** (ou tocando em ☰) e fecha deslizando para a esquerda ou tocando fora: volta ao relatório. Cada relatório é uma "pasta/conversa" na lateral, com dois atalhos: 📁 arquivos e 💬 conversa.
 
 O Claude gera o relatório (arquivo `relatorio.json`); você abre no Ômega, decide cada item tocando no chip ( A fazer ▾ ) ou nas bolinhas, e no fim toca em **Copiar relatório** e cola na conversa com o Claude.
 
@@ -18,6 +20,14 @@ O Claude gera o relatório (arquivo `relatorio.json`); você abre no Ômega, dec
 - **Pelo PC (mesma rede Wi-Fi):** com o `Iniciar Omega.bat` aberto, no celular digite o endereço `http://192.168.x.x:8765` que apareceu na janela. Atenção: por ser http (sem cadeado), nesse endereço o **microfone e a instalação como app não funcionam**. Para ditar por voz, use o endereço https abaixo.
 - **Endereço https (GitHub Pages):** https://seinfrailheusprocessos-ship-it.github.io/Omega/ — no celular, abra o arquivo `.json` (Abrir arquivo) ou cole o texto (Colar relatório). Menu do Chrome → **Instalar app** / **Adicionar à tela inicial**. Microfone funciona aqui.
 - **Levar as marcações de um aparelho para o outro:** menu ☰ → **Levar estado para outro aparelho** → Copiar estado (num) / Colar estado (noutro).
+
+## Pasta e conversa de cada relatório
+- **📁 Arquivos:** no computador, com o servidor (`Iniciar Omega.bat`) abre a pasta direto no Explorador; sem servidor, copia o caminho para você colar no Explorador (Win+E). No celular abre o link do Drive, se o relatório tiver.
+- **💬 Conversa:** cole uma vez, no campo da lateral, o link da conversa de desenvolvimento daquele relatório e tecle Enter; depois, um toque no 💬 abre a conversa.
+
+## Copiar em partes
+- **Copiar parágrafo** (em cada parágrafo), **Copiar capítulo** (no cabeçalho do capítulo), **Copiar texto inteiro** (no cabeçalho do texto) e, na lateral, **Copiar relatório inteiro**.
+- **Copiar tudo e enviar relatório** (lateral): copia as suas decisões + o relatório inteiro e abre a conversa do relatório; na conversa, toque no campo de texto e cole. (O Claude não aceita texto no endereço de uma conversa já existente, por isso o texto fica copiado.)
 
 ## Teclas (computador)
 Com o painel de escolhas aberto: **1 a 9** escolhem a opção · **N** próximo pendente · **P** anterior · setas ↑↓ percorrem as opções, **Enter** confirma, ←→ trocam de item, **Esc** fecha. Tab/Shift+Tab percorrem os chips.

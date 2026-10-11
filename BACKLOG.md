@@ -9,3 +9,5 @@
 - Editor de texto completo, geração de documentos, PDF e carimbo (fora do escopo).
 - Integração com o Panda e com o Google Drive (fora do escopo).
 - Índice de documentos e rotinas de prazo (fora do escopo).
+- Embutir uma fonte serifa livre (ex.: Source Serif) para o título ficar igual ao Claude Docs em qualquer aparelho.
+- Abrir a pasta no Explorador também sem o servidor (hoje só copia o caminho).

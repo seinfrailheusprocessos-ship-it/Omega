@@ -28,3 +28,16 @@
 - **Barra lateral**: "pastas" = Relatórios (cada relatório é uma caixinha), Seções, Abrir, Ferramentas e Ajustes. Gaveta no celular.
 - **Imagens de referência** (`referencia\`) não estavam disponíveis nesta sessão; o visual segue só as medidas do memorial (Georgia/serifa nos títulos, chips azul-claro, tabelas leves).
 - **Relatório antigo (v1)** ainda abre (convertido); as marcações antigas (v1) não são importadas.
+
+---
+# Versão 3 (branch `v3`; a `main` continua com a versão 2)
+- **Visual do Claude Docs** (prints do PDF): título em serifa leve, "Eu [data] · [@Morrão]", itens como lista com marcador e título em negrito seguido do texto, "Depende de: … Bloqueia: …. ( A fazer ▾ )" no fim do parágrafo, chips pequenos azul-claro, tabelas com cabeçalho cinza-claro e bordas finas, `código` em fonte monoespaçada com fundo bege. Fonte serifa: Tiempos/Source Serif se existirem no aparelho, senão Georgia (não embuti fontes).
+- **Justificado só nos parágrafos**: as células das tabelas ficam à esquerda (números e datas à direita, chips centralizados). Alinhamentos que você já escolheu continuam valendo.
+- **Barra de cima removida**: tudo foi para a lateral. Botão ☰ flutuante no canto; no celular a lateral abre também deslizando da borda esquerda (primeiros 30 px da tela) e fecha deslizando para a esquerda. Ela fecha sozinha ao usar Claude/Gemini/Copiar no celular.
+- **Lateral lista só relatórios**: "número + rótulo da pasta" (`numero` e `pasta.rotulo` do relatório; sem eles, a ordem e o título). A lista de seções saiu da lateral.
+- **📁 Arquivos**: computador com servidor → `POST /api/abrir-pasta` (só aceita pedido do próprio computador, só pasta existente, sem shell). Sem servidor → copia o caminho. Celular → só abre `pasta.drive` se houver (o celular não abre pastas do PC).
+- **💬 Conversa**: link salvo por relatório no estado (campo na lateral). Sem link, o ícone leva ao campo.
+- **Copiar em partes** nos quatro níveis (parágrafo, capítulo, texto inteiro, relatório inteiro).
+- **Copiar tudo e enviar**: "tudo" = suas decisões (formato da seção 10) + relatório completo. O Claude não recebe texto pelo endereço de uma conversa existente (só em `claude.ai/new?q=`, que tem limite de tamanho), então o app copia, abre a conversa e avisa para colar.
+- **Preservado da v2**: PWA, três temas, painel de escolhas, modo Texto, revisor, áudio, servidor local, `.gitignore` dos dados reais, ajuste de colunas, larguras e alinhamentos.
+- **Decisões em aberto da v2** continuam como estavam (celular+PC em sincronia fica no BACKLOG; revisor sem LanguageTool; marcações da v1 não importadas).
