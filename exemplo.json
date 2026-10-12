@@ -1,0 +1,45 @@
+{
+  "id": "canal-malhado-mp",
+  "rev": 4,
+  "numero": "3.1.1",
+  "titulo": "Canal do Malhado – Requisição MP",
+  "nome": "Canal do Malhado – MP",
+  "exemplo": true,
+  "autor": "@Claude",
+  "pasta": { "rotulo": "Canal do Malhado", "caminho": "C:\\CL\\3_Demandas_Externas\\3.1.1_Canal_do_Malhado", "drive": "" },
+  "atualizado": "2026-10-12T14:32:00-03:00",
+  "readme": "Objeto: assoreamento do canal do Malhado (Ilhéus). Origem: Ofício nº 114/2026 da Promotoria de Justiça de Ilhéus, recebido em 09/10/2026, prazo de dez dias corridos. Peças: ofício, laudo de vistoria de 03/10/2026, relatório fotográfico e planilha de quantitativos. Resposta: ofício ao MP com pedido de prorrogação.",
+  "prazos": [ { "titulo": "Prazo do MP (Ofício 114/2026)", "data": "2026-10-23", "tipo": "oficio" } ],
+  "secoes": [
+    { "num": "1", "titulo": "Situação", "itens": [
+      { "num": "1.1", "tipo": "acao", "titulo": "Registrar o Ofício 114/2026 recebido em 09/10", "texto": "Promotoria de Justiça de Ilhéus pede informações sobre o assoreamento do canal do Malhado.", "valor": "Feito" },
+      { "num": "1.2", "tipo": "acao", "titulo": "Vistoria técnica", "texto": "Vistoria de 03/10/2026: assoreamento em trecho de aproximadamente 410 metros.", "valor": "Feito" },
+      { "num": "1.3", "tipo": "acao", "titulo": "Levantamento de quantitativos", "texto": "Planilha preliminar pronta (seção 3).", "valor": "Feito" }
+    ] },
+    { "num": "2", "titulo": "Providências ao MP", "itens": [
+      { "num": "2.1", "tipo": "acao", "titulo": "Anexar laudo de vistoria ao ofício", "texto": "Laudo de 03/10 está na pasta 3.1.1/Anexos. Falta juntar ao ofício.", "caminhos": ["C:\\CL\\3_Demandas_Externas\\3.1.1_Canal_do_Malhado\\Anexos"], "valor": "A fazer" },
+      { "num": "2.2", "tipo": "decisao", "titulo": "Responder ao MP por ofício ou reunião?", "texto": "Prazo curto; ofício deixa registro formal. Reunião não afasta a resposta escrita.", "opcoes": ["Ofício", "Reunião", "Ofício + reunião", "Sem resposta"], "valor": "Aguardando" },
+      { "num": "2.3", "tipo": "info", "titulo": "Prazo do MP termina em 23/10/2026", "texto": "Contado do recebimento (09/10). Dez dias corridos." },
+      { "num": "2.4", "tipo": "acao", "titulo": "Pedir manifestação da Procuradoria", "texto": "Enviado em 08/10 por e-mail; sem retorno.", "valor": "Feito" }
+    ] },
+    { "num": "3", "titulo": "Valores e quantitativos", "itens": [
+      { "num": "3.0", "tipo": "acao", "titulo": "Planilha de quantitativos", "tabela": {
+        "colunas": [ { "nome": "Item" }, { "nome": "Descrição" }, { "nome": "Un." }, { "nome": "Qtd." }, { "nome": "Unitário" }, { "nome": "Total" }, { "nome": "Situação" } ],
+        "linhas": [
+          ["3.1", "Terraplenagem", "m³", "1.240,00", "R$ 18,40", "R$ 22.816,00", { "chip": { "valor": "Feito", "opcoes": ["A fazer", "Feito", "Ciente", "Ignorar", "Não consegui"] } }],
+          ["3.2", "Enrocamento", "m³", "860,00", "R$ 142,00", "R$ 122.120,00", { "chip": { "valor": "A fazer", "opcoes": ["A fazer", "Feito", "Ciente", "Ignorar", "Não consegui"] } }],
+          ["3.3", "Geotêxtil", "m²", "2.100,00", "R$ 9,75", "R$ 20.475,00", { "chip": { "valor": "Ciente", "opcoes": ["A fazer", "Feito", "Ciente", "Ignorar", "Não consegui"] } }],
+          ["3.4", "Drenagem", "m", "410,00", "R$ 215,00", "R$ 88.150,00", { "chip": { "valor": "Feito", "opcoes": ["A fazer", "Feito", "Ciente", "Ignorar", "Não consegui"] } }],
+          ["", "Total", "", "", "", "R$ 253.561,00", ""]
+        ] } }
+    ] },
+    { "num": "4", "titulo": "Minuta do ofício", "tipo": "texto",
+      "documento": { "tipo": "Ofício", "destinatario": "Ao Ministério Público do Estado da Bahia\nPromotoria de Justiça de Ilhéus", "assunto": "Resposta ao Ofício nº 114/2026 – Canal do Malhado." },
+      "capitulos": [ { "num": "I", "titulo": "DOS FATOS", "paragrafos": [
+        { "id": "4.1", "texto": "Considerando o recebimento do Ofício nº 114/2026, de 09/10/2026, informamos que esta Secretaria está apurando as condições do canal do Malhado.", "situacao": "vermelho" },
+        { "id": "4.2", "texto": "A vistoria técnica realizada em 03/10/2026 constatou assoreamento em trecho de aproximadamente 410 metros.", "situacao": "verde" },
+        { "id": "4.3", "texto": "Solicitamos prorrogação do prazo por mais dez dias úteis, para juntada de laudo complementar.", "situacao": "azul" },
+        { "id": "4.4", "texto": "Segue em anexo o relatório fotográfico.", "situacao": "verde" }
+      ] } ] }
+  ]
+}

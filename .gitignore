@@ -1,6 +1,4 @@
 # dados reais nunca vão para o repositório
-dados/relatorio.json
-dados/estado.json
-dados/*.local.json
 node_modules/
-dados/config.json
+teste/saida/
+*.local.json
