@@ -1,6 +1,6 @@
-# Formato do `relatorio.json` (o Claude escreve, o Ômega lê)
+# Formato do `relatorio.json` (o Claude escreve, o Omega lê)
 
-O Ômega **nunca** escreve neste arquivo. As escolhas ficam em `dados/estado.json` (e no navegador).
+O Omega **nunca** escreve neste arquivo. As escolhas ficam em `dados/estado.json` (e no navegador).
 Exemplo completo e fictício: `dados/relatorio.exemplo.json`.
 
 ```json
@@ -67,9 +67,19 @@ Célula: texto/número, `{ "chip": {...} }` (escolha na própria célula) ou `{ 
 `situacao`: `vermelho` (pendente, padrão), `verde` (aprovado) ou `azul` (ajustar).
 
 ## Regras da "leva"
-- Chegou `relatorio.json` com `rev` maior: o Ômega mantém a escolha de cada item de mesmo `num`, zera a marca "decidido desde a última leva" e avisa "Novo relatório carregado".
+- Chegou `relatorio.json` com `rev` maior: o Omega mantém a escolha de cada item de mesmo `num`, zera a marca "decidido desde a última leva" e avisa "Novo relatório carregado".
 - Parágrafo que você editou e que o Claude reescreveu na leva nova: vale o texto novo do Claude.
 - Itens "Feito" saem da seção e vão para "Já feito"; itens "Ignorar" continuam visíveis em cinza até o Claude tirá-los da leva seguinte.
 
 ## Formato antigo
 Relatórios da versão 1 (`secoes[].itens[]` com `id`, `categoria`, `opcoes`, `requer`) ainda abrem: `id`→`num`, `requer`→`dependeDe`, `rodada`→`rev`.
+
+## Novidades da 3.1
+- Dois campos por escolha: o **valor** (A fazer, Feito…) e o **comentário** (texto livre). Os dois voltam no "Copiar relatório".
+- Para o Claude oferecer caminhos de resposta (ex.: um ofício recebido), use um item `decisao` com `opcoes`, por exemplo: `["Responder por ofício", "Criar nota técnica como anexo", "Arquivar sem resposta"]`. A escolha volta no relatório copiado e o Claude elabora o documento (como seção `texto`) na leva seguinte.
+- Itens "Feito" **ficam no lugar** até o Claude refazer o relatório (ele decide se move para uma seção "Já feito" do próprio relatório).
+- Situação dos parágrafos nos documentos: **Pendente, Aprovado, Ajustar**. No arquivo continuam `vermelho`, `verde`, `azul`.
+
+## Objeto e pasta (3.2)
+`pasta.caminho` é a pasta do objeto no computador (aparece "Arquivos deste objeto"); `pasta.drive`, o link para o celular. O objeto criado em "Novo objeto" tem id `obj-…`: use o mesmo id no `relatorio.json` que o Claude gerar.
+Scripts e pastas liberadas ficam em `dados/config.json` (veja `dados/config.exemplo.json`).

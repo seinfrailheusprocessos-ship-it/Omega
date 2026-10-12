@@ -1,0 +1,32 @@
+{
+  "raizes": ["C:\\CL"],
+  "scripts": [
+    {
+      "id": "ocr",
+      "nome": "OCR (PDF)",
+      "aplicaA": "arquivo",
+      "extensoes": [".pdf"],
+      "comando": ["python", "C:\\CL\\_Executar\\ocr.py", "{arquivo}"],
+      "cwd": "C:\\CL\\_Executar"
+    },
+    {
+      "id": "notas",
+      "nome": "Fazer notas (gera o relatório do arquivo)",
+      "aplicaA": "arquivo",
+      "comando": ["python", "C:\\CL\\_Executar\\notas.py", "{arquivo}"]
+    },
+    {
+      "id": "renomear",
+      "nome": "Renomear pelo script",
+      "aplicaA": "arquivo",
+      "comando": ["python", "C:\\CL\\_Executar\\renomear.py", "{arquivo}"]
+    },
+    {
+      "id": "lote",
+      "nome": "Processar a pasta inteira",
+      "aplicaA": "pasta",
+      "comando": ["python", "C:\\CL\\_Executar\\lote.py", "{pasta}"]
+    }
+  ],
+  "_aviso": "ISTO É SÓ UM EXEMPLO. Copie este arquivo para config.json e troque os comandos pelos SEUS scripts. {arquivo}, {pasta} e {nome} são trocados pelo caminho escolhido no Omega. O Omega só executa o que estiver escrito aqui."
+}
