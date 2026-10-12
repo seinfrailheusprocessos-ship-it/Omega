@@ -15,3 +15,7 @@
 - Carimbo e numeração de páginas na visualização de impressão.
 - Sumário da lateral que acompanha a rolagem do relatório (confirmar se é o pedido).
 - Abrir documentos Word/Excel dentro do Omega.
+- Mesa PDF: girar, juntar e reordenar páginas; carimbo.
+- OCR dentro do navegador (só se o script do C: deixar de servir).
+- Fila de scripts em lote (várias páginas/arquivos de uma vez) com progresso.
+- Anexar arquivo automaticamente ao e-mail (exige integração com o Gmail).

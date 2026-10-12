@@ -79,3 +79,7 @@ Relatórios da versão 1 (`secoes[].itens[]` com `id`, `categoria`, `opcoes`, `r
 - Para o Claude oferecer caminhos de resposta (ex.: um ofício recebido), use um item `decisao` com `opcoes`, por exemplo: `["Responder por ofício", "Criar nota técnica como anexo", "Arquivar sem resposta"]`. A escolha volta no relatório copiado e o Claude elabora o documento (como seção `texto`) na leva seguinte.
 - Itens "Feito" **ficam no lugar** até o Claude refazer o relatório (ele decide se move para uma seção "Já feito" do próprio relatório).
 - Situação dos parágrafos nos documentos: **Pendente, Aprovado, Ajustar**. No arquivo continuam `vermelho`, `verde`, `azul`.
+
+## Objeto e pasta (3.2)
+`pasta.caminho` é a pasta do objeto no computador (aparece "Arquivos deste objeto"); `pasta.drive`, o link para o celular. O objeto criado em "Novo objeto" tem id `obj-…`: use o mesmo id no `relatorio.json` que o Claude gerar.
+Scripts e pastas liberadas ficam em `dados/config.json` (veja `dados/config.exemplo.json`).

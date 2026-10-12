@@ -145,7 +145,9 @@ function kind(v) {
   if (v === "Feito" || v === "Seguir" || v === "Aprovado") return "ok";
   if (v === "Ignorar") return "ign";
   if (v === "Não consegui") return "nao";
-  if (v === "Ajustar") return "aj";
+  if (v === "Ajustar" || v === "Em análise" || v === "Responder") return "aj";
+  if (v === "Respondido") return "ok";
+  if (v === "Arquivar") return "ign";
   return "ok";
 }
 const resolvido = k => k === "ok" || k === "ign";
@@ -156,7 +158,7 @@ function bloqueado(rel, it) {
 function opcoesDe(it) { return it.tipo === "acao" ? OPC_ACAO : (it.opcoes.length ? it.opcoes : OPC_DEC); }
 
 /* focos: {t:"I",num} | {t:"C",num,r,c} | {t:"P",sec,id} | {t:"K",sec,cap} */
-function chave(f) { return f.t === "I" ? "I:" + f.num : f.t === "C" ? `C:${f.num}:${f.r}:${f.c}` : f.t === "K" ? `K:${f.sec}:${f.cap}` : `P:${f.sec}:${f.id}`; }
+function chave(f) { return f.t === "I" ? "I:" + f.num : f.t === "C" ? `C:${f.num}:${f.r}:${f.c}` : f.t === "K" ? `K:${f.sec}:${f.cap}` : f.t === "E" ? `E:${f.id}` : `P:${f.sec}:${f.id}`; }
 function celula(it, r, c) { const x = it.tabela && it.tabela.linhas[r] && it.tabela.linhas[r][c]; return x && x.chip ? x.chip : null; }
 function secDe(rel, num) { return rel.dados.secoes.find(s => s.num === num); }
 function capDe(rel, f) { const s = secDe(rel, f.sec); return s && s.capitulos.find(c => c.num === f.cap); }
@@ -173,6 +175,11 @@ function alvos(rel) {
   return out;
 }
 function infoAlvo(rel, f) {
+  if (f.t === "E") {
+    const e = (rel.entrada || []).find(x => x.id === f.id); if (!e) return null;
+    const s = rel.st[chave(f)];
+    return { titulo: `Recebido · ${e.arquivo}`, sub: `Páginas: ${e.paginas || "todas"}`, opcoes: OPC_ENT, valor: (s && s.v) || "Pendente", padrao: "Pendente", bloq: false, custom: false };
+  }
   if (f.t === "P") {
     const sec = secDe(rel, f.sec), p = parDe(rel, f); if (!p) return null;
     return { titulo: `${f.id} · parágrafo`, sub: textoDe(rel, sec, p), opcoes: OPC_PAR, valor: ROTULO_SIT[sitDe(rel, sec, p)], padrao: "Pendente", bloq: false, custom: false };
@@ -235,7 +242,7 @@ function aplicarValor(rel, f, valor, obs, custom) {
 /* ================= estado da interface ================= */
 let vista = "rel"; // rel | rev | est | pdf | pastas | colar
 let pop = null, refoco = null, buscaQ = "";
-let API = { ok: false, raizes: [] };
+let API = { ok: false, raizes: [], scripts: [] };
 function relAtual() { return DB.atual && DB.rels[DB.atual] ? DB.rels[DB.atual] : null; }
 function remontar() { const y = scrollY; montar(); scrollTo(0, y); }
 function marcarFoco(f) {
@@ -256,12 +263,13 @@ function aplicarTema() {
 }
 function montar() {
   aplicarTema();
-  const m = $("#main"); m.replaceChildren();
+  const m = $("#main"); m.replaceChildren(); m.className = vista === "mesa" ? "larga" : "";
   const rel = relAtual();
   desenharLateral();
   if (vista === "rev") telaRevisor(m);
   else if (vista === "est") telaEstado(m);
   else if (vista === "pdf") telaPDF(m);
+  else if (vista === "mesa") telaMesa(m);
   else if (vista === "pastas") telaPastas(m);
   else if (vista === "colar") telaColar(m);
   else if (!rel) telaInicio(m);
@@ -368,7 +376,7 @@ function desenharLateral() {
     L.append(h("div", { class: "caixa-l" + (sel ? " sel" : "") },
       h("button", { class: "caixinha", onclick: () => { DB.atual = id; vista = "rel"; salvar(); montar(); scrollTo(0, 0); fecharLateralPequena(); } }, h("span", { class: "n" }, nomeRel(r, i)), h("span", { class: "c" }, n.pend || "✓")),
       h("button", { class: "ico", title: "Arquivos: abrir a pasta deste relatório", "aria-label": "Arquivos", onclick: () => abrirPasta(r) }, "📁"),
-      h("button", { class: "ico" + (r.conversa ? " tem" : ""), title: r.conversa ? "Abrir a conversa deste relatório" : "Colar o link da conversa", "aria-label": "Conversa", onclick: () => abrirConversa(id) }, "💬")));
+      h("button", { class: "ico" + (r.conversa ? " tem" : ""), title: r.conversa ? "Ir para a conversa (copia a mensagem e salva o retorno na pasta)" : "Colar o link da conversa", "aria-label": "Conversa", onclick: () => irConversa(id) }, "💬")));
   });
   if (rel) {
     const inp = h("input", { id: "in-conv", type: "url", placeholder: "Link da conversa deste relatório", "aria-label": "Link da conversa", onchange: e => {
@@ -377,7 +385,9 @@ function desenharLateral() {
       rel.conversa = v; salvar(); aviso(v ? "Link da conversa salvo." : "Link da conversa removido."); desenharLateral();
     } });
     inp.value = rel.conversa || "";
-    L.append(h("div", { class: "conv" }, inp, h("button", { class: "mini", onclick: () => { if (rel.conversa) window.open(rel.conversa, "_blank", "noopener"); else { inp.focus(); aviso("Cole o link e tecle Enter."); } } }, "Abrir")));
+    const msg = h("input", { id: "in-msg", type: "text", placeholder: "Mensagem ao ir para a conversa (padrão: Leia o relatório de retorno…)", "aria-label": "Mensagem para a conversa", onchange: e => { rel.msg = e.target.value.trim(); salvar(); } });
+    msg.value = rel.msg || "";
+    L.append(h("div", { class: "conv" }, inp, h("button", { class: "mini", onclick: () => irConversa(DB.atual) }, "Ir")), h("div", { class: "conv" }, msg));
   }
   const acao = (txt, ic, fn, on, attr) => h("button", Object.assign({ class: "lat-bt" + (on ? " on" : ""), onclick: fn }, attr || {}), h("span", { class: "ic" }, ic), txt);
   L.append(h("h4", {}, "Copiar"));
@@ -388,12 +398,14 @@ function desenharLateral() {
   L.append(h("h4", {}, "Texto"));
   L.append(acao("Revisar texto", "✎", () => { DB.ui.revisar = !DB.ui.revisar; salvar(); remontar(); aviso(DB.ui.revisar ? "Revisão de texto ligada." : "Revisão de texto desligada."); }, DB.ui.revisar, { id: "b-rev" }),
     acao("Áudio (ditado)", "🎙", () => alternarAudio(), audioOn, { id: "b-aud", "data-aud": "1" }),
-    acao("Novo documento", "＋", () => { novoDocumento(); fecharLateralPequena(); }),
-    acao("Abrir PDF", "📄", () => { abrirPDFLocal(); }),
+    acao("Novo objeto", "＋", () => { novoObjeto(); fecharLateralPequena(); }, false, { id: "b-novo-obj" }),
+    acao("Novo documento", "▭", () => { novoDocumento(); fecharLateralPequena(); }),
+    acao("Mesa PDF", "📄", () => { abrirMesaLocal(); }, false, { id: "b-mesa" }),
     acao("Pastas do computador", "🗂", () => { abrirPastaView(null); fecharLateralPequena(); }));
-  L.append(h("h4", {}, "Conversa"));
+  L.append(h("h4", {}, "Conversa e e-mail"));
   L.append(acao("Claude (nova conversa)", "✦", () => { window.open(URLS.claude, "_blank", "noopener"); fecharLateralPequena(); }),
-    acao("Gemini (nova conversa)", "✧", () => { window.open(URLS.gemini, "_blank", "noopener"); fecharLateralPequena(); }));
+    acao("Gemini (nova conversa)", "✧", () => { window.open(URLS.gemini, "_blank", "noopener"); fecharLateralPequena(); }),
+    acao("Gmail", "✉", () => { window.open("https://mail.google.com/", "_blank", "noopener"); fecharLateralPequena(); }, false, { id: "b-gmail" }));
   L.append(h("h4", {}, "Iluminação"));
   L.append(h("div", { class: "seg" }, [["claro", "Claro"], ["escuro", "Escuro"], ["maisescuro", "Mais escuro"]].map(([k, t]) => h("button", { class: DB.ui.tema === k ? "on" : "", "data-tema": k, onclick: () => { DB.ui.tema = k; salvar(); aplicarTema(); desenharLateral(); } }, t))));
   L.append(h("h4", {}, "Contador"), h("div", { id: "cont", class: "contador" }));
@@ -465,6 +477,9 @@ function telaRelatorio(m, rel) {
   m.append(h("h1", {}, nomeRel(rel) || d.titulo),
     h("p", { class: "sub-titulo" }, d.titulo),
     h("div", { class: "autoria" }, "Eu ", h("span", { class: "pilula" }, "▫ " + dataExtenso(d.atualizado)), " · ", h("span", { class: "pilula" }, d.autor), h("span", { class: "pilula suave" }, `rev ${d.rev}`)));
+  if (!d.secoes.length) m.append(h("div", { class: "cartao" }, h("p", { style: "margin:0 0 .5em" }, h("b", {}, "Objeto novo. "), "Ainda não há relatório do Claude. Suba arquivos, use a Mesa PDF ou peça o relatório ao Claude usando este id:"), h("div", { class: "cam" }, h("code", {}, d.id), h("button", { class: "mini", tabindex: "-1", onclick: async () => { (await copiar(d.id)) ? aviso("Id copiado.") : caixaCopia(d.id, "Id"); } }, "Copiar id"))));
+  const pa = painelArquivos(rel); if (pa) m.append(pa);
+  const rc = tabelaRecebidos(rel); if (rc) m.append(rc);
   d.secoes.forEach(sec => {
     const aberto = !rel.rec[sec.num];
     const el = h("section", { class: "sec" + (aberto ? "" : " rec"), id: "sec-" + sec.num });
@@ -658,7 +673,7 @@ function alterarPar(rel, sec, p, novo) {
 }
 
 /* ================= caixa de opções (o "dropdown" do chip) ================= */
-const COR_OPC = { "A fazer": "#4a90e2", "Aguardando": "#4a90e2", "Feito": "#1f9d6b", "Seguir": "#1f9d6b", "Ignorar": "#2e9c3a", "Não consegui": "#f0a020", "Pendente": "#d6453d", "Aprovado": "#2f8f4e", "Ajustar": "#3f6fd1" };
+const COR_OPC = { "A fazer": "#4a90e2", "Aguardando": "#4a90e2", "Feito": "#1f9d6b", "Seguir": "#1f9d6b", "Ignorar": "#2e9c3a", "Não consegui": "#f0a020", "Pendente": "#d6453d", "Aprovado": "#2f8f4e", "Ajustar": "#3f6fd1", "Em análise": "#4a90e2", "Responder": "#3f6fd1", "Respondido": "#2f8f4e", "Arquivar": "#8a8f98" };
 function corOpcao(o, f) {
   if (f.t === "K") return o === OPC_CAP[0] ? "#2f8f4e" : o === OPC_CAP[1] ? "#3f6fd1" : "#d6453d";
   return COR_OPC[o] || "#1f9d6b";
@@ -730,7 +745,7 @@ function escolherDoPop(item) {
   const valor = item.add != null ? item.add : item.valor;
   fecharPop(false);
   aplicarValor(rel, f, valor, item.limpar ? "" : obsCampo, item.add != null);
-  if (item.limpar) { const s = stOf(rel, chave(f)); if (f.t === "I" || f.t === "C") delete s.v; s.tocado = true; }
+  if (item.limpar) { const s = stOf(rel, chave(f)); if (f.t === "I" || f.t === "C" || f.t === "E") delete s.v; s.tocado = true; }
   refoco = `[data-chip="${chave(f)}"]`;
   salvar();
   const prox = DB.ui.avancar && !item.limpar && kind(valor) !== "pend" ? vizinho(rel, 1) : null;
@@ -811,6 +826,15 @@ function montarSaida(rel, soFoco) {
       if (ls.length) blocos.push(`## ${sec.num} ${sec.titulo}\n\n${ls.join("\n\n")}`);
     }
   });
+  if (!soFoco && (rel.entrada || []).length) {
+    const ls = [];
+    rel.entrada.forEach(e => {
+      const f = { t: "E", id: e.id }, s = rel.st[chave(f)]; if (!tocou(s)) return;
+      const resp = e.resposta && DB.rels[e.resposta];
+      ls.push(`${e.id} ${aspas(e.arquivo)} p. ${e.paginas || "todas"} [${(s && s.v) || "Pendente"}]` + (e.caminho ? ` — arquivo: ${e.caminho}` : "") + (resp ? ` — resposta: ${nomeRel(resp)}` : "") + (s && s.obs ? ` — comentário: ${s.obs}` : ""));
+    });
+    if (ls.length) blocos.push(`## Recebidos\n\n${ls.join("\n\n")}`);
+  }
   if (!soFoco) (rel.notasGeral || []).forEach(n => notas.push(`(geral) ${aspas(n)}`));
   let t = `[OMEGA] ${rotuloRel(rel)} · relatório ${d.id} rev ${d.rev} | ${agora()}\n\n`;
   t += blocos.length ? blocos.join("\n\n") + "\n" : "Nada decidido ou alterado desde a última leva.\n";
@@ -945,20 +969,22 @@ const MODELOS = {
   "Despacho": ["Despacho", "[Escreva aqui o despacho.]", "Nome do Signatário\nCargo do Signatário"],
   "Anexo": ["Anexo ao documento nº ___", "[Escreva aqui o conteúdo do anexo.]"]
 };
-function novoDocumento() {
+function novoDocumento(vinculo) {
   const corpo = h("div", {}, h("p", { class: "suave" }, "Cria um documento em branco, em campos, para você escrever (Tab passa de campo em campo). Dá para visualizar a impressão e copiar para o Claude."),
     Object.keys(MODELOS).map(nome => h("button", { class: "op", onclick: () => {
       const num = Math.max(0, ...Object.values(DB.rels).map(r => parseFloat(r.dados.numero) || 0)) + 1;
       const d = normalizar({ id: "doc-" + Date.now().toString(36), rev: 1, numero: num, titulo: `${nome} (novo)`, pasta: { rotulo: nome }, secoes: [{ num: "T1", titulo: nome, tipo: "texto", capitulos: [{ num: "1", titulo: "Documento", paragrafos: MODELOS[nome].map((t, i) => ({ id: `1.${i + 1}`, texto: t })) }] }] });
-      DB.rels[d.id] = novaRel(d); DB.atual = d.id; vista = "rel"; salvar(); document.querySelectorAll(".sobre").forEach(x => x.remove()); montar(); scrollTo(0, 0); aviso("Documento criado. Tab passa de campo em campo; Enter edita.");
+      DB.rels[d.id] = novaRel(d);
+      if (vinculo && DB.rels[vinculo.relId]) { const o = DB.rels[vinculo.relId], e = (o.entrada || []).find(x => x.id === vinculo.entradaId); if (e) { e.resposta = d.id; const s = stOf(o, "E:" + e.id); s.v = "Em análise"; s.tocado = true; } d.pasta.caminho = o.dados.pasta.caminho || ""; d.pasta.rotulo = nome + " — " + (e ? e.arquivo : ""); }
+      DB.atual = d.id; vista = "rel"; salvar(); document.querySelectorAll(".sobre").forEach(x => x.remove()); montar(); scrollTo(0, 0); aviso("Documento criado. Tab passa de campo em campo; Enter edita.");
     } }, h("span", {}, nome))));
   sobreposicao(corpo, "Novo documento");
 }
 
 /* ================= PDF e pastas do computador ================= */
-let pdfUrl = null, pdfNome = "", pdfVoltar = null;
+let pdfUrl = null, pdfNome = "", pdfVoltar = null, pdfCaminho = null;
 function abrirPDFLocal() {
-  const i = h("input", { type: "file", accept: "application/pdf,image/*,.txt", onchange: () => { const f = i.files[0]; if (!f) return; if (pdfUrl && pdfUrl.startsWith("blob:")) URL.revokeObjectURL(pdfUrl); pdfUrl = URL.createObjectURL(f); pdfNome = f.name; pdfVoltar = null; vista = "pdf"; montar(); fecharLateralPequena(); } });
+  const i = h("input", { type: "file", accept: "application/pdf,image/*,.txt", onchange: () => { const f = i.files[0]; if (!f) return; if (pdfUrl && pdfUrl.startsWith("blob:")) URL.revokeObjectURL(pdfUrl); pdfUrl = URL.createObjectURL(f); pdfCaminho = null; pdfNome = f.name; pdfVoltar = null; vista = "pdf"; montar(); fecharLateralPequena(); } });
   i.click();
 }
 function telaPDF(m) {
@@ -968,6 +994,7 @@ function telaPDF(m) {
     h("b", { style: "align-self:center" }, pdfNome),
     h("span", { class: "esp" }),
     h("button", { class: "btn", onclick: () => { try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch (e) { window.open(pdfUrl, "_blank"); aviso("Use o botão de imprimir da nova aba."); } } }, "Imprimir"),
+    pdfCaminho && /\.pdf$/i.test(pdfNome) ? h("button", { class: "btn sec", onclick: () => abrirMesaServidor(pdfCaminho, pdfNome) }, "Mesa PDF") : null,
     h("button", { class: "btn sec", onclick: () => window.open(pdfUrl, "_blank") }, "Abrir em outra aba")), fr);
 }
 let pastaAtual = null, listaPasta = null;
@@ -977,12 +1004,12 @@ async function api(rota, corpo) {
 }
 async function carregarAPI() {
   if (!/^https?:$/.test(location.protocol)) return;
-  try { const j = await (await fetch("api/status", { cache: "no-store" })).json(); API = { ok: true, raizes: j.raizes || [] }; desenharBusca(); } catch (e) { API = { ok: false, raizes: [] }; }
+  try { const j = await (await fetch("api/status", { cache: "no-store" })).json(); API = { ok: true, raizes: j.raizes || [], scripts: j.scripts || [] }; desenharBusca(); } catch (e) { API = { ok: false, raizes: [], scripts: [] }; }
 }
 function abrirPastaView(caminho) { pastaAtual = caminho; listaPasta = null; vista = "pastas"; montar(); }
 function abrirArquivoView(caminho) {
   const nome = caminho.split(/[\\/]/).pop(), ext = (nome.split(".").pop() || "").toLowerCase();
-  if (["pdf", "png", "jpg", "jpeg", "gif", "txt"].includes(ext)) { pdfUrl = "api/arquivo?caminho=" + encodeURIComponent(caminho); pdfNome = nome; pdfVoltar = caminho.replace(/[\\/][^\\/]*$/, ""); pastaAtual = pdfVoltar; vista = "pdf"; montar(); }
+  if (["pdf", "png", "jpg", "jpeg", "gif", "txt"].includes(ext)) { pdfUrl = "api/arquivo?caminho=" + encodeURIComponent(caminho); pdfCaminho = caminho; pdfNome = nome; pdfVoltar = caminho.replace(/[\\/][^\\/]*$/, ""); pastaAtual = pdfVoltar; vista = "pdf"; montar(); }
   else api("abrir-pasta", { caminho, arquivo: true }).then(() => aviso("Mostrando o arquivo no Explorador…")).catch(() => aviso("Não consegui abrir. Use o Iniciar Omega.bat."));
 }
 function telaPastas(m) {
@@ -1000,13 +1027,8 @@ function telaPastas(m) {
   cam.append(h("button", { class: "mini", onclick: () => abrirPastaView(null) }, "Raízes"), " ", h("code", {}, pastaAtual), " ",
     pastaAtual.toLowerCase() !== raiz.toLowerCase() ? h("button", { class: "mini", onclick: () => abrirPastaView(pastaAtual.replace(/[\\/][^\\/]*$/, "")) }, "↑ Subir") : null, " ",
     h("button", { class: "mini", onclick: () => api("abrir-pasta", { caminho: pastaAtual }).then(() => aviso("Abrindo no Explorador…")).catch(() => aviso("Não consegui abrir.")) }, "Abrir no Explorador"));
-  (async () => {
-    try {
-      const j = await (await api("listar?caminho=" + encodeURIComponent(pastaAtual))).json();
-      if (!j.length) lista.append(h("p", { class: "suave" }, "Pasta vazia."));
-      j.forEach(x => lista.append(h("button", { class: "lat-bt res", onclick: () => x.dir ? abrirPastaView(x.caminho) : abrirArquivoView(x.caminho) }, h("span", { class: "rn" }, x.dir ? "📁" : "📄"), h("span", { class: "rt" }, x.nome), h("span", { class: "rs" }, x.dir ? "" : Math.max(1, Math.round(x.tam / 1024)) + " KB · " + new Date(x.data).toLocaleDateString("pt-BR")))));
-    } catch (e) { lista.append(h("p", { class: "suave" }, "Não consegui listar esta pasta (fora das pastas liberadas?).")); }
-  })();
+  cam.append(" ", botaoSubir(pastaAtual, () => abrirPastaView(pastaAtual)), " ", h("button", { class: "mini", onclick: async () => { const n = prompt("Nome da nova pasta:"); if (!n) return; try { await api("criar-pasta", { caminho: juntar(pastaAtual, n) }); abrirPastaView(pastaAtual); } catch (e) { aviso("Não consegui criar a pasta."); } } }, "Nova pasta"));
+  listaArquivos(lista, pastaAtual, { aoPasta: abrirPastaView });
 }
 /* ================= revisor de português ================= */
 let STEMS = null, SUF = null, PRE = null, maxS = 0, maxP = 0, DICSTATE = "nao";
@@ -1215,6 +1237,237 @@ async function restaurarHandle() {
   } catch (e) {}
 }
 
+
+/* ================= objetos, arquivos da pasta C:, scripts, Mesa PDF, recebidos ================= */
+const OPC_ENT = ["Pendente", "Em análise", "Responder", "Respondido", "Arquivar"];
+const sepDe = p => p.includes("\\") ? "\\" : "/";
+const juntar = (d, n) => d.replace(/[\\/]+$/, "") + sepDe(d) + n;
+const slug = s => norm(s).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) || "objeto";
+const botao = (t, fn) => h("button", { class: "mini", tabindex: "-1", onclick: fn }, t);
+function emailGmail(assunto, corpo) { window.open("https://mail.google.com/mail/?view=cm&fs=1&su=" + encodeURIComponent(assunto) + "&body=" + encodeURIComponent(corpo), "_blank", "noopener"); }
+async function enviarArquivo(dir, file) {
+  const r = await fetch("api/enviar?caminho=" + encodeURIComponent(dir) + "&nome=" + encodeURIComponent(file.name), { method: "POST", body: file });
+  if (!r.ok) throw new Error("erro " + r.status);
+  return (await r.json()).caminho;
+}
+function menuSimples(ancora, itens) {
+  fecharBalao();
+  const r = ancora.getBoundingClientRect();
+  const m = h("div", { class: "bal", style: `left:${Math.max(8, Math.min(r.left, innerWidth - 260))}px;top:${Math.max(8, Math.min(r.bottom + 4, innerHeight - 50 - itens.length * 42))}px` }, itens.map(i => h("button", { onclick: () => { m.remove(); i.fn(); } }, i.rotulo)));
+  document.body.append(m);
+  setTimeout(() => document.addEventListener("click", function f(e) { if (!m.contains(e.target)) { m.remove(); document.removeEventListener("click", f); } }), 0);
+}
+/* script do C: (cadastrado em dados/config.json) rodando, com o resultado na tela */
+function scriptsPara(nome, ehDir) {
+  const ext = "." + ((nome.split(".").pop() || "").toLowerCase());
+  return (API.scripts || []).filter(s => (s.aplicaA === "pasta") === !!ehDir && (!s.extensoes.length || s.extensoes.includes(ext)));
+}
+async function executarScript(sc, caminho, aoFim) {
+  let job;
+  try { const r = await fetch("api/executar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ script: sc.id, caminho }) }); const j = await r.json(); if (!r.ok) throw new Error(j.erro || r.status); job = j.job; }
+  catch (e) { aviso("Não consegui executar: " + e.message); return; }
+  const pre = h("pre", { class: "copia", style: "max-height:50vh;overflow:auto" }, "Executando…"), est = h("p", { class: "suave" }, "Rodando…");
+  const ov = sobreposicao(h("div", {}, est, pre), sc.nome);
+  const volta = async () => {
+    if (!document.contains(ov)) return;
+    try {
+      const j = await (await fetch("api/job?id=" + job, { cache: "no-store" })).json();
+      pre.textContent = j.saida || "(sem saída)";
+      if (j.status === "rodando") { est.textContent = "Rodando…"; setTimeout(volta, 1000); return; }
+      est.textContent = j.status === "ok" ? "Terminou." : `Terminou com erro (código ${j.codigo}).`;
+      aviso(j.status === "ok" ? sc.nome + ": pronto." : sc.nome + ": terminou com erro."); if (aoFim) aoFim(j);
+    } catch (e) { est.textContent = "Perdi contato com o servidor."; }
+  };
+  volta();
+}
+/* lista de arquivos de uma pasta, com as ações de gerenciador */
+async function listaArquivos(box, caminho, opc) {
+  opc = opc || {}; box.replaceChildren(h("p", { class: "suave" }, "Carregando…"));
+  let j;
+  try { j = await (await api("listar?caminho=" + encodeURIComponent(caminho))).json(); }
+  catch (e) { box.replaceChildren(h("p", { class: "suave" }, "Não consegui listar esta pasta (não existe ou está fora das pastas liberadas em dados/config.json).")); return false; }
+  const recarregar = () => listaArquivos(box, caminho, opc);
+  const tb = h("tbody", {});
+  if (!j.length) tb.append(h("tr", {}, h("td", { colspan: "3", class: "suave" }, "Pasta vazia.")));
+  j.forEach(x => {
+    const ext = (x.nome.split(".").pop() || "").toLowerCase(), ac = h("div", { class: "arq-ac" });
+    if (!x.dir) ac.append(botao("Ver", () => abrirArquivoView(x.caminho)));
+    if (ext === "pdf") ac.append(botao("Mesa PDF", () => abrirMesaServidor(x.caminho, x.nome)));
+    if (ext === "json") ac.append(botao("Abrir como relatório", async () => { try { carregarRelatorio(await (await api("arquivo?caminho=" + encodeURIComponent(x.caminho))).json()); } catch (e) { aviso("Esse JSON não é um relatório do Omega."); } }));
+    ac.append(botao("Renomear", async () => {
+      const n = prompt("Novo nome para " + x.nome + ":", x.nome); if (!n || n === x.nome) return;
+      try { await api("renomear", { caminho: x.caminho, novoNome: n }); aviso("Renomeado."); recarregar(); } catch (e) { aviso("Não consegui renomear (já existe um com esse nome, ou o nome é inválido)."); }
+    }));
+    const sc = scriptsPara(x.nome, x.dir);
+    if (sc.length) ac.append(botao("Executar ▾", ev => menuSimples(ev.currentTarget, sc.map(s => ({ rotulo: s.nome, fn: () => executarScript(s, x.caminho, recarregar) })))));
+    ac.append(botao("Explorador", () => api("abrir-pasta", { caminho: x.caminho, arquivo: !x.dir }).catch(() => aviso("Não consegui abrir."))));
+    tb.append(h("tr", {}, h("td", { class: "arq-n" }, h("button", { class: "arq-nome", tabindex: "-1", onclick: () => x.dir ? (opc.aoPasta ? opc.aoPasta(x.caminho) : abrirPastaView(x.caminho)) : abrirArquivoView(x.caminho) }, (x.dir ? "📁 " : ext === "pdf" ? "📄 " : "▫ ") + x.nome)),
+      h("td", { class: "suave arq-t" }, x.dir ? "" : Math.max(1, Math.round(x.tam / 1024)) + " KB · " + new Date(x.data).toLocaleDateString("pt-BR")), h("td", {}, ac)));
+  });
+  box.replaceChildren(h("table", { class: "arq" }, tb));
+  return true;
+}
+function botaoSubir(dir, aoSubir) {
+  const i = h("input", { type: "file", multiple: true, class: "oculto", onchange: async () => {
+    const fs = [...i.files]; i.value = ""; if (!fs.length) return;
+    let n = 0; for (const f of fs) { try { aviso(`Enviando ${f.name}…`); await enviarArquivo(dir, f); n++; } catch (e) { aviso("Não consegui enviar " + f.name + " (pasta fora das liberadas?)."); } }
+    if (n) { aviso(`${n} arquivo(s) enviado(s) para a pasta.`); if (aoSubir) aoSubir(); }
+  } });
+  return h("span", {}, i, h("button", { class: "btn", "data-subir": "1", onclick: () => i.click() }, "Subir arquivo"));
+}
+function painelArquivos(rel) {
+  const cam = rel.dados.pasta.caminho; if (!cam || !API.ok) return null;
+  const aberto = !rel.rec.__arq, corpo = h("div", { class: "arq-corpo" });
+  let atual = cam;
+  const abrir = d => { atual = d; recarga(); };
+  const recarga = () => { corpo.replaceChildren(); const topo = h("div", { class: "migalhas" }, h("code", {}, atual), atual !== cam ? botao("↑ Subir", () => abrir(atual.replace(/[\\/][^\\/]*$/, "") || cam)) : null, botaoSubir(atual, recarga), botao("Atualizar", recarga), botao("Abrir no Explorador", () => api("abrir-pasta", { caminho: atual }).catch(() => aviso("Não consegui abrir."))));
+    const lista = h("div", {}); corpo.append(topo, lista); listaArquivos(lista, atual, { aoPasta: abrir }); };
+  if (aberto) recarga();
+  return h("section", { class: "sec" + (aberto ? "" : " rec"), id: "sec-__arq" },
+    h("div", { class: "sec-hl" }, h("button", { class: "sec-h", tabindex: "-1", onclick: () => { rel.rec.__arq = aberto; salvar(); remontar(); } }, h("span", { class: "seta" }, "▾"), h("h2", { class: "n" }, "Arquivos deste objeto"))), h("div", { class: "sec-b" }, corpo));
+}
+
+/* ---- Recebidos: arquivos/páginas que chegaram e o que fazer com eles ---- */
+function tabelaRecebidos(rel) {
+  const ent = rel.entrada || []; if (!ent.length) return null;
+  const tb = h("tbody", {});
+  ent.forEach(e => {
+    const f = { t: "E", id: e.id }, s = rel.st[chave(f)] || {}, v = s.v || "Pendente", resp = e.resposta && DB.rels[e.resposta];
+    const ac = h("div", { class: "arq-ac" });
+    if (e.caminho && API.ok) ac.append(botao("Ver", () => abrirArquivoView(e.caminho)));
+    if (resp) ac.append(botao("Abrir resposta", () => abrirRelatorio(e.resposta))); else ac.append(botao("Responder", () => novoDocumento({ relId: rel.dados.id, entradaId: e.id })));
+    ac.append(botao("Remover", () => { if (confirm("Tirar este recebido da lista?")) { rel.entrada = rel.entrada.filter(x => x.id !== e.id); delete rel.st[chave(f)]; salvar(); remontar(); } }));
+    tb.append(h("tr", { class: "item", "data-fk": chave(f) },
+      h("td", { "data-label": "Arquivo", class: "c-item" }, h("b", {}, e.arquivo)),
+      h("td", { "data-label": "Páginas", class: "c-dep" }, e.paginas || "todas"),
+      h("td", { "data-label": "O que fazer", class: "c-texto" }, ac, s.obs ? h("div", { class: "comentario" }, h("b", {}, "Comentário: "), s.obs) : null, resp ? h("div", { class: "suave" }, "Resposta: " + nomeRel(resp)) : null),
+      h("td", { "data-label": "Situação", class: "c-esc" }, "(", chipEl(f, v), ")")));
+  });
+  return h("section", { class: "sec" }, h("div", { class: "sec-hl" }, h("h2", { class: "n", style: "padding:8px 0" }, `Recebidos (${ent.length})`)),
+    h("table", { class: "rel" }, h("thead", {}, h("tr", {}, ["Arquivo", "Páginas", "O que fazer", "Situação"].map(t => h("th", {}, t)))), tb));
+}
+
+/* ---- Novo objeto ---- */
+function novoObjeto() {
+  const proximo = Math.max(0, ...Object.values(DB.rels).map(r => parseFloat(r.dados.numero) || 0)) + 1;
+  const campo = (rot, el) => h("label", { class: "campo" }, h("span", {}, rot), el);
+  const nome = h("input", { type: "text", placeholder: "Ex.: Canal do Malhado" }), num = h("input", { type: "text" }), cam = h("input", { type: "text", placeholder: "C:\\CL\\... (opcional)" }), conv = h("input", { type: "url", placeholder: "https://claude.ai/chat/… (opcional)" });
+  num.value = proximo;
+  const criar = h("input", { type: "checkbox" }); criar.checked = API.ok;
+  const corpo = h("div", {},
+    campo("Nome do objeto (o mesmo da pasta e da conversa)", nome), campo("Número", num), campo("Pasta no computador", cam),
+    h("label", { class: "lat-chk" }, criar, "Criar a pasta se não existir (precisa do Iniciar Omega.bat)"), campo("Link da conversa no Claude", conv),
+    h("div", { class: "linha" }, h("button", { class: "btn", id: "obj-criar", onclick: async () => {
+      const rot = nome.value.trim(); if (!rot) { aviso("Dê um nome ao objeto."); nome.focus(); return; }
+      const id = "obj-" + slug(rot) + "-" + Date.now().toString(36).slice(-4);
+      if (conv.value.trim() && !/^https?:\/\//i.test(conv.value.trim())) { aviso("O link da conversa precisa começar com https://"); return; }
+      if (cam.value.trim() && criar.checked && API.ok) { try { await api("criar-pasta", { caminho: cam.value.trim() }); } catch (e) { aviso("Não consegui criar a pasta (fora das pastas liberadas?). O objeto será criado mesmo assim."); } }
+      const d = normalizar({ id, rev: 1, numero: num.value.trim() || proximo, titulo: rot, pasta: { rotulo: rot, caminho: cam.value.trim() }, secoes: [] });
+      DB.rels[id] = novaRel(d); if (conv.value.trim()) DB.rels[id].conversa = conv.value.trim();
+      DB.atual = id; vista = "rel"; salvar(); document.querySelectorAll(".sobre").forEach(x => x.remove()); montar(); scrollTo(0, 0);
+      aviso("Objeto criado. Suba arquivos, use a Mesa PDF ou peça o relatório ao Claude com o id " + id);
+    } }, "Criar objeto")));
+  sobreposicao(corpo, "Novo objeto"); setTimeout(() => nome.focus(), 50);
+}
+
+/* ---- Mesa PDF: ler, escolher páginas, extrair, cadastrar como recebido, responder, imprimir, e-mail ---- */
+let mesa = null, pdfLibPronto = null;
+function carregarPDFLib() {
+  if (window.PDFLib) return Promise.resolve();
+  return pdfLibPronto || (pdfLibPronto = new Promise((ok, no) => { const s = h("script", { src: "pdf-lib.min.js" }); s.onload = ok; s.onerror = () => { pdfLibPronto = null; no(new Error("pdf-lib.min.js não encontrado")); }; document.head.append(s); }));
+}
+function abrirMesaLocal() {
+  const i = h("input", { type: "file", accept: "application/pdf", onchange: () => { const f = i.files[0]; if (!f) return; mesa = { blob: f, url: URL.createObjectURL(f), nome: f.name, caminho: null, total: null, relId: DB.atual, extraido: null }; vista = "mesa"; montar(); fecharLateralPequena(); } });
+  i.click();
+}
+function abrirMesaServidor(caminho, nome) { mesa = { blob: null, url: "api/arquivo?caminho=" + encodeURIComponent(caminho), nome, caminho, total: null, relId: DB.atual, extraido: null }; vista = "mesa"; montar(); }
+async function bytesMesa() { return mesa.blob ? await mesa.blob.arrayBuffer() : await (await fetch(mesa.url)).arrayBuffer(); }
+function lerPaginas(txt, total) {
+  const out = new Set();
+  String(txt || "").split(/[,;\s]+/).filter(Boolean).forEach(p => {
+    const m = p.match(/^(\d+)(?:-(\d*))?$/); if (!m) return;
+    const a = +m[1], b = m[2] === undefined ? a : (m[2] === "" ? total : +m[2]);
+    for (let i = Math.max(1, a); i <= Math.min(b, total || b); i++) out.add(i);
+  });
+  return [...out].sort((x, y) => x - y);
+}
+function rotuloPaginas(ps) { const r = []; for (let i = 0; i < ps.length;) { let j = i; while (ps[j + 1] === ps[j] + 1) j++; r.push(j > i ? `${ps[i]}-${ps[j]}` : `${ps[i]}`); i = j + 1; } return r.join(","); }
+function telaMesa(m) {
+  if (!mesa) { m.append(h("p", {}, "Nenhum PDF aberto."), h("button", { class: "btn", onclick: abrirMesaLocal }, "Escolher PDF")); return; }
+  const visor = h("iframe", { class: "visor", id: "mesa-visor", src: mesa.url, title: mesa.nome });
+  const info = h("p", { class: "suave", id: "mesa-info" }, "Contando páginas…"), pags = h("input", { type: "text", id: "mesa-pags", placeholder: "Ex.: 2-4, 7", "aria-label": "Páginas" });
+  const ext = h("div", { id: "mesa-ext" });
+  const sel = h("select", { id: "mesa-obj" }, Object.keys(DB.rels).map(id => h("option", { value: id }, nomeRel(DB.rels[id])))); if (mesa.relId && DB.rels[mesa.relId]) sel.value = mesa.relId;
+  const escolhidas = () => lerPaginas(pags.value, mesa.total);
+  const ir = () => { const e = escolhidas(); visor.src = mesa.url + "#page=" + (e[0] || 1); };
+  carregarPDFLib().then(async () => { try { const d = await PDFLib.PDFDocument.load(await bytesMesa(), { ignoreEncryption: true }); mesa.total = d.getPageCount(); info.textContent = `${mesa.total} página(s). Escreva as páginas que quer (ex.: 2-4, 7).`; } catch (e) { info.textContent = "Não consegui ler este PDF para contar páginas (o botão Extrair pode não funcionar)."; } }).catch(e => { info.textContent = e.message; });
+  async function extrair() {
+    const e = escolhidas(); if (!e.length) { aviso("Escreva as páginas, por exemplo 2-4, 7."); return; }
+    try {
+      await carregarPDFLib(); const src = await PDFLib.PDFDocument.load(await bytesMesa(), { ignoreEncryption: true }), out = await PDFLib.PDFDocument.create();
+      (await out.copyPages(src, e.map(x => x - 1))).forEach(p => out.addPage(p));
+      const blob = new Blob([await out.save()], { type: "application/pdf" }), base = mesa.nome.replace(/\.pdf$/i, "");
+      mesa.extraido = { blob, nome: `${base}_p${rotuloPaginas(e)}.pdf`, paginas: rotuloPaginas(e), n: e.length, url: URL.createObjectURL(blob) };
+      desenhaExt();
+    } catch (er) { aviso("Não consegui extrair: " + er.message); }
+  }
+  function desenhaExt() {
+    ext.replaceChildren(); const x = mesa.extraido; if (!x) return;
+    ext.append(h("p", {}, h("b", {}, "Pronto: "), `${x.nome} (${x.n} página(s))`),
+      h("div", { class: "linha" },
+        h("button", { class: "btn sec", onclick: () => { visor.src = x.url; } }, "Ver o extraído"),
+        h("button", { class: "btn sec", onclick: () => { const a = h("a", { href: x.url, download: x.nome }); document.body.append(a); a.click(); a.remove(); } }, "Baixar"),
+        h("button", { class: "btn sec", id: "mesa-salvar", onclick: salvarNaPasta }, "Salvar na pasta do objeto"),
+        h("button", { class: "btn sec", onclick: () => { try { visor.contentWindow.focus(); visor.contentWindow.print(); } catch (e) { window.open(x.url, "_blank"); } } }, "Imprimir"),
+        h("button", { class: "btn sec", onclick: () => { emailGmail("Documento: " + x.nome, "Segue em anexo: " + x.nome + "\n\n(anexe o arquivo: ele está na pasta do objeto ou nos Downloads)"); } }, "E-mail (Gmail)")));
+  }
+  async function salvarNaPasta() {
+    const rel = DB.rels[sel.value], dir = rel && rel.dados.pasta.caminho, x = mesa.extraido;
+    if (!dir) { aviso("O objeto escolhido não tem pasta. Defina em Novo objeto."); return null; }
+    if (!API.ok) { aviso("Para gravar na pasta, abra o Omega pelo Iniciar Omega.bat. Use Baixar por enquanto."); return null; }
+    try { const f = new File([x.blob], x.nome, { type: "application/pdf" }); const c = await enviarArquivo(dir, f); aviso("Salvo na pasta: " + c); x.caminho = c; return c; } catch (e) { aviso("Não consegui salvar na pasta."); return null; }
+  }
+  function cadastrar() {
+    const rel = DB.rels[sel.value]; if (!rel) return null;
+    const e = escolhidas(), x = mesa.extraido;
+    const reg = { id: "R" + Date.now().toString(36), arquivo: x ? x.nome : mesa.nome, paginas: x ? x.paginas : (e.length ? rotuloPaginas(e) : "todas"), caminho: (x && x.caminho) || mesa.caminho || "", criado: Date.now() };
+    (rel.entrada = rel.entrada || []).push(reg); const s = stOf(rel, "E:" + reg.id); s.v = "Pendente"; s.tocado = true; salvar();
+    aviso(`Cadastrado como recebido em ${nomeRel(rel)} (Pendente).`); return { rel, reg };
+  }
+  const scs = scriptsPara(mesa.nome, false);
+  m.append(h("div", { class: "linha", style: "margin-top:0" }, h("button", { class: "btn sec", onclick: () => { vista = mesa.caminho ? "pastas" : "rel"; if (mesa.caminho) pastaAtual = mesa.caminho.replace(/[\\/][^\\/]*$/, ""); montar(); } }, "← Voltar"), h("b", { style: "align-self:center" }, "Mesa PDF — " + mesa.nome)),
+    h("div", { class: "mesa-grade" }, visor, h("div", { class: "mesa-ctrl" }, info,
+      h("label", { class: "campo" }, h("span", {}, "Páginas"), pags),
+      h("div", { class: "linha" }, h("button", { class: "btn sec", id: "mesa-ir", onclick: ir }, "Ir para a página"), h("button", { class: "btn", id: "mesa-extrair", onclick: extrair }, "Extrair páginas")),
+      ext, h("hr"),
+      h("label", { class: "campo" }, h("span", {}, "Objeto"), sel),
+      h("div", { class: "linha" },
+        h("button", { class: "btn sec", id: "mesa-cadastrar", onclick: () => { cadastrar(); } }, "Cadastrar como recebido (Pendente)"),
+        h("button", { class: "btn sec", id: "mesa-responder", onclick: () => { const c = cadastrar(); if (c) novoDocumento({ relId: c.rel.dados.id, entradaId: c.reg.id }); } }, "Responder (novo documento)")),
+      h("div", { class: "linha" }, h("button", { class: "btn sec", onclick: () => { try { visor.contentWindow.focus(); visor.contentWindow.print(); } catch (e) { window.open(mesa.url, "_blank"); } } }, "Imprimir o PDF aberto"),
+        h("button", { class: "btn sec", onclick: () => emailGmail("PDF: " + mesa.nome, "Segue em anexo: " + mesa.nome) }, "E-mail (Gmail)")),
+      h("hr"),
+      h("div", {}, h("b", {}, "Scripts do C:"),
+        API.ok ? (scs.length ? h("div", { class: "linha" }, scs.map(s => h("button", { class: "btn sec", onclick: async () => {
+          let cam = mesa.caminho;
+          if (!cam) { const rel = DB.rels[sel.value], dir = rel && rel.dados.pasta.caminho; if (!dir) { aviso("Escolha um objeto que tenha pasta para enviar o PDF antes."); return; } try { cam = await enviarArquivo(dir, mesa.blob instanceof File ? mesa.blob : new File([mesa.blob], mesa.nome)); mesa.caminho = cam; } catch (e) { aviso("Não consegui enviar o PDF para a pasta."); return; } }
+          executarScript(s, cam);
+        } }, s.nome))) : h("p", { class: "suave" }, "Nenhum script cadastrado para PDF em dados/config.json.")) : h("p", { class: "suave" }, "Abra pelo Iniciar Omega.bat para usar os scripts (OCR, notas, renomear)."))))); 
+}
+
+/* ---- 💬: copia a mensagem (e salva o retorno na pasta) e vai para a conversa ---- */
+async function irConversa(id) {
+  const r = DB.rels[id]; if (!r) return;
+  if (!r.conversa) { DB.atual = id; vista = "rel"; DB.ui.lateral = true; salvar(); montar(); const i = $("#in-conv"); if (i) i.focus(); aviso("Cole o link da conversa deste objeto no campo da lateral e tecle Enter."); return; }
+  const rotulo = nomeRel(r), msg = r.msg || `Leia o relatório de retorno do Omega do objeto ${rotulo} (rev ${r.dados.rev}).`, texto = montarSaida(r, false);
+  let salvo = null;
+  if (API.ok && r.dados.pasta.caminho) { try { salvo = (await (await api("salvar", { caminho: r.dados.pasta.caminho, nome: `RETORNO_OMEGA_rev${r.dados.rev}.txt`, texto })).json()).caminho; } catch (e) {} }
+  const copia = salvo ? `${msg} O arquivo está em: ${salvo}` : `${msg}\n\n${texto}`;
+  const ok = await copiar(copia);
+  window.open(r.conversa, "_blank", "noopener");
+  if (ok) aviso(salvo ? "Retorno salvo na pasta e mensagem copiada. Na conversa, cole com Ctrl+V." : "Relatório copiado. Na conversa, cole com Ctrl+V.");
+  else caixaCopia(copia, "Mensagem para a conversa");
+}
 
 /* ================= início ================= */
 addEventListener("resize", () => { ajustarTabelas(); aplicarTema(); if (pop) fecharPop(false); });

@@ -2,15 +2,17 @@
 // deixa o Omega procurar/abrir pastas e ver arquivos das pastas liberadas em dados/config.json.
 // Uso:  node servidor.js        (depois abra http://localhost:8765)
 // Não precisa instalar nada além do Node.
-const http = require("http"), fs = require("fs"), path = require("path"), os = require("os"), { execFile } = require("child_process");
+const http = require("http"), fs = require("fs"), path = require("path"), os = require("os"), { execFile, spawn } = require("child_process");
 const RAIZ = __dirname, PORTA = Number(process.env.PORTA) || 8765;
 const TIPOS = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".webmanifest": "application/manifest+json" };
-const ARQ = { ".pdf": "application/pdf", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".txt": "text/plain; charset=utf-8" };
+const ARQ = { ".pdf": "application/pdf", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".txt": "text/plain; charset=utf-8", ".json": "application/json; charset=utf-8" };
 
 /* pastas liberadas: dados/config.json  {"raizes": ["C:\\CL"]}  (ou variável OMEGA_RAIZES separada por ;) */
+function config() { try { return JSON.parse(fs.readFileSync(path.join(RAIZ, "dados", "config.json"), "utf8")); } catch (e) { return {}; } }
+function scripts() { return (config().scripts || []).filter(s => s && s.id && Array.isArray(s.comando) && s.comando.length); }
 function raizes() {
   let r = [];
-  try { r = JSON.parse(fs.readFileSync(path.join(RAIZ, "dados", "config.json"), "utf8")).raizes || []; } catch (e) {}
+  try { r = config().raizes || []; } catch (e) {}
   if (process.env.OMEGA_RAIZES) r = process.env.OMEGA_RAIZES.split(";").filter(Boolean);
   return r.map(x => String(x)).filter(x => path.isAbsolute(x) && fs.existsSync(x));
 }
@@ -41,7 +43,10 @@ function montarIndice() {
 }
 const norm = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 const json = (res, obj, cod) => { res.writeHead(cod || 200, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }); res.end(JSON.stringify(obj)); };
-function corpoJson(req, cb) { const p = []; let n = 0; req.on("data", c => { n += c.length; if (n < 20000) p.push(c); }); req.on("end", () => { try { cb(JSON.parse(Buffer.concat(p).toString())); } catch (e) { cb(null); } }); }
+function corpoJson(req, cb, limite) { const p = []; let n = 0; req.on("data", c => { n += c.length; if (n < (limite || 20000)) p.push(c); }); req.on("end", () => { try { cb(JSON.parse(Buffer.concat(p).toString())); } catch (e) { cb(null); } }); }
+const nomeSeguro = n => path.basename(String(n || "")).replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_").replace(/^\.+/, "").trim().slice(0, 180);
+function livre(dir, nome) { let p = path.join(dir, nome), i = 2; const ext = path.extname(nome), base = path.basename(nome, ext); while (fs.existsSync(p)) p = path.join(dir, `${base} (${i++})${ext}`); return p; }
+const jobs = new Map();
 
 http.createServer((req, res) => {
   const u = new URL(req.url || "/", "http://x"), url = decodeURIComponent(u.pathname);
@@ -49,7 +54,68 @@ http.createServer((req, res) => {
 
   if (rel.startsWith("/api/")) {
     if (!local(req)) { res.writeHead(403); return res.end(); }   // só o próprio computador
-    if (req.method === "GET" && rel === "/api/status") return json(res, { raizes: raizes() });
+    if (req.method === "GET" && rel === "/api/status") return json(res, { raizes: raizes(), scripts: scripts().map(x => ({ id: x.id, nome: x.nome || x.id, aplicaA: x.aplicaA === "pasta" ? "pasta" : "arquivo", extensoes: (x.extensoes || []).map(e => String(e).toLowerCase()) })) });
+    if (req.method === "POST" && rel === "/api/enviar") {      // upload de arquivo para uma pasta liberada
+      const dir = dentro(u.searchParams.get("caminho") || ""), nome = nomeSeguro(u.searchParams.get("nome"));
+      if (!dir || !nome || !fs.statSync(dir).isDirectory()) { res.writeHead(403); return res.end(); }
+      const destino = livre(dir, nome), out = fs.createWriteStream(destino); let n = 0, falhou = false;
+      req.on("data", c => { n += c.length; if (n > 800e6 && !falhou) { falhou = true; req.destroy(); out.destroy(); try { fs.unlinkSync(destino); } catch (e) {} } });
+      req.pipe(out);
+      out.on("finish", () => json(res, { caminho: destino }));
+      out.on("error", () => { res.writeHead(500); res.end(); });
+      return;
+    }
+    if (req.method === "POST" && rel === "/api/renomear") {
+      return corpoJson(req, b => {
+        const orig = b && dentro(String(b.caminho || "")), nome = b && nomeSeguro(b.novoNome);
+        if (!orig || !nome) { res.writeHead(403); return res.end(); }
+        const novo = path.join(path.dirname(orig), nome);
+        if (fs.existsSync(novo)) { res.writeHead(409); return res.end(); }
+        try { fs.renameSync(orig, novo); json(res, { caminho: novo }); } catch (e) { res.writeHead(500); res.end(); }
+      });
+    }
+    if (req.method === "POST" && rel === "/api/criar-pasta") {
+      return corpoJson(req, b => {
+        const alvo = b && String(b.caminho || "");
+        if (!alvo || !path.isAbsolute(alvo)) { res.writeHead(400); return res.end(); }
+        // sobe até achar um pai que exista e confira se está dentro de uma pasta liberada
+        let pai = path.dirname(alvo); while (!fs.existsSync(pai) && path.dirname(pai) !== pai) pai = path.dirname(pai);
+        if (!dentro(pai) && !dentro(alvo)) { res.writeHead(403); return res.end(); }
+        try { fs.mkdirSync(alvo, { recursive: true }); json(res, { caminho: alvo }); } catch (e) { res.writeHead(500); res.end(); }
+      });
+    }
+    if (req.method === "POST" && rel === "/api/salvar") {       // grava o relatório de retorno (texto) na pasta do objeto
+      return corpoJson(req, b => {
+        const dir = b && dentro(String(b.caminho || "")), nome = b && nomeSeguro(b.nome);
+        if (!dir || !nome || !fs.statSync(dir).isDirectory() || !/\.(txt|md|json)$/i.test(nome)) { res.writeHead(403); return res.end(); }
+        try { const p = path.join(dir, nome); fs.writeFileSync(p, String(b.texto || ""), "utf8"); json(res, { caminho: p }); } catch (e) { res.writeHead(500); res.end(); }
+      }, 5e6);
+    }
+    if (req.method === "POST" && rel === "/api/executar") {      // roda um script que VOCÊ cadastrou em dados/config.json
+      return corpoJson(req, b => {
+        const sc = b && scripts().find(x => x.id === b.script), alvo = b && dentro(String(b.caminho || ""));
+        if (!sc || !alvo) { res.writeHead(403); return res.end(); }
+        const ehDir = fs.statSync(alvo).isDirectory();
+        if ((sc.aplicaA === "pasta") !== ehDir) { res.writeHead(400); return res.end(); }
+        const exts = (sc.extensoes || []).map(e => String(e).toLowerCase());
+        if (exts.length && !exts.includes(path.extname(alvo).toLowerCase())) { res.writeHead(400); return res.end(); }
+        if (/(^|[\\/])(cmd|powershell|pwsh)(\.exe)?$/i.test(String(sc.comando[0])) && /[&|<>^%"`;$()]/.test(alvo)) { return json(res, { erro: "nome de arquivo com caracteres que o Windows interpretaria; renomeie antes" }, 400); }
+        const subs = { "{arquivo}": alvo, "{pasta}": ehDir ? alvo : path.dirname(alvo), "{nome}": path.basename(alvo) };
+        const args = sc.comando.map(a => Object.keys(subs).reduce((t, k) => t.split(k).join(subs[k]), String(a)));
+        const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        const job = { id, script: sc.id, alvo, saida: "", status: "rodando", codigo: null };
+        jobs.set(id, job); if (jobs.size > 40) jobs.delete(jobs.keys().next().value);
+        const add = d => { job.saida = (job.saida + d.toString()).slice(-200000); };
+        try {
+          const pr = spawn(args[0], args.slice(1), { cwd: sc.cwd && fs.existsSync(sc.cwd) ? sc.cwd : (ehDir ? alvo : path.dirname(alvo)), windowsHide: true, shell: false });
+          pr.stdout.on("data", add); pr.stderr.on("data", add);
+          pr.on("error", e => { add("\nErro ao iniciar: " + e.message + "\n"); job.status = "erro"; });
+          pr.on("close", c => { job.codigo = c; if (job.status === "rodando") job.status = c === 0 ? "ok" : "erro"; });
+        } catch (e) { add("Erro: " + e.message); job.status = "erro"; }
+        json(res, { job: id });
+      });
+    }
+    if (req.method === "GET" && rel === "/api/job") { const j = jobs.get(u.searchParams.get("id") || ""); return j ? json(res, j) : json(res, { erro: "?" }, 404); }
     if (req.method === "GET" && rel === "/api/pastas") {
       const toks = norm(u.searchParams.get("q") || "").split(/\s+/).filter(Boolean);
       if (!toks.length || !raizes().length) return json(res, []);

@@ -63,3 +63,17 @@
 - **Editor de PDF / "mesa de PDF"**: não feito (só ler e imprimir). Está no BACKLOG.
 - **Salvamento**: continua automático a cada toque (navegador e, com o servidor, `dados/estado.json`).
 - **Tema padrão** agora é o "Mais escuro" (como nos seus prints novos); troca na lateral.
+
+---
+# Versão 3.2 (pedido por voz: objeto, upload, scripts do C:, Mesa PDF, conversa)
+- **Omega não faz OCR nem pensa**: é gerenciador dos seus scripts. OCR no navegador (tesseract) pesaria dezenas de MB e não substitui o seu script; por isso não embuti.
+- **Scripts**: só rodam os cadastrados por você em `dados/config.json` (ignorado pelo git), com `execFile`-style (sem shell), argumentos `{arquivo}`, `{pasta}`, `{nome}` validados contra as pastas liberadas, só a partir do próprio computador, e bloqueando nomes com `& | < > ^ % " ; $ ( )` quando o comando é cmd/PowerShell. Não conheço os nomes/argumentos dos seus scripts: o `config.exemplo.json` é ilustrativo e precisa ser ajustado por você. Saída do script aparece numa janela; "notas" gerando o relatório na pasta é problema do seu script, o Omega só mostra o arquivo na lista e abre `.json` como relatório.
+- **Renomear**: botão do Omega (renomeia direto na pasta, recusa nome repetido) e, se você cadastrar, o seu script de renomear em "Executar ▾".
+- **Upload**: grava na pasta do objeto (até 800 MB, sem sobrescrever: acrescenta "(2)").
+- **Mesa PDF**: usa pdf-lib (MIT, `pdf-lib.min.js`, 440 KB) para extrair páginas; a leitura com miniaturas é do leitor de PDF do próprio Chrome. Não edita, não gira, não junta (backlog).
+- **Recebidos** é uma tabela por objeto guardada no estado do navegador/servidor (não vem do `relatorio.json`). Entram no "Copiar relatório" até a próxima leva.
+- **💬** deixou de só abrir o link: salva `RETORNO_OMEGA_rev<N>.txt` na pasta (se houver servidor e pasta), copia a mensagem e abre a conversa. A mensagem é editável por objeto.
+- **E-mail**: abre o compose do Gmail com assunto/texto; **anexo não dá para automatizar pelo navegador** (precisa anexar à mão). Não enviei nada sozinho.
+- **Impressão direta nas impressoras da prefeitura**: pelo diálogo de impressão do navegador/Windows (não há como escolher impressora por código no navegador).
+- **Novo objeto** é um objeto vazio com id `obj-…`; o Claude deve usar esse mesmo id no `relatorio.json` para o estado se manter (o id aparece no objeto com botão Copiar id).
+- **Não feito**: Claude/IA dentro do app (você preferiu o fluxo de relatório), OCR embutido, edição de PDF, anexos de e-mail automáticos.

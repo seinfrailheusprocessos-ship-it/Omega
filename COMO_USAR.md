@@ -37,6 +37,15 @@ O Claude gera o relatório (arquivo `relatorio.json`); você abre no Omega, deci
 5. **No parágrafo de um documento:** Enter (ou F2) para reescrever como num campo de formulário; Ctrl+Enter ou Tab terminam; a caixinha ao lado marca Pendente, Aprovado ou Ajustar. A caixinha **Capítulo** aprova o capítulo inteiro.
 6. **/** (barra) ou Ctrl+K vai para a busca; **N** e **P** vão ao próximo e ao anterior pendente.
 
+## Novo objeto, arquivos do C:, scripts, Mesa PDF
+O Omega **não pensa nem faz OCR sozinho**: ele é o gerenciador que liga as suas pastas do C: aos scripts que você já tem e à conversa com o Claude.
+1. **Novo objeto** (lateral): nome (o mesmo da pasta e da conversa), número, pasta no computador (pode criar) e link da conversa do Claude.
+2. **Arquivos deste objeto** (aparece no objeto, com o servidor ligado): **Subir arquivo** (upload para a pasta), Ver, Mesa PDF, **Renomear**, Explorador e **Executar ▾** (seus scripts: OCR, "fazer notas" que gera o relatório do arquivo na pasta, renomear pelo script…). O resultado do script aparece numa janela. Arquivos `.json` têm "Abrir como relatório".
+3. **Seus scripts:** copie `dados/config.exemplo.json` para `dados/config.json` e troque os comandos pelos seus (o exemplo é só ilustração). O Omega só executa o que estiver escrito nesse arquivo, só com arquivos dentro das pastas liberadas e só a partir do próprio computador.
+4. **Mesa PDF** (lateral ou botão no arquivo; funciona também no celular, sem servidor): vê o PDF com miniaturas, você escreve as páginas (ex.: 2-4, 7) e **Extrair páginas** gera um PDF só com elas (para separar um ofício de um bloco escaneado de 50 páginas). Daí: Baixar, Salvar na pasta do objeto, Imprimir, E-mail (Gmail), **Cadastrar como recebido (Pendente)** ou **Responder (novo documento)**. Os recebidos ficam numa tabela no objeto, com a caixinha Pendente / Em análise / Responder / Respondido / Arquivar, e vão no Copiar relatório.
+5. **💬 Conversa:** o ícone 💬 (e o botão Ir) salva o relatório de retorno na pasta (`RETORNO_OMEGA_rev<N>.txt`), copia a mensagem "Leia o relatório de retorno do Omega do objeto …" e abre a conversa; é só colar com Ctrl+V. Você pode trocar a mensagem no campo da lateral. Sem servidor, ele cola o próprio relatório de decisões.
+6. **Gmail** está na lateral. O e-mail abre já com assunto e texto; o anexo você coloca (o arquivo está na pasta do objeto).
+
 ## Buscar
 A busca no alto da lateral aceita número (ex.: 1.4.7), palavras do texto ou o nome do objeto (ex.: "canal do malhado": aparece o relatório e tudo o que está pendente nele). Com o servidor ligado e as pastas liberadas, aparecem também pastas e arquivos do computador.
 

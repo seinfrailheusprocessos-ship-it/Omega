@@ -287,3 +287,22 @@ table.tex{border-collapse:collapse}
   .folha{box-shadow:none;width:auto;min-height:0;padding:0;margin:0}
   @page{size:A4;margin:2.5cm 2cm}
 }
+
+/* arquivos, mesa PDF, formulários */
+main#main.larga{max-width:1280px}
+table.arq{width:100%;border-collapse:collapse;font-size:15px}
+table.arq td{padding:6px 8px;border-bottom:1px solid var(--borda);vertical-align:middle}
+table.arq .arq-n{width:45%}
+table.arq .arq-t{white-space:nowrap;font-size:13px}
+.arq-nome{border:0;background:none;text-align:left;font-size:15px;padding:4px 0;color:var(--texto)}
+.arq-nome:hover{color:var(--destaque);text-decoration:underline}
+.arq-ac{display:flex;gap:6px;flex-wrap:wrap}
+.mesa-grade{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:16px;align-items:start}
+.mesa-grade .visor{height:calc(100vh - 130px);min-height:420px}
+.mesa-ctrl{display:flex;flex-direction:column;gap:6px}
+.mesa-ctrl hr{border:0;border-top:1px solid var(--borda);width:100%;margin:8px 0}
+.campo{display:flex;flex-direction:column;gap:4px;margin:8px 0;font-size:13.5px;color:var(--suave)}
+.campo input,.campo select{border:1px solid var(--borda);background:var(--bg2);border-radius:10px;padding:9px 12px;font-size:15px;color:var(--texto)}
+@media(max-width:900px){.mesa-grade{grid-template-columns:1fr}.mesa-grade .visor{height:60vh}}
+table.arq .arq-ac{justify-content:flex-end}
+@media(max-width:720px){table.arq td{display:block;border:0;padding:3px 0}table.arq tr{display:block;border-bottom:1px solid var(--borda);padding:6px 0}table.arq .arq-n{width:auto}table.arq .arq-ac{justify-content:flex-start}}
