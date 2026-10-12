@@ -1,0 +1,68 @@
+# ============================================================================
+#  CONFIGURAÇÃO DO PIPELINE DE ESCANEAMENTO - SEINFRA ILHÉUS
+#  Edite com o Bloco de Notas. Use barras normais ou invertidas, sempre entre aspas.
+#  Atenção: respeite os espaços no começo de cada linha (recuo).
+# ============================================================================
+
+# Pasta onde ficam os PDF/JPG/PNG/TIFF escaneados (entrada). Os originais NUNCA são alterados.
+entrada: "C:\\CL_ENTRADA\\ESCANEADOS"
+
+# Pasta raiz de tudo o que o pipeline produz.
+saida: "C:\\CL\\6_Pipeline"
+
+extensoes: [".pdf", ".jpg", ".jpeg", ".png", ".tif", ".tiff"]
+
+# false = COPIA (padrão, mais seguro). true = depois de processar, MOVE o original
+# para a subpasta PROCESSADOS dentro da entrada.
+mover_para_processados: false
+pasta_processados: "PROCESSADOS"
+
+ocr:
+  # auto = usa Tesseract se estiver instalado, senão RapidOCR. Opções: auto | tesseract | rapidocr
+  motor: auto
+  idioma: por
+  dpi: 300                  # resolução-alvo da rasterização
+  tesseract_caminho: ""     # deixe vazio para procurar sozinho
+  corrigir_orientacao: true
+  corrigir_inclinacao: true
+  qualidade_jpeg: 75        # qualidade das imagens dentro dos PDFs de saída (1-100)
+
+# Quantos processos paralelos. 0 = automático (núcleos do PC menos 1).
+processos: 0
+
+# Página em branco: fração de "tinta" abaixo da qual a página é considerada vazia.
+pagina_em_branco_tinta: 0.0006
+
+# Limiares de decisão
+confianca:
+  minima_auto_separacao: 0.70   # abaixo disso o documento vai para REVISAR
+  minima_auto_categoria: 0.60
+  minima_anexar_pagina: 0.55    # abaixo disso a página vira SOLTA em vez de anexada
+
+# Nome final: TIPO_ORGAO_NUMERO_DATA.pdf
+nome:
+  formato_data: "%d%m%Y"        # DDMMAAAA
+  sem_numero: "SN"
+  sem_data: "SD"
+  sem_orgao: "SO"
+  sem_tipo: "DOC"
+  usar_processo_como_numero: true   # documentos sem número próprio (ex.: intimação) usam o nº do processo
+
+# Cópias extras
+copiar_paginas_brancas: false   # true = grava PDF das páginas em branco em SOLTOS
+limpar_cache_apos_concluir: true
+
+# Vigilância de pasta (opção --vigiar)
+vigiar:
+  intervalo_segundos: 30
+  estabilidade_segundos: 10     # arquivo precisa ficar sem mudar de tamanho por esse tempo
+
+# Status em arquivo
+status:
+  intervalo_segundos: 3
+
+# Classificador por LLM (DESLIGADO). Para ligar, defina a variável de ambiente
+# PIPELINE_LLM_CMD com o comando que lê JSON no stdin e responde JSON. Veja LEIA-ME.md.
+llm:
+  ativo: false
+  confianca_minima_para_chamar: 0.6   # só consulta o LLM quando a regra ficar abaixo disso

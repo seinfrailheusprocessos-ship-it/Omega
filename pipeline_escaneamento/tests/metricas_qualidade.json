@@ -1,0 +1,969 @@
+{
+ "parametros": {
+  "motores": [
+   "tesseract",
+   "rapidocr"
+  ],
+  "sementes": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "docs": 24,
+  "dpi": 200,
+  "saida": "tests/metricas_qualidade.json",
+  "v": false
+ },
+ "por_execucao": [
+  {
+   "docs_verdade": 25,
+   "sep_ok": 25,
+   "cat_ok": 24,
+   "nome_ok": 25,
+   "campos": {
+    "tipo": [
+     25,
+     25
+    ],
+    "orgao": [
+     21,
+     21
+    ],
+    "numero": [
+     20,
+     20
+    ],
+    "data": [
+     25,
+     25
+    ],
+    "signatario_nome": [
+     22,
+     25
+    ],
+    "signatario_cargo": [
+     22,
+     25
+    ],
+    "processo": [
+     8,
+     8
+    ],
+    "assunto": [
+     18,
+     20
+    ],
+    "destinatario": [
+     18,
+     24
+    ]
+   },
+   "erros": [
+    "S014: categoria OFICIO_MP != OFICIO_EXTERNO"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 2,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 28.6,
+   "paginas": 50,
+   "motor": "tesseract",
+   "semente": 1
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 23,
+   "cat_ok": 23,
+   "nome_ok": 23,
+   "campos": {
+    "tipo": [
+     23,
+     23
+    ],
+    "orgao": [
+     18,
+     18
+    ],
+    "numero": [
+     20,
+     20
+    ],
+    "data": [
+     23,
+     23
+    ],
+    "signatario_nome": [
+     23,
+     23
+    ],
+    "signatario_cargo": [
+     23,
+     23
+    ],
+    "processo": [
+     10,
+     10
+    ],
+    "assunto": [
+     15,
+     20
+    ],
+    "destinatario": [
+     18,
+     22
+    ]
+   },
+   "erros": [
+    "S013: separação errada (CI, CI_PGM_373-2026_24082026.pdf)",
+    "S022: separação errada (CI, CI_GAB_414-2026_13072026.pdf)"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 4,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 27.0,
+   "paginas": 51,
+   "motor": "tesseract",
+   "semente": 2
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 21,
+   "cat_ok": 21,
+   "nome_ok": 21,
+   "campos": {
+    "tipo": [
+     21,
+     21
+    ],
+    "orgao": [
+     17,
+     17
+    ],
+    "numero": [
+     19,
+     19
+    ],
+    "data": [
+     21,
+     21
+    ],
+    "signatario_nome": [
+     18,
+     21
+    ],
+    "signatario_cargo": [
+     18,
+     21
+    ],
+    "processo": [
+     6,
+     6
+    ],
+    "assunto": [
+     16,
+     19
+    ],
+    "destinatario": [
+     18,
+     20
+    ]
+   },
+   "erros": [
+    "S010: separação errada (OUTROS, DECLARACAO_SEAD_SN_02022026.pdf)",
+    "S013: separação errada (OFICIO_MP, OFICIO_PGM_264-2026_03122026.pdf)",
+    "S012: separação errada (PEDIDO_VEREADOR, REQUERIMENTO_CMI_416-2026_16092026.pdf)",
+    "S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_114-2026_23092026.pdf)"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 5,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 27.3,
+   "paginas": 47,
+   "motor": "tesseract",
+   "semente": 3
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 19,
+   "cat_ok": 19,
+   "nome_ok": 19,
+   "campos": {
+    "tipo": [
+     19,
+     19
+    ],
+    "orgao": [
+     16,
+     16
+    ],
+    "numero": [
+     17,
+     17
+    ],
+    "data": [
+     19,
+     19
+    ],
+    "signatario_nome": [
+     17,
+     19
+    ],
+    "signatario_cargo": [
+     17,
+     19
+    ],
+    "processo": [
+     5,
+     5
+    ],
+    "assunto": [
+     16,
+     17
+    ],
+    "destinatario": [
+     16,
+     18
+    ]
+   },
+   "erros": [
+    "S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_84-2026_28062026.pdf)",
+    "S014: separação errada (CI, CI_SESAU_417-2026_26062026.pdf)",
+    "S013: separação errada (OFICIO_JUSTICA, OFICIO_SESAU_415-2026_22032026.pdf)",
+    "S019: separação errada (JUSTICA, INTIMACAO_TJBA_92866141120268050103_22052026.pdf)",
+    "S018: separação errada (JUSTICA, INTIMACAO_TJBA_93945365620268050103_10112026.pdf)",
+    "S022: separação errada (OFICIO_EXTERNO, OFICIO_SEDUC_33-2026_16072026.pdf)"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 4,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 29.4,
+   "paginas": 54,
+   "motor": "tesseract",
+   "semente": 4
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 22,
+   "cat_ok": 22,
+   "nome_ok": 22,
+   "campos": {
+    "tipo": [
+     22,
+     22
+    ],
+    "orgao": [
+     16,
+     16
+    ],
+    "numero": [
+     19,
+     19
+    ],
+    "data": [
+     22,
+     22
+    ],
+    "signatario_nome": [
+     22,
+     22
+    ],
+    "signatario_cargo": [
+     22,
+     22
+    ],
+    "processo": [
+     7,
+     7
+    ],
+    "assunto": [
+     16,
+     19
+    ],
+    "destinatario": [
+     17,
+     21
+    ]
+   },
+   "erros": [
+    "S015: separação errada (JUSTICA, DESPACHO_TJBA_19827151220268050103_08012026.pdf)",
+    "S012: separação errada (JUSTICA, DESPACHO_TJBA_91812155720268050103_03102026.pdf)",
+    "S017: separação errada (CI, CI_SEMAM_74-2026_10082026.pdf)"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 5,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 28.0,
+   "paginas": 50,
+   "motor": "tesseract",
+   "semente": 5
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 15,
+   "cat_ok": 11,
+   "nome_ok": 4,
+   "campos": {
+    "tipo": [
+     13,
+     15
+    ],
+    "orgao": [
+     1,
+     12
+    ],
+    "numero": [
+     13,
+     13
+    ],
+    "data": [
+     15,
+     15
+    ],
+    "signatario_nome": [
+     0,
+     15
+    ],
+    "signatario_cargo": [
+     7,
+     15
+    ],
+    "processo": [
+     1,
+     4
+    ],
+    "assunto": [
+     11,
+     13
+    ],
+    "destinatario": [
+     4,
+     14
+    ]
+   },
+   "erros": [
+    "S001: categoria OUTROS != CI",
+    "S001: nome DOC_SO_118-2026_26122026.pdf != CI_PGM_118-2026_26122026.pdf",
+    "S002: nome OFICIO_SO_429-2026_14012026.pdf != OFICIO_SEMAM_429-2026_14012026.pdf",
+    "S003: categoria OFICIO_EXTERNO != OFICIO_MP",
+    "S003: nome OFICIO_SO_434-2026_16102026.pdf != OFICIO_SEMAM_434-2026_16102026.pdf",
+    "S004: separação errada (OFICIO_JUSTICA, OFICIO_SEDES_241-2026_01122026.pdf)",
+    "S005: separação errada (PEDIDO_VEREADOR, REQUERIMENTO_CMI_236-2026_12102026.pdf)",
+    "S006: categoria OFICIO_EXTERNO != MP",
+    "S006: nome OFICIO_SO_441-2026_06102026.pdf != OFICIO_MPBA_441-2026_06102026.pdf",
+    "S007: nome DECISAO_SO_19158021320268050103_03052026.pdf != DECISAO_TJBA_19158021320268050103_03052026.pdf",
+    "S008: separação errada (AUTORIZACAO, OFICIO_?_19-2026_05072026.pdf)",
+    "S011: separação errada (CI, CI_SEDES_346-2026_09042026.pdf)",
+    "S013: separação errada (JUSTICA, DECISAO_TJBA_18074211520268050103_18102026.pdf)",
+    "S015: separação errada (PEDIDO_VEREADOR, INDICACAO_CMI_33-2026_13062026.pdf)",
+    "S016: nome INDICACAO_SO_334-2026_03082026.pdf != INDICACAO_CMI_334-2026_03082026.pdf",
+    "S010: nome CERTIDAO_SO_SN_20122026.pdf != CERTIDAO_SEFAZ_SN_20122026.pdf",
+    "S017: nome RECOMENDACAO_SO_306-2026_26102026.pdf != RECOMENDACAO_MPBA_306-2026_26102026.pdf",
+    "S019: separação errada (CI, CI_SEMAM_280-2026_05042026.pdf)",
+    "S020: categoria OUTROS != CI",
+    "S020: nome DOC_SO_6-2026_15092026.pdf != CI_PGM_6-2026_15092026.pdf",
+    "S022: nome INDICACAO_SO_283-2026_28052026.pdf != INDICACAO_CMI_283-2026_28052026.pdf",
+    "S023: separação errada (JUSTICA, DECISAO_TJBA_27641185120268050103_27102026.pdf)",
+    "S018: separação errada (JUSTICA, INTIMACAO_TJBA_30126252920268050103_16062026.pdf)",
+    "S024: separação errada (CI, CI_SEMAM_140-2026_07092026.pdf)",
+    "S901: nome CI_SO_188-2026_22082026.pdf != CI_SEAD_188-2026_22082026.pdf"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 19,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 233.5,
+   "paginas": 50,
+   "motor": "rapidocr",
+   "semente": 1
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 13,
+   "cat_ok": 8,
+   "nome_ok": 1,
+   "campos": {
+    "tipo": [
+     11,
+     13
+    ],
+    "orgao": [
+     0,
+     12
+    ],
+    "numero": [
+     11,
+     11
+    ],
+    "data": [
+     13,
+     13
+    ],
+    "signatario_nome": [
+     2,
+     13
+    ],
+    "signatario_cargo": [
+     7,
+     13
+    ],
+    "processo": [
+     2,
+     6
+    ],
+    "assunto": [
+     7,
+     11
+    ],
+    "destinatario": [
+     3,
+     12
+    ]
+   },
+   "erros": [
+    "S001: separação errada (CI, CI_GAB_258-2026_15092026.pdf)",
+    "S002: nome OFICIO_SO_379-2026_23072026.pdf != OFICIO_SEFAZ_379-2026_23072026.pdf",
+    "S003: categoria OFICIO_EXTERNO != OFICIO_MP",
+    "S003: nome OFICIO_SO_362-2026_26052026.pdf != OFICIO_PGM_362-2026_26052026.pdf",
+    "S004: separação errada (OFICIO_JUSTICA, OFICIO_SEAD_295-2026_02022026.pdf)",
+    "S005: nome REQUERIMENTO_SO_374-2026_02012026.pdf != REQUERIMENTO_CMI_374-2026_02012026.pdf",
+    "S006: nome NOTIFICACAO_SO_230-2026_10012026.pdf != NOTIFICACAO_MPBA_230-2026_10012026.pdf",
+    "S007: nome DESPACHO_SO_38865287520268050103_20052026.pdf != DESPACHO_TJBA_38865287520268050103_20052026.pdf",
+    "S008: separação errada (AUTORIZACAO, OFICIO_?_117-2026_19022026.pdf)",
+    "S015: separação errada (AUTORIZACAO, OFICIO_?_361-2026_15032026.pdf)",
+    "S014: categoria OUTROS != CI",
+    "S014: nome DOC_SO_344-2026_23042026.pdf != CI_SEMAM_344-2026_23042026.pdf",
+    "S013: separação errada (CI, CI_PGM_373-2026_24082026.pdf)",
+    "S009: separação errada (ASSOCIACAO, OFICIO_?_238-2026_22092026.pdf)",
+    "S016: separação errada (JUSTICA, INTIMACAO_TJBA_65428498120268050103_21082026.pdf)",
+    "S010: nome CERTIDAO_SO_SN_17072026.pdf != CERTIDAO_SEDUC_SN_17072026.pdf",
+    "S012: separação errada (ASSOCIACAO, OFICIO_?_72-2026_15122026.pdf)",
+    "S017: categoria OFICIO_EXTERNO != MP",
+    "S017: nome OFICIO_SO_390-2026_07122026.pdf != OFICIO_MPBA_390-2026_07122026.pdf",
+    "S018: separação errada (OFICIO_EXTERNO, OFICIO_PGM_387-2026_20022026.pdf)",
+    "S022: separação errada (CI, CI_GAB_414-2026_13072026.pdf)",
+    "S019: categoria OFICIO_EXTERNO != MP",
+    "S019: nome OFICIO_SO_171-2026_10062026.pdf != OFICIO_MPBA_171-2026_10062026.pdf",
+    "S020: nome NOTIFICACAO_SO_58-2026_04012026.pdf != NOTIFICACAO_MPBA_58-2026_04012026.pdf",
+    "S023: nome REQUERIMENTO_SO_195-2026_11032026.pdf != REQUERIMENTO_CMI_195-2026_11032026.pdf",
+    "S021: separação errada (MP, NOTIFICACAO_MPBA_168-2026_09042026.pdf)",
+    "S024: separação errada (OFICIO_JUSTICA, OFICIO_SEAD_313-2026_24042026.pdf)",
+    "S901: categoria OUTROS != CI",
+    "S901: nome DOC_SO_268-2026_12082026.pdf != CI_PGM_268-2026_12082026.pdf"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 21,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 228.4,
+   "paginas": 51,
+   "motor": "rapidocr",
+   "semente": 2
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 16,
+   "cat_ok": 12,
+   "nome_ok": 2,
+   "campos": {
+    "tipo": [
+     16,
+     16
+    ],
+    "orgao": [
+     1,
+     14
+    ],
+    "numero": [
+     14,
+     14
+    ],
+    "data": [
+     15,
+     16
+    ],
+    "signatario_nome": [
+     3,
+     16
+    ],
+    "signatario_cargo": [
+     8,
+     16
+    ],
+    "processo": [
+     2,
+     6
+    ],
+    "assunto": [
+     11,
+     14
+    ],
+    "destinatario": [
+     3,
+     15
+    ]
+   },
+   "erros": [
+    "S001: separação errada (CI, CI_SEFAZ_445-2026_05112026.pdf)",
+    "S002: nome OFICIO_SO_345-2026_09042026.pdf != OFICIO_SEFAZ_345-2026_09042026.pdf",
+    "S003: categoria OFICIO_EXTERNO != OFICIO_MP",
+    "S003: nome OFICIO_SO_464-2026_18062026.pdf != OFICIO_SEFAZ_464-2026_18062026.pdf",
+    "S004: categoria OFICIO_EXTERNO != OFICIO_JUSTICA",
+    "S004: nome OFICIO_SO_460-2026_14022026.pdf != OFICIO_SEDES_460-2026_14022026.pdf",
+    "S005: nome INDICACAO_SO_40-2026_01052026.pdf != INDICACAO_CMI_40-2026_01052026.pdf",
+    "S006: categoria OFICIO_EXTERNO != MP",
+    "S006: nome OFICIO_SO_330-2026_13092026.pdf != OFICIO_MPBA_330-2026_13092026.pdf",
+    "S007: nome DESPACHO_SO_46795767220268050103_01062026.pdf != DESPACHO_TJBA_46795767220268050103_01062026.pdf",
+    "S014: nome RECOMENDACAO_SO_310-2026_15062026.pdf != RECOMENDACAO_MPBA_310-2026_15062026.pdf",
+    "S010: separação errada (OUTROS, DECLARACAO_SEAD_SN_02022026.pdf)",
+    "S013: separação errada (OFICIO_MP, OFICIO_PGM_264-2026_03122026.pdf)",
+    "S011: nome OFICIO_SO_114-2026_23092026.pdf != OFICIO_GAB_114-2026_23092026.pdf",
+    "S015: categoria OFICIO_EXTERNO != MP",
+    "S015: nome OFICIO_SO_139-2026_18042026.pdf != OFICIO_MPBA_139-2026_18042026.pdf",
+    "S009: nome OFICIO_ASSOCIACAODEMORA_335-2026_SD.pdf != OFICIO_?_335-2026_08092026.pdf",
+    "S016: nome CI_SO_56-2026_22072026.pdf != CI_GAB_56-2026_22072026.pdf",
+    "S019: separação errada (OFICIO_EXTERNO, OFICIO_GAB_330-2026_05082026.pdf)",
+    "S017: separação errada (CI, CI_SESAU_247-2026_22022026.pdf)",
+    "S018: separação errada (AUTORIZACAO, OFICIO_?_202-2026_25122026.pdf)",
+    "S020: separação errada (OFICIO_EXTERNO, OFICIO_SEDES_397-2026_16062026.pdf)",
+    "S021: nome DECLARACAO_SO_SN_20032026.pdf != DECLARACAO_SEMAM_SN_20032026.pdf",
+    "S022: nome REQUERIMENTO_SO_183-2026_02052026.pdf != REQUERIMENTO_CMI_183-2026_02052026.pdf",
+    "S024: separação errada (PEDIDO_VEREADOR, REQUERIMENTO_CMI_253-2026_22022026.pdf)",
+    "S023: separação errada (AUTORIZACAO, OFICIO_?_341-2026_03052026.pdf)",
+    "S901: nome CI_SO_100-2026_02082026.pdf != CI_SEDUC_100-2026_02082026.pdf"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 18,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 207.2,
+   "paginas": 47,
+   "motor": "rapidocr",
+   "semente": 3
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 7,
+   "cat_ok": 7,
+   "nome_ok": 1,
+   "campos": {
+    "tipo": [
+     7,
+     7
+    ],
+    "orgao": [
+     0,
+     6
+    ],
+    "numero": [
+     6,
+     6
+    ],
+    "data": [
+     7,
+     7
+    ],
+    "signatario_nome": [
+     0,
+     7
+    ],
+    "signatario_cargo": [
+     5,
+     7
+    ],
+    "processo": [
+     1,
+     2
+    ],
+    "assunto": [
+     5,
+     6
+    ],
+    "destinatario": [
+     1,
+     6
+    ]
+   },
+   "erros": [
+    "S001: separação errada (CI, CI_SEAD_329-2026_27012026.pdf)",
+    "S002: separação errada (OFICIO_EXTERNO, OFICIO_SEFAZ_417-2026_09052026.pdf)",
+    "S003: separação errada (OFICIO_MP, OFICIO_SEDES_464-2026_07092026.pdf)",
+    "S004: nome OFICIO_SO_196-2026_09032026.pdf != OFICIO_PGM_196-2026_09032026.pdf",
+    "S005: nome REQUERIMENTO_SO_252-2026_18012026.pdf != REQUERIMENTO_CMI_252-2026_18012026.pdf",
+    "S006: nome RECOMENDACAO_SO_131-2026_02012026.pdf != RECOMENDACAO_MPBA_131-2026_02012026.pdf",
+    "S007: separação errada (JUSTICA, DECISAO_TJBA_88587713720268050103_14022026.pdf)",
+    "S012: separação errada (CI, CI_SESAU_434-2026_14042026.pdf)",
+    "S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_84-2026_28062026.pdf)",
+    "S009: separação errada (ASSOCIACAO, OFICIO_?_132-2026_28092026.pdf)",
+    "S010: nome DECLARACAO_SO_SN_26102026.pdf != DECLARACAO_SESAU_SN_26102026.pdf",
+    "S016: separação errada (OFICIO_JUSTICA, OFICIO_GAB_199-2026_13062026.pdf)",
+    "S014: separação errada (CI, CI_SESAU_417-2026_26062026.pdf)",
+    "S013: separação errada (OFICIO_JUSTICA, OFICIO_SESAU_415-2026_22032026.pdf)",
+    "S015: separação errada (CI, CI_SEDES_276-2026_11122026.pdf)",
+    "S019: separação errada (JUSTICA, INTIMACAO_TJBA_92866141120268050103_22052026.pdf)",
+    "S018: separação errada (JUSTICA, INTIMACAO_TJBA_93945365620268050103_10112026.pdf)",
+    "S017: separação errada (ASSOCIACAO, OFICIO_?_318-2026_22102026.pdf)",
+    "S022: separação errada (OFICIO_EXTERNO, OFICIO_SEDUC_33-2026_16072026.pdf)",
+    "S020: nome CI_SO_428-2026_26062026.pdf != CI_PGM_428-2026_26062026.pdf",
+    "S021: nome REQUERIMENTO_SO_357-2026_05102026.pdf != REQUERIMENTO_CMI_357-2026_05102026.pdf",
+    "S023: separação errada (CI, CI_SESAU_312-2026_09072026.pdf)",
+    "S024: separação errada (CI, CI_SESAU_234-2026_01062026.pdf)",
+    "S901: separação errada (CI, CI_SEFAZ_326-2026_22062026.pdf)"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 27,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 247.0,
+   "paginas": 54,
+   "motor": "rapidocr",
+   "semente": 4
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 11,
+   "cat_ok": 9,
+   "nome_ok": 3,
+   "campos": {
+    "tipo": [
+     11,
+     11
+    ],
+    "orgao": [
+     1,
+     9
+    ],
+    "numero": [
+     9,
+     9
+    ],
+    "data": [
+     11,
+     11
+    ],
+    "signatario_nome": [
+     3,
+     11
+    ],
+    "signatario_cargo": [
+     6,
+     11
+    ],
+    "processo": [
+     3,
+     5
+    ],
+    "assunto": [
+     7,
+     9
+    ],
+    "destinatario": [
+     3,
+     11
+    ]
+   },
+   "erros": [
+    "S001: separação errada (CI, CI_GAB_7-2026_08102026.pdf)",
+    "S002: nome OFICIO_SO_447-2026_06042026.pdf != OFICIO_SEDUC_447-2026_06042026.pdf",
+    "S003: categoria OFICIO_EXTERNO != OFICIO_MP",
+    "S004: separação errada (OFICIO_JUSTICA, OFICIO_SEFAZ_384-2026_01052026.pdf)",
+    "S005: separação errada (PEDIDO_VEREADOR, INDICACAO_CMI_237-2026_27042026.pdf)",
+    "S006: categoria OFICIO_MP != MP",
+    "S006: nome NOTIFICACAO_SO_163-2026_22052026.pdf != NOTIFICACAO_MPBA_163-2026_22052026.pdf",
+    "S007: nome DECISAO_SO_23689846820268050103_05042026.pdf != DECISAO_TJBA_23689846820268050103_05042026.pdf",
+    "S014: separação errada (ASSOCIACAO, OFICIO_?_129-2026_16052026.pdf)",
+    "S015: separação errada (JUSTICA, DESPACHO_TJBA_19827151220268050103_08012026.pdf)",
+    "S012: separação errada (JUSTICA, DESPACHO_TJBA_91812155720268050103_03102026.pdf)",
+    "S009: separação errada (ASSOCIACAO, OFICIO_?_287-2026_12052026.pdf)",
+    "S010: separação errada (OUTROS, ATA_SEDES_SN_21052026.pdf)",
+    "S016: separação errada (ASSOCIACAO, OFICIO_?_234-2026_18052026.pdf)",
+    "S013: nome INTIMACAO_SO_82780504720268050103_11022026.pdf != INTIMACAO_TJBA_82780504720268050103_11022026.pdf",
+    "S011: separação errada (MP, NOTIFICACAO_MPBA_82-2026_07012026.pdf)",
+    "S017: separação errada (CI, CI_SEMAM_74-2026_10082026.pdf)",
+    "S018: nome INDICACAO_SO_423-2026_21102026.pdf != INDICACAO_CMI_423-2026_21102026.pdf",
+    "S019: separação errada (ASSOCIACAO, OFICIO_?_339-2026_04092026.pdf)",
+    "S020: nome RECOMENDACAO_SO_292-2026_05052026.pdf != RECOMENDACAO_MPBA_292-2026_05052026.pdf",
+    "S022: separação errada (CI, CI_SEAD_467-2026_03022026.pdf)",
+    "S023: nome INDICACAO_SO_390-2026_22082026.pdf != INDICACAO_CMI_390-2026_22082026.pdf",
+    "S024: nome OFICIO_SO_234-2026_22012026.pdf != OFICIO_SEDUC_234-2026_22012026.pdf",
+    "S901: separação errada (CI, CI_SEAD_342-2026_09042026.pdf)"
+   ],
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 19,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 223.7,
+   "paginas": 50,
+   "motor": "rapidocr",
+   "semente": 5
+  }
+ ],
+ "resumo": {
+  "tesseract": {
+   "docs": 125,
+   "paginas": 252,
+   "segundos": 140.3,
+   "separacao_ok": 110,
+   "categoria_ok": 109,
+   "nome_ok": 110,
+   "soltos_esperados": 15,
+   "soltos_acertados": 15,
+   "paginas_de_documento_viraram_solto": 20,
+   "brancas_esperadas": 10,
+   "brancas_acertadas": 10,
+   "campos": {
+    "tipo": [
+     110,
+     110
+    ],
+    "orgao": [
+     88,
+     88
+    ],
+    "numero": [
+     95,
+     95
+    ],
+    "data": [
+     110,
+     110
+    ],
+    "signatario_nome": [
+     102,
+     110
+    ],
+    "signatario_cargo": [
+     102,
+     110
+    ],
+    "processo": [
+     36,
+     36
+    ],
+    "assunto": [
+     81,
+     95
+    ],
+    "destinatario": [
+     87,
+     105
+    ]
+   },
+   "erros": [
+    "[semente 1] S014: categoria OFICIO_MP != OFICIO_EXTERNO",
+    "[semente 2] S013: separação errada (CI, CI_PGM_373-2026_24082026.pdf)",
+    "[semente 2] S022: separação errada (CI, CI_GAB_414-2026_13072026.pdf)",
+    "[semente 3] S010: separação errada (OUTROS, DECLARACAO_SEAD_SN_02022026.pdf)",
+    "[semente 3] S013: separação errada (OFICIO_MP, OFICIO_PGM_264-2026_03122026.pdf)",
+    "[semente 3] S012: separação errada (PEDIDO_VEREADOR, REQUERIMENTO_CMI_416-2026_16092026.pdf)",
+    "[semente 3] S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_114-2026_23092026.pdf)",
+    "[semente 4] S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_84-2026_28062026.pdf)",
+    "[semente 4] S014: separação errada (CI, CI_SESAU_417-2026_26062026.pdf)",
+    "[semente 4] S013: separação errada (OFICIO_JUSTICA, OFICIO_SESAU_415-2026_22032026.pdf)",
+    "[semente 4] S019: separação errada (JUSTICA, INTIMACAO_TJBA_92866141120268050103_22052026.pdf)",
+    "[semente 4] S018: separação errada (JUSTICA, INTIMACAO_TJBA_93945365620268050103_10112026.pdf)",
+    "[semente 4] S022: separação errada (OFICIO_EXTERNO, OFICIO_SEDUC_33-2026_16072026.pdf)",
+    "[semente 5] S015: separação errada (JUSTICA, DESPACHO_TJBA_19827151220268050103_08012026.pdf)",
+    "[semente 5] S012: separação errada (JUSTICA, DESPACHO_TJBA_91812155720268050103_03102026.pdf)",
+    "[semente 5] S017: separação errada (CI, CI_SEMAM_74-2026_10082026.pdf)"
+   ]
+  },
+  "rapidocr": {
+   "docs": 125,
+   "paginas": 252,
+   "segundos": 1139.8,
+   "separacao_ok": 62,
+   "categoria_ok": 47,
+   "nome_ok": 11,
+   "soltos_esperados": 15,
+   "soltos_acertados": 15,
+   "paginas_de_documento_viraram_solto": 104,
+   "brancas_esperadas": 10,
+   "brancas_acertadas": 10,
+   "campos": {
+    "tipo": [
+     58,
+     62
+    ],
+    "orgao": [
+     3,
+     53
+    ],
+    "numero": [
+     53,
+     53
+    ],
+    "data": [
+     61,
+     62
+    ],
+    "signatario_nome": [
+     8,
+     62
+    ],
+    "signatario_cargo": [
+     33,
+     62
+    ],
+    "processo": [
+     9,
+     23
+    ],
+    "assunto": [
+     41,
+     53
+    ],
+    "destinatario": [
+     14,
+     58
+    ]
+   },
+   "erros": [
+    "[semente 1] S001: categoria OUTROS != CI",
+    "[semente 1] S001: nome DOC_SO_118-2026_26122026.pdf != CI_PGM_118-2026_26122026.pdf",
+    "[semente 1] S002: nome OFICIO_SO_429-2026_14012026.pdf != OFICIO_SEMAM_429-2026_14012026.pdf",
+    "[semente 1] S003: categoria OFICIO_EXTERNO != OFICIO_MP",
+    "[semente 1] S003: nome OFICIO_SO_434-2026_16102026.pdf != OFICIO_SEMAM_434-2026_16102026.pdf",
+    "[semente 1] S004: separação errada (OFICIO_JUSTICA, OFICIO_SEDES_241-2026_01122026.pdf)",
+    "[semente 1] S005: separação errada (PEDIDO_VEREADOR, REQUERIMENTO_CMI_236-2026_12102026.pdf)",
+    "[semente 1] S006: categoria OFICIO_EXTERNO != MP",
+    "[semente 1] S006: nome OFICIO_SO_441-2026_06102026.pdf != OFICIO_MPBA_441-2026_06102026.pdf",
+    "[semente 1] S007: nome DECISAO_SO_19158021320268050103_03052026.pdf != DECISAO_TJBA_19158021320268050103_03052026.pdf",
+    "[semente 1] S008: separação errada (AUTORIZACAO, OFICIO_?_19-2026_05072026.pdf)",
+    "[semente 1] S011: separação errada (CI, CI_SEDES_346-2026_09042026.pdf)",
+    "[semente 1] S013: separação errada (JUSTICA, DECISAO_TJBA_18074211520268050103_18102026.pdf)",
+    "[semente 1] S015: separação errada (PEDIDO_VEREADOR, INDICACAO_CMI_33-2026_13062026.pdf)",
+    "[semente 1] S016: nome INDICACAO_SO_334-2026_03082026.pdf != INDICACAO_CMI_334-2026_03082026.pdf",
+    "[semente 1] S010: nome CERTIDAO_SO_SN_20122026.pdf != CERTIDAO_SEFAZ_SN_20122026.pdf",
+    "[semente 1] S017: nome RECOMENDACAO_SO_306-2026_26102026.pdf != RECOMENDACAO_MPBA_306-2026_26102026.pdf",
+    "[semente 1] S019: separação errada (CI, CI_SEMAM_280-2026_05042026.pdf)",
+    "[semente 1] S020: categoria OUTROS != CI",
+    "[semente 1] S020: nome DOC_SO_6-2026_15092026.pdf != CI_PGM_6-2026_15092026.pdf",
+    "[semente 1] S022: nome INDICACAO_SO_283-2026_28052026.pdf != INDICACAO_CMI_283-2026_28052026.pdf",
+    "[semente 1] S023: separação errada (JUSTICA, DECISAO_TJBA_27641185120268050103_27102026.pdf)",
+    "[semente 1] S018: separação errada (JUSTICA, INTIMACAO_TJBA_30126252920268050103_16062026.pdf)",
+    "[semente 1] S024: separação errada (CI, CI_SEMAM_140-2026_07092026.pdf)",
+    "[semente 1] S901: nome CI_SO_188-2026_22082026.pdf != CI_SEAD_188-2026_22082026.pdf",
+    "[semente 2] S001: separação errada (CI, CI_GAB_258-2026_15092026.pdf)",
+    "[semente 2] S002: nome OFICIO_SO_379-2026_23072026.pdf != OFICIO_SEFAZ_379-2026_23072026.pdf",
+    "[semente 2] S003: categoria OFICIO_EXTERNO != OFICIO_MP",
+    "[semente 2] S003: nome OFICIO_SO_362-2026_26052026.pdf != OFICIO_PGM_362-2026_26052026.pdf",
+    "[semente 2] S004: separação errada (OFICIO_JUSTICA, OFICIO_SEAD_295-2026_02022026.pdf)",
+    "[semente 2] S005: nome REQUERIMENTO_SO_374-2026_02012026.pdf != REQUERIMENTO_CMI_374-2026_02012026.pdf",
+    "[semente 2] S006: nome NOTIFICACAO_SO_230-2026_10012026.pdf != NOTIFICACAO_MPBA_230-2026_10012026.pdf",
+    "[semente 2] S007: nome DESPACHO_SO_38865287520268050103_20052026.pdf != DESPACHO_TJBA_38865287520268050103_20052026.pdf",
+    "[semente 2] S008: separação errada (AUTORIZACAO, OFICIO_?_117-2026_19022026.pdf)",
+    "[semente 2] S015: separação errada (AUTORIZACAO, OFICIO_?_361-2026_15032026.pdf)",
+    "[semente 2] S014: categoria OUTROS != CI",
+    "[semente 2] S014: nome DOC_SO_344-2026_23042026.pdf != CI_SEMAM_344-2026_23042026.pdf",
+    "[semente 2] S013: separação errada (CI, CI_PGM_373-2026_24082026.pdf)",
+    "[semente 2] S009: separação errada (ASSOCIACAO, OFICIO_?_238-2026_22092026.pdf)",
+    "[semente 2] S016: separação errada (JUSTICA, INTIMACAO_TJBA_65428498120268050103_21082026.pdf)",
+    "[semente 2] S010: nome CERTIDAO_SO_SN_17072026.pdf != CERTIDAO_SEDUC_SN_17072026.pdf",
+    "[semente 2] S012: separação errada (ASSOCIACAO, OFICIO_?_72-2026_15122026.pdf)",
+    "[semente 2] S017: categoria OFICIO_EXTERNO != MP",
+    "[semente 2] S017: nome OFICIO_SO_390-2026_07122026.pdf != OFICIO_MPBA_390-2026_07122026.pdf",
+    "[semente 2] S018: separação errada (OFICIO_EXTERNO, OFICIO_PGM_387-2026_20022026.pdf)",
+    "[semente 2] S022: separação errada (CI, CI_GAB_414-2026_13072026.pdf)",
+    "[semente 2] S019: categoria OFICIO_EXTERNO != MP",
+    "[semente 2] S019: nome OFICIO_SO_171-2026_10062026.pdf != OFICIO_MPBA_171-2026_10062026.pdf",
+    "[semente 2] S020: nome NOTIFICACAO_SO_58-2026_04012026.pdf != NOTIFICACAO_MPBA_58-2026_04012026.pdf",
+    "[semente 2] S023: nome REQUERIMENTO_SO_195-2026_11032026.pdf != REQUERIMENTO_CMI_195-2026_11032026.pdf",
+    "[semente 2] S021: separação errada (MP, NOTIFICACAO_MPBA_168-2026_09042026.pdf)",
+    "[semente 2] S024: separação errada (OFICIO_JUSTICA, OFICIO_SEAD_313-2026_24042026.pdf)",
+    "[semente 2] S901: categoria OUTROS != CI",
+    "[semente 2] S901: nome DOC_SO_268-2026_12082026.pdf != CI_PGM_268-2026_12082026.pdf",
+    "[semente 3] S001: separação errada (CI, CI_SEFAZ_445-2026_05112026.pdf)",
+    "[semente 3] S002: nome OFICIO_SO_345-2026_09042026.pdf != OFICIO_SEFAZ_345-2026_09042026.pdf",
+    "[semente 3] S003: categoria OFICIO_EXTERNO != OFICIO_MP",
+    "[semente 3] S003: nome OFICIO_SO_464-2026_18062026.pdf != OFICIO_SEFAZ_464-2026_18062026.pdf",
+    "[semente 3] S004: categoria OFICIO_EXTERNO != OFICIO_JUSTICA",
+    "[semente 3] S004: nome OFICIO_SO_460-2026_14022026.pdf != OFICIO_SEDES_460-2026_14022026.pdf",
+    "[semente 3] S005: nome INDICACAO_SO_40-2026_01052026.pdf != INDICACAO_CMI_40-2026_01052026.pdf",
+    "[semente 3] S006: categoria OFICIO_EXTERNO != MP",
+    "[semente 3] S006: nome OFICIO_SO_330-2026_13092026.pdf != OFICIO_MPBA_330-2026_13092026.pdf",
+    "[semente 3] S007: nome DESPACHO_SO_46795767220268050103_01062026.pdf != DESPACHO_TJBA_46795767220268050103_01062026.pdf",
+    "[semente 3] S014: nome RECOMENDACAO_SO_310-2026_15062026.pdf != RECOMENDACAO_MPBA_310-2026_15062026.pdf",
+    "[semente 3] S010: separação errada (OUTROS, DECLARACAO_SEAD_SN_02022026.pdf)",
+    "[semente 3] S013: separação errada (OFICIO_MP, OFICIO_PGM_264-2026_03122026.pdf)",
+    "[semente 3] S011: nome OFICIO_SO_114-2026_23092026.pdf != OFICIO_GAB_114-2026_23092026.pdf",
+    "[semente 3] S015: categoria OFICIO_EXTERNO != MP",
+    "[semente 3] S015: nome OFICIO_SO_139-2026_18042026.pdf != OFICIO_MPBA_139-2026_18042026.pdf",
+    "[semente 3] S009: nome OFICIO_ASSOCIACAODEMORA_335-2026_SD.pdf != OFICIO_?_335-2026_08092026.pdf",
+    "[semente 3] S016: nome CI_SO_56-2026_22072026.pdf != CI_GAB_56-2026_22072026.pdf",
+    "[semente 3] S019: separação errada (OFICIO_EXTERNO, OFICIO_GAB_330-2026_05082026.pdf)",
+    "[semente 3] S017: separação errada (CI, CI_SESAU_247-2026_22022026.pdf)",
+    "[semente 3] S018: separação errada (AUTORIZACAO, OFICIO_?_202-2026_25122026.pdf)",
+    "[semente 3] S020: separação errada (OFICIO_EXTERNO, OFICIO_SEDES_397-2026_16062026.pdf)",
+    "[semente 3] S021: nome DECLARACAO_SO_SN_20032026.pdf != DECLARACAO_SEMAM_SN_20032026.pdf",
+    "[semente 3] S022: nome REQUERIMENTO_SO_183-2026_02052026.pdf != REQUERIMENTO_CMI_183-2026_02052026.pdf",
+    "[semente 3] S024: separação errada (PEDIDO_VEREADOR, REQUERIMENTO_CMI_253-2026_22022026.pdf)",
+    "[semente 3] S023: separação errada (AUTORIZACAO, OFICIO_?_341-2026_03052026.pdf)",
+    "[semente 3] S901: nome CI_SO_100-2026_02082026.pdf != CI_SEDUC_100-2026_02082026.pdf",
+    "[semente 4] S001: separação errada (CI, CI_SEAD_329-2026_27012026.pdf)",
+    "[semente 4] S002: separação errada (OFICIO_EXTERNO, OFICIO_SEFAZ_417-2026_09052026.pdf)",
+    "[semente 4] S003: separação errada (OFICIO_MP, OFICIO_SEDES_464-2026_07092026.pdf)",
+    "[semente 4] S004: nome OFICIO_SO_196-2026_09032026.pdf != OFICIO_PGM_196-2026_09032026.pdf",
+    "[semente 4] S005: nome REQUERIMENTO_SO_252-2026_18012026.pdf != REQUERIMENTO_CMI_252-2026_18012026.pdf",
+    "[semente 4] S006: nome RECOMENDACAO_SO_131-2026_02012026.pdf != RECOMENDACAO_MPBA_131-2026_02012026.pdf",
+    "[semente 4] S007: separação errada (JUSTICA, DECISAO_TJBA_88587713720268050103_14022026.pdf)",
+    "[semente 4] S012: separação errada (CI, CI_SESAU_434-2026_14042026.pdf)",
+    "[semente 4] S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_84-2026_28062026.pdf)",
+    "[semente 4] S009: separação errada (ASSOCIACAO, OFICIO_?_132-2026_28092026.pdf)",
+    "[semente 4] S010: nome DECLARACAO_SO_SN_26102026.pdf != DECLARACAO_SESAU_SN_26102026.pdf",
+    "[semente 4] S016: separação errada (OFICIO_JUSTICA, OFICIO_GAB_199-2026_13062026.pdf)",
+    "[semente 4] S014: separação errada (CI, CI_SESAU_417-2026_26062026.pdf)",
+    "[semente 4] S013: separação errada (OFICIO_JUSTICA, OFICIO_SESAU_415-2026_22032026.pdf)",
+    "[semente 4] S015: separação errada (CI, CI_SEDES_276-2026_11122026.pdf)",
+    "[semente 4] S019: separação errada (JUSTICA, INTIMACAO_TJBA_92866141120268050103_22052026.pdf)",
+    "[semente 4] S018: separação errada (JUSTICA, INTIMACAO_TJBA_93945365620268050103_10112026.pdf)",
+    "[semente 4] S017: separação errada (ASSOCIACAO, OFICIO_?_318-2026_22102026.pdf)",
+    "[semente 4] S022: separação errada (OFICIO_EXTERNO, OFICIO_SEDUC_33-2026_16072026.pdf)",
+    "[semente 4] S020: nome CI_SO_428-2026_26062026.pdf != CI_PGM_428-2026_26062026.pdf",
+    "[semente 4] S021: nome REQUERIMENTO_SO_357-2026_05102026.pdf != REQUERIMENTO_CMI_357-2026_05102026.pdf",
+    "[semente 4] S023: separação errada (CI, CI_SESAU_312-2026_09072026.pdf)",
+    "[semente 4] S024: separação errada (CI, CI_SESAU_234-2026_01062026.pdf)",
+    "[semente 4] S901: separação errada (CI, CI_SEFAZ_326-2026_22062026.pdf)",
+    "[semente 5] S001: separação errada (CI, CI_GAB_7-2026_08102026.pdf)",
+    "[semente 5] S002: nome OFICIO_SO_447-2026_06042026.pdf != OFICIO_SEDUC_447-2026_06042026.pdf",
+    "[semente 5] S003: categoria OFICIO_EXTERNO != OFICIO_MP",
+    "[semente 5] S004: separação errada (OFICIO_JUSTICA, OFICIO_SEFAZ_384-2026_01052026.pdf)",
+    "[semente 5] S005: separação errada (PEDIDO_VEREADOR, INDICACAO_CMI_237-2026_27042026.pdf)",
+    "[semente 5] S006: categoria OFICIO_MP != MP",
+    "[semente 5] S006: nome NOTIFICACAO_SO_163-2026_22052026.pdf != NOTIFICACAO_MPBA_163-2026_22052026.pdf",
+    "[semente 5] S007: nome DECISAO_SO_23689846820268050103_05042026.pdf != DECISAO_TJBA_23689846820268050103_05042026.pdf",
+    "[semente 5] S014: separação errada (ASSOCIACAO, OFICIO_?_129-2026_16052026.pdf)",
+    "[semente 5] S015: separação errada (JUSTICA, DESPACHO_TJBA_19827151220268050103_08012026.pdf)",
+    "[semente 5] S012: separação errada (JUSTICA, DESPACHO_TJBA_91812155720268050103_03102026.pdf)",
+    "[semente 5] S009: separação errada (ASSOCIACAO, OFICIO_?_287-2026_12052026.pdf)",
+    "[semente 5] S010: separação errada (OUTROS, ATA_SEDES_SN_21052026.pdf)",
+    "[semente 5] S016: separação errada (ASSOCIACAO, OFICIO_?_234-2026_18052026.pdf)",
+    "[semente 5] S013: nome INTIMACAO_SO_82780504720268050103_11022026.pdf != INTIMACAO_TJBA_82780504720268050103_11022026.pdf",
+    "[semente 5] S011: separação errada (MP, NOTIFICACAO_MPBA_82-2026_07012026.pdf)",
+    "[semente 5] S017: separação errada (CI, CI_SEMAM_74-2026_10082026.pdf)",
+    "[semente 5] S018: nome INDICACAO_SO_423-2026_21102026.pdf != INDICACAO_CMI_423-2026_21102026.pdf",
+    "[semente 5] S019: separação errada (ASSOCIACAO, OFICIO_?_339-2026_04092026.pdf)",
+    "[semente 5] S020: nome RECOMENDACAO_SO_292-2026_05052026.pdf != RECOMENDACAO_MPBA_292-2026_05052026.pdf",
+    "[semente 5] S022: separação errada (CI, CI_SEAD_467-2026_03022026.pdf)",
+    "[semente 5] S023: nome INDICACAO_SO_390-2026_22082026.pdf != INDICACAO_CMI_390-2026_22082026.pdf",
+    "[semente 5] S024: nome OFICIO_SO_234-2026_22012026.pdf != OFICIO_SEDUC_234-2026_22012026.pdf",
+    "[semente 5] S901: separação errada (CI, CI_SEAD_342-2026_09042026.pdf)"
+   ]
+  }
+ }
+}

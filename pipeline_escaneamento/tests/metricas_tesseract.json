@@ -1,0 +1,406 @@
+{
+ "parametros": {
+  "motores": [
+   "tesseract"
+  ],
+  "sementes": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "docs": 24,
+  "dpi": 200,
+  "saida": "tests/metricas_tesseract.json",
+  "v": false
+ },
+ "por_execucao": [
+  {
+   "docs_verdade": 25,
+   "sep_ok": 25,
+   "cat_ok": 24,
+   "nome_ok": 25,
+   "campos": {
+    "tipo": [
+     25,
+     25
+    ],
+    "orgao": [
+     21,
+     21
+    ],
+    "numero": [
+     20,
+     20
+    ],
+    "data": [
+     25,
+     25
+    ],
+    "signatario_nome": [
+     22,
+     25
+    ],
+    "signatario_cargo": [
+     22,
+     25
+    ],
+    "processo": [
+     8,
+     8
+    ],
+    "assunto": [
+     18,
+     20
+    ],
+    "destinatario": [
+     18,
+     24
+    ]
+   },
+   "erros": [
+    "S014: categoria OFICIO_MP != OFICIO_EXTERNO"
+   ],
+   "auto_total": 23,
+   "revisar_total": 2,
+   "auto_com_separacao_errada": 0,
+   "auto_com_categoria_errada": 0,
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 2,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 28.6,
+   "paginas": 50,
+   "motor": "tesseract",
+   "semente": 1
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 23,
+   "cat_ok": 23,
+   "nome_ok": 23,
+   "campos": {
+    "tipo": [
+     23,
+     23
+    ],
+    "orgao": [
+     18,
+     18
+    ],
+    "numero": [
+     20,
+     20
+    ],
+    "data": [
+     23,
+     23
+    ],
+    "signatario_nome": [
+     23,
+     23
+    ],
+    "signatario_cargo": [
+     23,
+     23
+    ],
+    "processo": [
+     10,
+     10
+    ],
+    "assunto": [
+     15,
+     20
+    ],
+    "destinatario": [
+     18,
+     22
+    ]
+   },
+   "erros": [
+    "S013: separação errada (CI, CI_PGM_373-2026_24082026.pdf)",
+    "S022: separação errada (CI, CI_GAB_414-2026_13072026.pdf)"
+   ],
+   "auto_total": 23,
+   "revisar_total": 2,
+   "auto_com_separacao_errada": 1,
+   "auto_com_categoria_errada": 0,
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 4,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 27.8,
+   "paginas": 51,
+   "motor": "tesseract",
+   "semente": 2
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 21,
+   "cat_ok": 21,
+   "nome_ok": 21,
+   "campos": {
+    "tipo": [
+     21,
+     21
+    ],
+    "orgao": [
+     17,
+     17
+    ],
+    "numero": [
+     19,
+     19
+    ],
+    "data": [
+     21,
+     21
+    ],
+    "signatario_nome": [
+     18,
+     21
+    ],
+    "signatario_cargo": [
+     18,
+     21
+    ],
+    "processo": [
+     6,
+     6
+    ],
+    "assunto": [
+     16,
+     19
+    ],
+    "destinatario": [
+     18,
+     20
+    ]
+   },
+   "erros": [
+    "S010: separação errada (OUTROS, DECLARACAO_SEAD_SN_02022026.pdf)",
+    "S013: separação errada (OFICIO_MP, OFICIO_PGM_264-2026_03122026.pdf)",
+    "S012: separação errada (PEDIDO_VEREADOR, REQUERIMENTO_CMI_416-2026_16092026.pdf)",
+    "S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_114-2026_23092026.pdf)"
+   ],
+   "auto_total": 21,
+   "revisar_total": 4,
+   "auto_com_separacao_errada": 1,
+   "auto_com_categoria_errada": 0,
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 5,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 26.6,
+   "paginas": 47,
+   "motor": "tesseract",
+   "semente": 3
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 19,
+   "cat_ok": 19,
+   "nome_ok": 19,
+   "campos": {
+    "tipo": [
+     19,
+     19
+    ],
+    "orgao": [
+     16,
+     16
+    ],
+    "numero": [
+     17,
+     17
+    ],
+    "data": [
+     19,
+     19
+    ],
+    "signatario_nome": [
+     17,
+     19
+    ],
+    "signatario_cargo": [
+     17,
+     19
+    ],
+    "processo": [
+     5,
+     5
+    ],
+    "assunto": [
+     16,
+     17
+    ],
+    "destinatario": [
+     16,
+     18
+    ]
+   },
+   "erros": [
+    "S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_84-2026_28062026.pdf)",
+    "S014: separação errada (CI, CI_SESAU_417-2026_26062026.pdf)",
+    "S013: separação errada (OFICIO_JUSTICA, OFICIO_SESAU_415-2026_22032026.pdf)",
+    "S019: separação errada (JUSTICA, INTIMACAO_TJBA_92866141120268050103_22052026.pdf)",
+    "S018: separação errada (JUSTICA, INTIMACAO_TJBA_93945365620268050103_10112026.pdf)",
+    "S022: separação errada (OFICIO_EXTERNO, OFICIO_SEDUC_33-2026_16072026.pdf)"
+   ],
+   "auto_total": 22,
+   "revisar_total": 4,
+   "auto_com_separacao_errada": 4,
+   "auto_com_categoria_errada": 0,
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 4,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 30.3,
+   "paginas": 54,
+   "motor": "tesseract",
+   "semente": 4
+  },
+  {
+   "docs_verdade": 25,
+   "sep_ok": 22,
+   "cat_ok": 22,
+   "nome_ok": 22,
+   "campos": {
+    "tipo": [
+     22,
+     22
+    ],
+    "orgao": [
+     16,
+     16
+    ],
+    "numero": [
+     19,
+     19
+    ],
+    "data": [
+     22,
+     22
+    ],
+    "signatario_nome": [
+     22,
+     22
+    ],
+    "signatario_cargo": [
+     22,
+     22
+    ],
+    "processo": [
+     7,
+     7
+    ],
+    "assunto": [
+     16,
+     19
+    ],
+    "destinatario": [
+     17,
+     21
+    ]
+   },
+   "erros": [
+    "S015: separação errada (JUSTICA, DESPACHO_TJBA_19827151220268050103_08012026.pdf)",
+    "S012: separação errada (JUSTICA, DESPACHO_TJBA_91812155720268050103_03102026.pdf)",
+    "S017: separação errada (CI, CI_SEMAM_74-2026_10082026.pdf)"
+   ],
+   "auto_total": 22,
+   "revisar_total": 3,
+   "auto_com_separacao_errada": 1,
+   "auto_com_categoria_errada": 0,
+   "soltos_esperados": 3,
+   "soltos_acertados": 3,
+   "soltos_indevidos": 5,
+   "brancas_esperadas": 2,
+   "brancas_acertadas": 2,
+   "segundos": 27.8,
+   "paginas": 50,
+   "motor": "tesseract",
+   "semente": 5
+  }
+ ],
+ "resumo": {
+  "tesseract": {
+   "docs": 125,
+   "paginas": 252,
+   "segundos": 141.1,
+   "separacao_ok": 110,
+   "categoria_ok": 109,
+   "nome_ok": 110,
+   "soltos_esperados": 15,
+   "soltos_acertados": 15,
+   "paginas_de_documento_viraram_solto": 20,
+   "brancas_esperadas": 10,
+   "brancas_acertadas": 10,
+   "campos": {
+    "tipo": [
+     110,
+     110
+    ],
+    "orgao": [
+     88,
+     88
+    ],
+    "numero": [
+     95,
+     95
+    ],
+    "data": [
+     110,
+     110
+    ],
+    "signatario_nome": [
+     102,
+     110
+    ],
+    "signatario_cargo": [
+     102,
+     110
+    ],
+    "processo": [
+     36,
+     36
+    ],
+    "assunto": [
+     81,
+     95
+    ],
+    "destinatario": [
+     87,
+     105
+    ]
+   },
+   "auto_total": 111,
+   "revisar_total": 15,
+   "auto_com_separacao_errada": 7,
+   "auto_com_categoria_errada": 0,
+   "erros": [
+    "[semente 1] S014: categoria OFICIO_MP != OFICIO_EXTERNO",
+    "[semente 2] S013: separação errada (CI, CI_PGM_373-2026_24082026.pdf)",
+    "[semente 2] S022: separação errada (CI, CI_GAB_414-2026_13072026.pdf)",
+    "[semente 3] S010: separação errada (OUTROS, DECLARACAO_SEAD_SN_02022026.pdf)",
+    "[semente 3] S013: separação errada (OFICIO_MP, OFICIO_PGM_264-2026_03122026.pdf)",
+    "[semente 3] S012: separação errada (PEDIDO_VEREADOR, REQUERIMENTO_CMI_416-2026_16092026.pdf)",
+    "[semente 3] S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_114-2026_23092026.pdf)",
+    "[semente 4] S011: separação errada (OFICIO_EXTERNO, OFICIO_GAB_84-2026_28062026.pdf)",
+    "[semente 4] S014: separação errada (CI, CI_SESAU_417-2026_26062026.pdf)",
+    "[semente 4] S013: separação errada (OFICIO_JUSTICA, OFICIO_SESAU_415-2026_22032026.pdf)",
+    "[semente 4] S019: separação errada (JUSTICA, INTIMACAO_TJBA_92866141120268050103_22052026.pdf)",
+    "[semente 4] S018: separação errada (JUSTICA, INTIMACAO_TJBA_93945365620268050103_10112026.pdf)",
+    "[semente 4] S022: separação errada (OFICIO_EXTERNO, OFICIO_SEDUC_33-2026_16072026.pdf)",
+    "[semente 5] S015: separação errada (JUSTICA, DESPACHO_TJBA_19827151220268050103_08012026.pdf)",
+    "[semente 5] S012: separação errada (JUSTICA, DESPACHO_TJBA_91812155720268050103_03102026.pdf)",
+    "[semente 5] S017: separação errada (CI, CI_SEMAM_74-2026_10082026.pdf)"
+   ]
+  }
+ }
+}

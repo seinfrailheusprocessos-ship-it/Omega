@@ -1,0 +1,34 @@
+# ============================================================================
+#  SIGLAS DOS ÓRGÃOS (editável)
+#  "padrao" é procurado no cabeçalho (MAIÚSCULAS, sem acento). A primeira da lista que
+#  bater vence, então coloque os mais específicos primeiro.
+#  Órgão que não aparece aqui ganha uma sigla provisória e é anotado em
+#  _CATALOGO\orgaos_novos.csv para você revisar e acrescentar abaixo.
+# ============================================================================
+orgaos:
+  - {sigla: SEINFRA, padrao: 'INFRAESTRUTURA( E DEFESA CIVIL)?|SEINFRA'}
+  - {sigla: SEDUC,   padrao: 'SECRETARIA MUNICIPAL DE EDUCACAO|SEDUC'}
+  - {sigla: SESAU,   padrao: 'SECRETARIA MUNICIPAL DE SAUDE|SESAU'}
+  - {sigla: SEFAZ,   padrao: 'SECRETARIA MUNICIPAL DE FAZENDA|SEFAZ'}
+  - {sigla: SEAD,    padrao: 'SECRETARIA MUNICIPAL DE ADMINISTRACAO|SEAD\b'}
+  - {sigla: SEMAM,   padrao: 'MEIO AMBIENTE|SEMAM'}
+  - {sigla: SEDES,   padrao: 'DESENVOLVIMENTO SOCIAL|ASSISTENCIA SOCIAL|SEDES'}
+  - {sigla: SETUR,   padrao: 'SECRETARIA MUNICIPAL DE TURISMO|SETUR'}
+  - {sigla: SEPLAN,  padrao: 'PLANEJAMENTO|SEPLAN'}
+  - {sigla: PGM,     padrao: 'PROCURADORIA GERAL DO MUNICIPIO|PROCURADORIA-GERAL|\bPGM\b'}
+  - {sigla: CGM,     padrao: 'CONTROLADORIA GERAL|CONTROLADORIA-GERAL|\bCGM\b'}
+  - {sigla: GAB,     padrao: 'GABINETE DO PREFEITO|GABINETE DO CHEFE'}
+  - {sigla: CMI,     padrao: 'CAMARA MUNICIPAL DE ILHEUS|CAMARA DE VEREADORES DE ILHEUS|CAMARA MUNICIPAL'}
+  - {sigla: MPBA,    padrao: 'MINISTERIO PUBLICO DO ESTADO DA BAHIA|MINISTERIO PUBLICO'}
+  - {sigla: TJBA,    padrao: 'TRIBUNAL DE JUSTICA DO ESTADO DA BAHIA|PODER JUDICIARIO DO ESTADO DA BAHIA|PODER JUDICIARIO'}
+  - {sigla: COELBA,  padrao: 'COELBA|COMPANHIA DE ELETRICIDADE DO ESTADO DA BAHIA'}
+  - {sigla: EMBASA,  padrao: 'EMBASA|EMPRESA BAIANA DE AGUAS'}
+  # Prefeitura sem secretaria identificada:
+  - {sigla: PMI,     padrao: 'PREFEITURA MUNICIPAL DE ILHEUS'}
+
+# Palavras que indicam que uma linha do topo é nome de entidade (para sigla provisória)
+indicadores_entidade: ['ASSOCIACAO', 'COMPANHIA', 'EMPRESA', 'LTDA', 'EIRELI', 'S/A', 'SINDICATO',
+                       'CONSTRUTORA', 'INSTITUTO', 'FUNDACAO', 'COOPERATIVA', 'CONSORCIO',
+                       'CONSELHO', 'FEDERACAO', 'ENGENHARIA', 'SERVICOS', 'COMERCIO']
+palavras_ignoradas_sigla: ['DE', 'DA', 'DO', 'DAS', 'DOS', 'E', 'LTDA', 'EIRELI', 'ME', 'S/A', 'SA',
+                           'EMPRESA', 'COMPANHIA']
