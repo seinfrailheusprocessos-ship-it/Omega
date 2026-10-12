@@ -3,3 +3,4 @@ dados/relatorio.json
 dados/estado.json
 dados/*.local.json
 node_modules/
+dados/config.json

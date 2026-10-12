@@ -41,3 +41,25 @@
 - **Copiar tudo e enviar**: "tudo" = suas decisões (formato da seção 10) + relatório completo. O Claude não recebe texto pelo endereço de uma conversa existente (só em `claude.ai/new?q=`, que tem limite de tamanho), então o app copia, abre a conversa e avisa para colar.
 - **Preservado da v2**: PWA, três temas, painel de escolhas, modo Texto, revisor, áudio, servidor local, `.gitignore` dos dados reais, ajuste de colunas, larguras e alinhamentos.
 - **Decisões em aberto da v2** continuam como estavam (celular+PC em sincronia fica no BACKLOG; revisor sem LanguageTool; marcações da v1 não importadas).
+
+---
+# Versão 3.1 (pedido por voz de 12/10/2026, sobre os prints do Claude Docs)
+- **Nome sem acento**: "Omega" em tudo (tela, título, manifesto, texto copiado `[OMEGA] …`). Sem "central de comando".
+- **Relatório em tabela de linhas transparentes** (Item | O que fazer | Depende de | Bloqueia | Escolha), como a Parte 2 do PDF. Tabelas reais e os documentos de texto (DFD, ETP…) têm linhas visíveis, como no Word.
+- **Texto justificado**: parágrafos, "O que fazer" e colunas longas de tabelas reais (média acima de 45 caracteres). Colunas curtas ficam à esquerda; números/datas à direita. Dá para trocar por coluna.
+- **Caixinha com Tab/Espaço/setas** no lugar do painel lateral: o dropdown abre colado na caixinha (folha de baixo no celular), com "Procurar ou adicionar opção…", pontos coloridos e ✓ na atual, como no print. **Escrever uma opção nova** substitui o antigo "Outro…". Só os chips (e os parágrafos dos documentos) recebem Tab; botões auxiliares ficam fora do Tab de propósito.
+- **Comentário** é independente da escolha (campo na mesma caixa; Enter salva só o comentário). O ditado 🎙 da caixa escreve no comentário.
+- **Depois de escolher**, o foco fica na mesma caixinha (Tab vai para a próxima). "Ir para o próximo pendente" é ajuste opcional, desligado.
+- **Item "Feito" não sai mais do lugar** (isso era meu; no manual quem move para "Já feito" é o Claude na leva seguinte).
+- **Documentos em campos**: Tab passa por parágrafo e caixinha (Pendente/Aprovado/Ajustar); Enter/F2 reescreve; a caixinha **Capítulo** aprova o capítulo inteiro (sai como uma linha "Todo o capítulo [Aprovado]"). O "toque na bolinha" da v2 foi trocado pela caixinha.
+- **Copiar relatório** leva só o que você decidiu/alterou/comentou (`1.4.7 [Feito] — comentário: …`), com o rótulo `[OMEGA] 1 Exemplo Geral · relatório … rev …`.
+- **Busca na lateral** (número, palavras ou nome do objeto) no lugar das categorias; "/" ou Ctrl+K foca nela. Com servidor e pastas liberadas, busca pastas/arquivos do computador. A frase sobre rolagem da lateral veio cortada; não implementei sumário com rolagem. Diga se era isso.
+- **Claude em linha removido**: tirei a barrinha flutuante de selecionar trecho. Ficam só os atalhos que abrem conversa nova e o fluxo de relatório (copiar e colar). "Revisar no Gemini" continua no parágrafo.
+- **Revisar tudo** (cada documento): lista todos os problemas, aceita sugestões uma a uma e corrige espaços/pontuação de uma vez.
+- **Pastas do computador**: o navegador não lê o disco; quem lê é o `servidor.js`, só para pedidos do próprio computador, só nas pastas de `dados/config.json`. Mostra PDF/imagem/txt; Word/Excel abrem no Explorador. Não funciona pelo celular (de propósito, para não expor o PC na rede).
+- **Visualizar impressão** (folha A4) e **imprimir/salvar PDF** pelo navegador (usa as impressoras do Windows, inclusive as da prefeitura se estiverem instaladas). **Abrir PDF** de qualquer pasta para ler/imprimir.
+- **Novo documento** em branco (ofício, nota técnica, CI, despacho, anexo) só com a estrutura e "Nome do Signatário / Cargo do Signatário"; texto jurídico quem escreve é você ou o Claude pelo relatório.
+- **Carimbo e numeração de páginas**: não coloquei. Pesaria o Omega e já existe na skill de licitações; o caminho é o Claude gerar o PDF carimbado e o Omega abrir/imprimir (Abrir PDF ou Pastas). Se quiser, vira a próxima etapa.
+- **Editor de PDF / "mesa de PDF"**: não feito (só ler e imprimir). Está no BACKLOG.
+- **Salvamento**: continua automático a cada toque (navegador e, com o servidor, `dados/estado.json`).
+- **Tema padrão** agora é o "Mais escuro" (como nos seus prints novos); troca na lateral.

@@ -1,6 +1,6 @@
 {
-  "name": "Ômega",
-  "short_name": "Ômega",
+  "name": "Omega",
+  "short_name": "Omega",
   "description": "Leitor e decisor de relatórios",
   "start_url": "./index.html",
   "scope": "./",

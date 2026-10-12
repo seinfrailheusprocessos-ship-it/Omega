@@ -67,6 +67,18 @@
       "titulo": "Contratos",
       "itens": [
         {
+          "num": "2.0",
+          "tipo": "decisao",
+          "titulo": "Ofício recebido (exemplo)",
+          "texto": "EXEMPLO FICTÍCIO. Chegou um ofício pedindo informações sobre o contrato de exemplo. Como seguir?",
+          "opcoes": [
+            "Responder por ofício",
+            "Criar nota técnica como anexo",
+            "Arquivar sem resposta"
+          ],
+          "valor": "Aguardando"
+        },
+        {
           "num": "2.1",
           "tipo": "decisao",
           "titulo": "Prazo de vigência do contrato de exemplo",
