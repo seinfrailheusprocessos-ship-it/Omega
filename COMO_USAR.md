@@ -1,4 +1,4 @@
-# Como usar o Omega (versão 3.1)
+# Como usar o Omega (versão 3.3)
 
 **Novidade da v3:** não há mais barra de cima. Tudo (Claude, Gemini, Revisar texto, Áudio, Copiar, tema, contador) está na **barra lateral**. No celular ela abre **deslizando o dedo da borda esquerda para a direita** (ou tocando em ☰) e fecha deslizando para a esquerda ou tocando fora: volta ao relatório. Cada relatório é uma "pasta/conversa" na lateral, com dois atalhos: 📁 arquivos e 💬 conversa.
 
@@ -28,6 +28,24 @@ O Claude gera o relatório (arquivo `relatorio.json`); você abre no Omega, deci
 ## Copiar em partes
 - **Copiar parágrafo** (em cada parágrafo), **Copiar capítulo** (no cabeçalho do capítulo), **Copiar texto inteiro** (no cabeçalho do texto) e, na lateral, **Copiar relatório inteiro**.
 - **Copiar tudo e enviar relatório** (lateral): copia as suas decisões + o relatório inteiro e abre a conversa do relatório; na conversa, toque no campo de texto e cole. (O Claude não aceita texto no endereço de uma conversa já existente, por isso o texto fica copiado.)
+
+## Novo visual (3.3)
+- Fonte **IBM Plex Mono** (embutida, funciona offline) e as **três iluminações**: Claro, Escuro e Mais escuro (⋯ → Iluminação). Proporções do Claude desktop: lateral de 19,5%, barra de 56 px, linhas de 43 px, coluna de leitura de 73%.
+- **Barra superior congelada** com: Relatório (PDF), Documento, Resposta, CI, Copiar relatório, Copiar item, Foco, Pasta, Conversa, 🎙 e ⋯ (tudo o que saiu da lateral: Novo objeto, Mesa PDF, hierarquia, ajustes…). Os "visualizar" mostram a folha A4 para imprimir/salvar PDF.
+- **Lateral enxuta** (☰ recolhe; no celular abre deslizando da borda): só busca, **Numérica / Últimos trabalhados** e as **pastas numeradas** (1 Licitações, 2 Aditivos, 3 Jurídico, 4 Comunicações…). Clicar abre o relatório da pasta.
+- **Caixa de comentário** arredondada na base: escreve o comentário do item em foco (Enter salva).
+
+## Ditado em qualquer caixa
+Microfone flutuante em toda caixa de texto e atalho **Ctrl+Shift+Espaço** (liga/desliga no campo onde está o cursor, inclusive dentro de um parágrafo). O texto aparece enquanto você fala, a tela desce sozinha e o ditado **não para na pausa** (o Chrome corta de vez em quando; o Omega religa sozinho). No celular use também o microfone do teclado Gboard.
+
+## Códigos, pastas e README
+Todo objeto e documento tem **código numérico** (1.7, 1.7.1…). Novo objeto sugere o próximo código da categoria, a pasta `1_LICITACOES/1.8_NOME` e cria o **README.md** (memorial + ficha). ⋯ → "Criar a hierarquia base de pastas" cria as pastas das categorias. "Atualizar README" (em Arquivos deste objeto) regrava a ficha.
+
+## Mesa PDF por gesto
+Abra o PDF (⋯ → Mesa PDF, ou "Mesa PDF" num arquivo). **Arraste uma página para a direita** para extrair. **Segure** uma página para selecionar várias: a lista rola sozinha (velocidade em ⋯ → Ajustes ou na própria Mesa), marcar uma página destaca a próxima, toque num espaço vazio ou em ⏸ para pausar, e arraste a barra "extrair" para a direita. Depois: **Renomear** (padrão MAIÚSCULAS_COM_UNDERLINE, com o código) e **Salvar onde**: mesma pasta, outra pasta que já existe, pasta nova ou **Criar resposta** (pasta com o nome do arquivo). Teclado: setas, Espaço seleciona, Enter extrai.
+
+## Revisão dos PDFs separados pelo script
+Em "Arquivos deste objeto", **Revisar PDFs separados**: lista cada arquivo (tipo, páginas, título→fecho quando o script grava `_pipeline.json`) com a caixinha Pendente / Arquivado / Corrigir / Responder. Veja `PIPELINE_SPEC.md` (o contrato com os scripts).
 
 ## Teclado (computador): só Tab, Espaço e setas
 1. **Tab** pula de caixinha em caixinha ( A fazer ▾ ). Num documento de licitação (DFD, ETP, TR, CI…), o Tab passa por cada parágrafo e pela caixinha dele.

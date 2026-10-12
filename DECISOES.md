@@ -77,3 +77,19 @@
 - **Impressão direta nas impressoras da prefeitura**: pelo diálogo de impressão do navegador/Windows (não há como escolher impressora por código no navegador).
 - **Novo objeto** é um objeto vazio com id `obj-…`; o Claude deve usar esse mesmo id no `relatorio.json` para o estado se manter (o id aparece no objeto com botão Copiar id).
 - **Não feito**: Claude/IA dentro do app (você preferiu o fluxo de relatório), OCR embutido, edição de PDF, anexos de e-mail automáticos.
+
+---
+# Versão 3.3 (aprovação da simulação: IBM Plex Mono, três temas, "pode executar tudo")
+- **D1 fonte:** IBM Plex Mono (a que você preferiu), embutida no CSS (OFL-1.1, `LICENCA-FONTE.txt`).
+- **D2 sessões:** segui a recomendação (duas). Esta sessão fez a interface; os scripts de OCR/separação/renomeação ficam para a sessão 2, com o contrato em `PIPELINE_SPEC.md`. O Omega já dispara scripts (config.json) e lê `_pipeline.json` na revisão.
+- **D3 atalho do ditado:** Ctrl+Shift+Espaço. **D4 data nos nomes:** `dd-mm-aaaa` (ex.: `12-10-2026`). **D5 hierarquia:** 1 Licitações, 2 Aditivos, 3 Jurídico, 4 Comunicações; 5 em diante a definir (nomes editáveis em `DB.cats`, hoje só no código).
+- **Temas:** os três ficam; padrão agora "Mais escuro"; cores medidas do print no Escuro (#111111/#151515/#20201F/#313130/#292929/#4D4D4C/#F0EFEC/#C3C2B7/#B8B8B6), Mais escuro derivado, Claro em cinzas frios estilo Apple, destaque #4A5D78.
+- **Proporções:** lateral `clamp(270px, 19,53vw, 420px)`, barra 56 px, itens 43 px, coluna 73%. Divisórias de 1 px e curtas (52% da largura) na lateral; o relatório não tem linhas longas.
+- **Barra superior congelada** substitui a barra da v3 e concentra as funções; o que não cabia foi para ⋯. "Resposta" e "CI" visualizam a folha A4 do documento respectivo; avisam quando ainda não existe.
+- **Lateral** só tem busca, organização e pastas. Pasta = objeto/relatório; categoria = primeiro número do código. Objeto sem ponto no código cai em "Sem categoria". "Últimos trabalhados" usa a data de modificação da pasta quando há servidor; senão, a última vez que você mexeu no objeto.
+- **Ditado:** voz para texto do Chrome (não grava áudio), insere no cursor de qualquer caixa (inclui o parágrafo em edição), mostra o texto provisório enquanto fala, rola a tela e religa sozinho nas pausas. Não prometo "sem limite": o Chrome corta e o Omega religa. Celular: microfone do Gboard.
+- **Códigos:** todo objeto e documento tem código numérico. Recebidos e documentos filhos usam `código.N` (contador único por objeto: 1.8.1, 1.8.2…). Pastas dos objetos: `código_NOME_MAIÚSCULO` (ex.: `1.8_CANAL_DO_MALHADO`), pastas das categorias: `1_LICITACOES`. Você disse "pastas só em números": usei o código numérico como início do nome, e não só o número, para você reconhecer a pasta.
+- **README** em cada pasta de objeto e de categoria (modelo em `readmeObjeto`). Não consigo criar pastas reais no seu C: daqui; o Omega cria quando você usa Novo objeto / "Criar a hierarquia base".
+- **Mesa PDF por gesto:** miniaturas com pdf.js 3.11 (Apache-2.0, `pdf-mesa.js`, 1,4 MB, worker embutido para funcionar com duplo clique). Arrastar para a direita > 110 px extrai; segurar 0,5 s seleciona; barra de extrair; rolagem automática (0–12, padrão 4), pausa por toque num espaço vazio ou ⏸. Digitar intervalo (2-4) foi removido, como pedido; sobrou o teclado.
+- **Revisão do pipeline:** lê `_pipeline.json` se existir; senão lista os PDFs e a pasta de cada um como "tipo". "Arquivado" não conta como pendência.
+- **Fora do que foi pedido:** não mexi nos scripts de OCR; não implementei sumário com rolagem na lateral (a frase cortada do pedido anterior).

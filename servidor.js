@@ -55,6 +55,19 @@ http.createServer((req, res) => {
   if (rel.startsWith("/api/")) {
     if (!local(req)) { res.writeHead(403); return res.end(); }   // só o próprio computador
     if (req.method === "GET" && rel === "/api/status") return json(res, { raizes: raizes(), scripts: scripts().map(x => ({ id: x.id, nome: x.nome || x.id, aplicaA: x.aplicaA === "pasta" ? "pasta" : "arquivo", extensoes: (x.extensoes || []).map(e => String(e).toLowerCase()) })) });
+    if (req.method === "POST" && rel === "/api/mtimes") {       // datas de modificação das pastas (para "Últimos trabalhados")
+      return corpoJson(req, b => { const out = {}; ((b && b.caminhos) || []).slice(0, 500).forEach(c => { const d = dentro(String(c)); if (d) { try { out[c] = fs.statSync(d).mtimeMs; } catch (e) {} } }); json(res, out); }, 200000);
+    }
+    if (req.method === "GET" && rel === "/api/listar-tudo") {   // PDFs da pasta e subpastas (até 3 níveis)
+      const base = dentro(u.searchParams.get("caminho") || "");
+      if (!base || !fs.statSync(base).isDirectory()) return json(res, { erro: "fora das pastas liberadas" }, 403);
+      const out = [];
+      const anda = (dir, prof, relp) => { let ents; try { ents = fs.readdirSync(dir, { withFileTypes: true }); } catch (e) { return; }
+        for (const e of ents) { if (e.name.startsWith(".")) continue; const p = path.join(dir, e.name);
+          if (e.isDirectory()) { if (prof < 3) anda(p, prof + 1, path.join(relp, e.name)); }
+          else if (/\.pdf$/i.test(e.name) && out.length < 2000) { let st; try { st = fs.statSync(p); } catch (x) { continue; } out.push({ nome: e.name, caminho: p, rel: relp, tam: st.size, data: st.mtimeMs }); } } };
+      anda(base, 0, ""); out.sort((a, b) => (a.rel + a.nome).localeCompare(b.rel + b.nome, "pt-BR", { numeric: true })); return json(res, out);
+    }
     if (req.method === "POST" && rel === "/api/enviar") {      // upload de arquivo para uma pasta liberada
       const dir = dentro(u.searchParams.get("caminho") || ""), nome = nomeSeguro(u.searchParams.get("nome"));
       if (!dir || !nome || !fs.statSync(dir).isDirectory()) { res.writeHead(403); return res.end(); }

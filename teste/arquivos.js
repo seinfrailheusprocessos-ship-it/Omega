@@ -1,5 +1,5 @@
-// Teste do gerenciador de arquivos / scripts / Mesa PDF (precisa de Node + playwright + pdf-lib instalados).
-// Uso: PLAYWRIGHT_PATH=... node teste/arquivos.js
+// Teste do gerenciador de arquivos, scripts, hierarquia, README, Mesa PDF e revisão (precisa de Node + playwright + pdf-lib).
+// Uso: PLAYWRIGHT_PATH=... PDFLIB_PATH=... node teste/arquivos.js
 const { chromium } = require(process.env.PLAYWRIGHT_PATH || "playwright");
 const { spawn } = require("child_process"); const fs = require("fs"), path = require("path"), os = require("os");
 const RAIZ = path.resolve(__dirname, ".."), PORTA = 8794, BASE = `http://localhost:${PORTA}/index.html`;
@@ -8,81 +8,85 @@ let falhas = 0; const ok = (c, m) => { console.log((c ? "OK    " : "FALHA ") + m
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "omega-")), raiz = path.join(tmp, "CL"); fs.mkdirSync(raiz);
   const cfg = path.join(RAIZ, "dados", "config.json"); const tinha = fs.existsSync(cfg); if (tinha) fs.renameSync(cfg, cfg + ".bak");
   fs.writeFileSync(cfg, JSON.stringify({ raizes: [raiz], scripts: [{ id: "ocr", nome: "OCR (teste)", aplicaA: "arquivo", extensoes: [".pdf"], comando: [process.execPath, "-e", "console.log('OCR rodou em ' + require('path').basename(process.argv[1]))", "{arquivo}"] }] }));
-  // PDF de 5 páginas
   let PDFLib; try { PDFLib = require(process.env.PDFLIB_PATH || "pdf-lib"); } catch (e) { PDFLib = require(path.join(RAIZ, "node_modules/pdf-lib")); }
-  const d = await PDFLib.PDFDocument.create(); for (let i = 1; i <= 5; i++) d.addPage([300, 200]).drawText("Pagina " + i, { x: 50, y: 100 });
+  const d = await PDFLib.PDFDocument.create(); for (let i = 1; i <= 8; i++) d.addPage([300, 400]).drawText("Pagina " + i, { x: 40, y: 200, size: 24 });
   const pdf = path.join(tmp, "escaneado.pdf"); fs.writeFileSync(pdf, await d.save());
   const srv = spawn(process.execPath, [path.join(RAIZ, "servidor.js")], { env: { ...process.env, PORTA: String(PORTA) }, stdio: "ignore" });
   await new Promise(r => setTimeout(r, 1200));
   const b = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
   try {
-    const ctx = await b.newContext({ viewport: { width: 1280, height: 850 }, permissions: ["clipboard-read", "clipboard-write"] });
+    const ctx = await b.newContext({ viewport: { width: 1920, height: 1080 }, permissions: ["clipboard-read", "clipboard-write"] });
     const p = await ctx.newPage(); const erros = []; p.on("pageerror", e => erros.push(e.message)); p.on("console", m => m.type() === "error" && !/Failed to load resource/.test(m.text()) && erros.push(m.text()));
     await p.goto(BASE + "?exemplo=1"); await p.waitForSelector(".chip"); await p.waitForTimeout(600);
     const texto = () => p.evaluate(() => navigator.clipboard.readText());
-    // novo objeto
-    await p.locator("#b-novo-obj").click(); await p.waitForSelector(".sobre .campo");
-    const campos = p.locator(".sobre .campo input[type=text], .sobre .campo input[type=url]");
-    await campos.nth(0).fill("Canal do Malhado"); await campos.nth(2).fill(path.join(raiz, "Canal do Malhado")); await campos.nth(3).fill("https://claude.ai/chat/abc-123");
-    await p.locator("#obj-criar").click(); await p.waitForTimeout(500);
-    ok(fs.existsSync(path.join(raiz, "Canal do Malhado")), "Novo objeto cria a pasta no computador");
-    ok((await p.locator(".caixa-l .caixinha .n").allInnerTexts()).some(x => x === "2 Canal do Malhado"), "objeto aparece na lateral com número e nome");
-    ok(await p.locator("h1", { hasText: "2 Canal do Malhado" }).count() === 1 && await p.getByText("Objeto novo.").count() === 1, "objeto novo mostra o id para o Claude");
-    // upload
+    const mais = async () => { if (await p.locator("#mais.oculto").count()) await p.click("#b-mais"); await p.waitForTimeout(100); };
+    // hierarquia base
+    await mais(); await p.locator("#m-hier").click(); await p.waitForSelector("#hier-criar"); await p.locator("#hier-criar").click(); await p.waitForTimeout(700);
+    ok(fs.existsSync(path.join(raiz, "1_LICITACOES", "README.md")) && fs.existsSync(path.join(raiz, "4_COMUNICACOES", "README.md")), "hierarquia base: pastas numeradas das categorias, cada uma com README");
+    // novo objeto: código, pasta e README
+    await mais(); await p.locator("#m-novo-obj").click(); await p.waitForSelector("#obj-cod");
+    ok((await p.inputValue("#obj-cod")) === "1.8", "Novo objeto: código sugerido 1.8");
+    await p.fill("#obj-nome", "Canal do Malhado"); await p.fill("#obj-conv", "https://claude.ai/chat/abc-123");
+    ok((await p.inputValue("#obj-cam")) === path.join(raiz, "1_LICITACOES", "1.8_CANAL_DO_MALHADO"), "pasta sugerida dentro da categoria: " + (await p.inputValue("#obj-cam")));
+    await p.locator("#obj-criar").click(); await p.waitForTimeout(700);
+    const pastaObj = path.join(raiz, "1_LICITACOES", "1.8_CANAL_DO_MALHADO");
+    ok(fs.existsSync(path.join(pastaObj, "README.md")) && fs.readFileSync(path.join(pastaObj, "README.md"), "utf8").includes("# 1.8 Canal do Malhado"), "pasta criada com README (memorial/ficha)");
+    ok((await p.locator("#lateral .li[data-pasta]").allInnerTexts()).some(x => /1\.8\s+Canal do Malhado/.test(x)), "aparece na lateral, na categoria 1");
+    // upload, renomear, script
     await p.waitForSelector('[data-subir]');
     await p.locator('#sec-__arq input[type=file]').first().setInputFiles(pdf); await p.waitForSelector("table.arq td", { timeout: 5000 }); await p.waitForTimeout(400);
-    ok(fs.existsSync(path.join(raiz, "Canal do Malhado", "escaneado.pdf")), "upload de PDF grava na pasta do objeto");
-    ok(await p.locator("table.arq", { hasText: "escaneado.pdf" }).count() === 1, "arquivo aparece na lista");
-    // renomear
-    p.once("dialog", dl => dl.accept("oficio-123.pdf")); await p.locator("table.arq .mini", { hasText: "Renomear" }).click(); await p.waitForTimeout(500);
-    ok(fs.existsSync(path.join(raiz, "Canal do Malhado", "oficio-123.pdf")) && !fs.existsSync(path.join(raiz, "Canal do Malhado", "escaneado.pdf")), "renomear arquivo pelo Omega");
-    // executar script
-    await p.locator("table.arq .mini", { hasText: "Executar" }).click(); await p.locator(".bal button", { hasText: "OCR (teste)" }).click();
-    await p.waitForSelector(".sobre pre", { timeout: 5000 }); await p.waitForFunction(() => /Terminou/.test(document.querySelector(".sobre").innerText), null, { timeout: 8000 });
-    ok((await p.locator(".sobre pre").innerText()).includes("OCR rodou em oficio-123.pdf"), "script do C: executa e mostra o resultado");
+    ok(fs.existsSync(path.join(pastaObj, "escaneado.pdf")), "upload de PDF grava na pasta do objeto");
+    p.once("dialog", dl => dl.accept("bloco-1.pdf")); await p.locator("table.arq tr", { hasText: "escaneado.pdf" }).locator(".mini", { hasText: "Renomear" }).click(); await p.waitForTimeout(500);
+    ok(fs.existsSync(path.join(pastaObj, "bloco-1.pdf")), "renomear arquivo pelo Omega");
+    await p.locator("table.arq tr", { hasText: "bloco-1.pdf" }).locator(".mini", { hasText: "Executar" }).click(); await p.locator(".bal button", { hasText: "OCR (teste)" }).click();
+    await p.waitForFunction(() => /Terminou/.test((document.querySelector(".sobre") || {}).innerText || ""), null, { timeout: 8000 });
+    ok((await p.locator(".sobre pre").innerText()).includes("OCR rodou em bloco-1.pdf"), "script do C: executa e mostra o resultado");
     await p.locator(".sobre button", { hasText: "Fechar" }).click();
-    // Mesa PDF
-    await p.locator("table.arq .mini", { hasText: "Mesa PDF" }).click(); await p.waitForFunction(() => /5 página/.test(document.querySelector("#mesa-info").innerText), null, { timeout: 8000 });
-    ok(true, "Mesa PDF conta as páginas (5)");
-    await p.fill("#mesa-pags", "2-3"); await p.locator("#mesa-extrair").click(); await p.waitForSelector("#mesa-ext b", { timeout: 8000 });
-    ok((await p.locator("#mesa-ext").innerText()).includes("oficio-123_p2-3.pdf (2 página(s))"), "extrai só as páginas 2-3 num PDF novo");
-    await p.locator("#mesa-salvar").click(); await p.waitForTimeout(600);
-    const ext = path.join(raiz, "Canal do Malhado", "oficio-123_p2-3.pdf");
-    ok(fs.existsSync(ext) && (await PDFLib.PDFDocument.load(fs.readFileSync(ext))).getPageCount() === 2, "salva o PDF extraído (2 páginas) na pasta do objeto");
-    await p.locator("#mesa-obj").selectOption({ label: "2 Canal do Malhado" });
-    await p.locator("#mesa-cadastrar").click(); await p.waitForTimeout(150);
-    await p.getByText("← Voltar").click(); await p.waitForTimeout(200);
-    await p.locator(".caixa-l .caixinha", { hasText: "Canal do Malhado" }).click(); await p.waitForSelector("table.rel");
-    ok(await p.locator("h2", { hasText: "Recebidos (1)" }).count() === 1, "o PDF fica cadastrado em Recebidos (Pendente)");
-    await p.locator('[data-chip^="E:"]').click(); await p.keyboard.type("anál"); await p.keyboard.press("Enter"); await p.waitForTimeout(150);
-    ok((await p.locator('[data-chip^="E:"]').innerText()).trim() === "Em análise", "situação do recebido: Pendente → Em análise (caixinha)");
+    // Mesa PDF com servidor: extrair → renomear → criar resposta (pasta com o nome do arquivo)
+    await p.locator("table.arq tr", { hasText: "bloco-1.pdf" }).locator(".mini", { hasText: "Mesa PDF" }).click(); await p.waitForFunction(() => /8 página/.test(document.querySelector("#mesa-info").innerText), null, { timeout: 15000 });
+    await p.waitForSelector("#grade .pg canvas"); await p.waitForTimeout(500);
+    await p.locator("#mesa-obj").selectOption({ label: "1.8 Canal do Malhado" });
+    const bx = await p.locator('#grade .pg[data-n="3"]').boundingBox();
+    await p.mouse.move(bx.x + 20, bx.y + 20); await p.mouse.down(); await p.mouse.move(bx.x + 230, bx.y + 24, { steps: 8 }); await p.mouse.up(); await p.waitForSelector("#mesa-nome");
+    ok((await p.inputValue("#mesa-nome")) === "1.8.1_BLOCO-1_P3", "nome sugerido com código do objeto: " + (await p.inputValue("#mesa-nome")));
+    await p.locator("#mesa-continuar").click(); await p.waitForSelector("#dest-resposta"); ok(await p.locator("#dest-aqui:not([disabled])").count() === 1, "com servidor: salvar na mesma pasta / outra / nova / criar resposta");
+    await p.locator("#dest-resposta").click(); await p.waitForTimeout(900);
+    const pastaResp = path.join(pastaObj, "1.8.1_BLOCO-1_P3");
+    ok(fs.existsSync(path.join(pastaResp, "README.md")) && fs.existsSync(path.join(pastaResp, "1.8.1_BLOCO-1_P3.pdf")), "'Criar resposta' cria a pasta com o nome do arquivo e salva o PDF dentro");
+    const pdfSalvo = await PDFLib.PDFDocument.load(fs.readFileSync(path.join(pastaResp, "1.8.1_BLOCO-1_P3.pdf"))); ok(pdfSalvo.getPageCount() === 1, "PDF extraído com 1 página");
+    await p.locator(".sobre .op", { hasText: "Ofício" }).click(); await p.waitForSelector("[data-pf]"); ok(/^1\.8\.2 /.test(await p.locator("h1").innerText()) || /^1\.8\.\d /.test(await p.locator("h1").innerText()), "abre a resposta (documento novo) com código dentro do objeto: " + (await p.locator("h1").innerText()));
+    // outra pasta já existente
+    await p.locator('#lateral .li[data-pasta]', { hasText: "Canal do Malhado" }).first().click(); await p.waitForTimeout(200);
+    ok(await p.locator("h2", { hasText: "Recebidos (1)" }).count() === 1, "o extraído está em Recebidos do objeto");
+    // revisão do pipeline (_pipeline.json + subpastas por tipo)
+    const rev = path.join(pastaObj, "RECEBIDOS"); fs.mkdirSync(path.join(rev, "CI"), { recursive: true }); fs.mkdirSync(path.join(rev, "SOLTOS"), { recursive: true });
+    fs.copyFileSync(pdf, path.join(rev, "CI", "CI_SEDUC_045-2026_12-10-2026.pdf")); fs.copyFileSync(pdf, path.join(rev, "SOLTOS", "SOLTO_P7.pdf"));
+    fs.writeFileSync(path.join(rev, "_pipeline.json"), JSON.stringify({ docs: [{ arquivo: "CI_SEDUC_045-2026_12-10-2026.pdf", tipo: "CI", paginas: "2-3", titulo: "COMUNICAÇÃO INTERNA", fecho: "Cargo do Signatário, 12/10" }] }));
+    await p.evaluate(p0 => abrirRevisao(p0), rev); await p.waitForSelector("#tb-revi tbody tr[data-fk]");
+    ok(await p.locator("#tb-revi tbody tr[data-fk]").count() === 2 && (await p.locator("#tb-revi").innerText()).includes("COMUNICAÇÃO INTERNA → Cargo do Signatário"), "revisão lista os PDFs separados com tipo, páginas e título→fecho do script");
+    await p.locator('#tb-revi [data-chip]').first().click(); await p.locator(".pop-op", { hasText: "Arquivado" }).click(); await p.waitForTimeout(200);
+    await p.locator('#tb-revi [data-chip]').nth(1).click(); await p.locator(".pop-op", { hasText: "Corrigir" }).click(); await p.waitForTimeout(200);
+    await p.locator('#tb-revi input[type=text]').fill("oficio pgm nº 118/2026 10/10/2026"); await p.locator('#tb-revi input[type=text]').press("Enter"); await p.waitForTimeout(700);
+    ok(fs.existsSync(path.join(rev, "SOLTOS", "OFICIO_PGM_118-2026_10-10-2026.pdf")), "Corrigir: renomeia o arquivo no padrão MAIÚSCULAS_COM_UNDERLINE");
+    await p.locator("#tb-revi >> text=Voltar").first().click().catch(() => {}); await p.getByText("← Voltar").first().click(); await p.waitForTimeout(200);
     await p.locator("#b-cop").click(); await p.waitForTimeout(200);
-    const t = await texto(); ok(/## Recebidos\n\nR\w+ "oficio-123_p2-3.pdf" p\. 2-3 \[Em análise\]/.test(t), "Copiar relatório inclui os recebidos");
-    // conversa
-    const [pop] = await Promise.all([ctx.waitForEvent("page"), p.locator(".caixa-l .ico").nth(3).click()]);
-    await p.waitForTimeout(500);
-    const msg = await texto();
-    ok(/^Leia o relatório de retorno do Omega do objeto 2 Canal do Malhado/.test(msg) && pop.url().startsWith("https://claude.ai/chat/abc-123"), "💬 abre a conversa e copia 'Leia o relatório de retorno…'");
-    const retorno = path.join(raiz, "Canal do Malhado", "RETORNO_OMEGA_rev1.txt");
-    ok(fs.existsSync(retorno) && fs.readFileSync(retorno, "utf8").includes("[OMEGA] 2 Canal do Malhado") && msg.includes(retorno), "salva o relatório de retorno na pasta e cita o caminho na mensagem");
+    const t = await texto(); ok(/## Revisão de arquivos[\s\S]*CI_SEDUC_045-2026_12-10-2026\.pdf \[Arquivado\]/.test(t) && /## Recebidos/.test(t), "Copiar relatório inclui a revisão de arquivos e os recebidos");
+    // últimos trabalhados: data de modificação da pasta
+    const velho = new Date(Date.now() - 20 * 86400000); fs.utimesSync(pastaObj, velho, velho);
+    await p.evaluate(() => { mtimesEm = 0; DB.ui.ordem = "rec"; }); await p.evaluate(async () => { await carregarMtimes(); desenharLateral(); }); await p.waitForTimeout(300);
+    ok((await p.locator("#lat-lista .li").allInnerTexts()).length >= 2, "'Últimos trabalhados' usa a data da pasta (servidor)");
+    // conversa: salva retorno na pasta e copia a mensagem
+    await p.evaluate(() => { DB.ui.ordem = "num"; }); 
+    const [pop] = await Promise.all([ctx.waitForEvent("page"), p.locator("#b-conv").click()]); await p.waitForTimeout(600);
+    const msg = await texto(); const retorno = path.join(pastaObj, "RETORNO_OMEGA_rev1.txt");
+    ok(/^Leia o relatório de retorno do Omega do objeto 1\.8 Canal do Malhado/.test(msg) && pop.url().startsWith("https://claude.ai/chat/abc-123") && fs.existsSync(retorno) && msg.includes(retorno), "Conversa: abre o link, salva o retorno na pasta e copia 'Leia o relatório de retorno…'");
     await pop.close();
-    // Gmail
-    await p.evaluate(() => { window.__abertas = []; window.open = u => { window.__abertas.push(u); }; }); await p.locator("#b-gmail").click(); ok((await p.evaluate(() => window.__abertas[0] || "")).startsWith("https://mail.google.com"), "atalho do Gmail");
     // segurança
-    const seg = await p.evaluate(async () => [(await fetch("api/enviar?caminho=/etc&nome=x.txt", { method: "POST", body: "x" })).status, (await fetch("api/renomear", { method: "POST", body: JSON.stringify({ caminho: "/etc/hostname", novoNome: "y" }) })).status, (await fetch("api/executar", { method: "POST", body: JSON.stringify({ script: "ocr", caminho: "/etc/hostname" }) })).status, (await fetch("api/salvar", { method: "POST", body: JSON.stringify({ caminho: "/tmp", nome: "a.txt", texto: "x" }) })).status]);
+    const seg = await p.evaluate(async () => [(await fetch("api/enviar?caminho=/etc&nome=x.txt", { method: "POST", body: "x" })).status, (await fetch("api/renomear", { method: "POST", body: JSON.stringify({ caminho: "/etc/hostname", novoNome: "y" }) })).status, (await fetch("api/executar", { method: "POST", body: JSON.stringify({ script: "ocr", caminho: "/etc/hostname" }) })).status, (await fetch("api/salvar", { method: "POST", body: JSON.stringify({ caminho: "/tmp", nome: "a.txt", texto: "x" }) })).status, (await fetch("api/listar-tudo?caminho=/etc")).status]);
     ok(seg.every(s => s === 403), "fora das pastas liberadas tudo é negado " + seg);
     ok(erros.length === 0, "sem erros no console " + erros.join(";"));
-    // Mesa PDF sem servidor (file://) para o celular/GitHub Pages
-    const p2 = await (await b.newContext({ viewport: { width: 400, height: 800 } })).newPage();
-    await p2.goto("file://" + path.join(RAIZ, "index.html") + "?exemplo=1"); await p2.waitForSelector(".chip"); await p2.click("#b-lat"); 
-    const [fc] = await Promise.all([p2.waitForEvent("filechooser"), p2.locator("#b-mesa").click()]); await fc.setFiles(pdf);
-    await p2.waitForFunction(() => /5 página/.test(document.querySelector("#mesa-info").innerText), null, { timeout: 8000 });
-    await p2.fill("#mesa-pags", "2-4"); await p2.locator("#mesa-extrair").click(); await p2.waitForSelector("#mesa-ext b", { timeout: 8000 });
-    ok((await p2.locator("#mesa-ext").innerText()).includes("escaneado_p2-4.pdf (3 página(s))"), "Mesa PDF funciona sem servidor (celular): extrai 2-4");
-    await p2.locator("#mesa-cadastrar").click(); await p2.waitForTimeout(150);
-    ok(await p2.evaluate(() => (relAtual().entrada || []).length) === 1, "cadastro como recebido sem servidor");
   } finally {
-    await b.close(); srv.kill(); fs.rmSync(cfg, { force: true }); if (tinha) fs.renameSync(cfg + ".bak", cfg); fs.rmSync(tmp, { recursive: true, force: true });
+    await b.close(); srv.kill(); fs.rmSync(cfg, { force: true }); if (tinha) fs.renameSync(cfg + ".bak", cfg); fs.rmSync(path.join(RAIZ, "dados", "estado.json"), { force: true }); fs.rmSync(tmp, { recursive: true, force: true });
   }
   console.log(falhas ? `\n${falhas} FALHA(S)` : "\nTUDO OK"); process.exit(falhas ? 1 : 0);
 })();

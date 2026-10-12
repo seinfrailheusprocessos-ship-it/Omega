@@ -121,7 +121,7 @@ function novaRel(d) { return { dados: d, st: {}, alin: {}, larg: {}, rec: {}, fo
 function carregarRelatorio(bruto, opts) {
   opts = opts || {};
   const d = normalizar(bruto), ja = DB.rels[d.id];
-  if (!ja) { DB.rels[d.id] = novaRel(d); DB.atual = d.id; vista = "rel"; aviso("Relatório carregado."); }
+  if (!ja) { DB.rels[d.id] = novaRel(d); DB.atual = d.id; vista = "rel"; abrirGrupo(d.id); aviso("Relatório carregado."); }
   else {
     const nova = d.rev > ja.dados.rev;
     if (nova) for (const k in ja.st) ja.st[k].tocado = false;
@@ -145,7 +145,8 @@ function kind(v) {
   if (v === "Feito" || v === "Seguir" || v === "Aprovado") return "ok";
   if (v === "Ignorar") return "ign";
   if (v === "Não consegui") return "nao";
-  if (v === "Ajustar" || v === "Em análise" || v === "Responder") return "aj";
+  if (v === "Ajustar" || v === "Em análise" || v === "Responder" || v === "Corrigir") return "aj";
+  if (v === "Arquivado") return "ok";
   if (v === "Respondido") return "ok";
   if (v === "Arquivar") return "ign";
   return "ok";
@@ -158,7 +159,7 @@ function bloqueado(rel, it) {
 function opcoesDe(it) { return it.tipo === "acao" ? OPC_ACAO : (it.opcoes.length ? it.opcoes : OPC_DEC); }
 
 /* focos: {t:"I",num} | {t:"C",num,r,c} | {t:"P",sec,id} | {t:"K",sec,cap} */
-function chave(f) { return f.t === "I" ? "I:" + f.num : f.t === "C" ? `C:${f.num}:${f.r}:${f.c}` : f.t === "K" ? `K:${f.sec}:${f.cap}` : f.t === "E" ? `E:${f.id}` : `P:${f.sec}:${f.id}`; }
+function chave(f) { return f.t === "I" ? "I:" + f.num : f.t === "C" ? `C:${f.num}:${f.r}:${f.c}` : f.t === "K" ? `K:${f.sec}:${f.cap}` : f.t === "E" ? `E:${f.id}` : f.t === "V" ? `V:${f.p}` : `P:${f.sec}:${f.id}`; }
 function celula(it, r, c) { const x = it.tabela && it.tabela.linhas[r] && it.tabela.linhas[r][c]; return x && x.chip ? x.chip : null; }
 function secDe(rel, num) { return rel.dados.secoes.find(s => s.num === num); }
 function capDe(rel, f) { const s = secDe(rel, f.sec); return s && s.capitulos.find(c => c.num === f.cap); }
@@ -175,6 +176,7 @@ function alvos(rel) {
   return out;
 }
 function infoAlvo(rel, f) {
+  if (f.t === "V") { const s = rel.st[chave(f)]; return { titulo: "Revisão · " + f.p.split(/[\\/]/).pop(), sub: "Arquivado = sem ação pendente", opcoes: OPC_REV, valor: (s && s.v) || "Pendente", padrao: "Pendente", bloq: false, custom: false }; }
   if (f.t === "E") {
     const e = (rel.entrada || []).find(x => x.id === f.id); if (!e) return null;
     const s = rel.st[chave(f)];
@@ -248,6 +250,7 @@ function remontar() { const y = scrollY; montar(); scrollTo(0, y); }
 function marcarFoco(f) {
   document.querySelectorAll(".foco").forEach(e => e.classList.remove("foco"));
   if (f) { const e = document.querySelector(`[data-fk="${CSS.escape(chave(f))}"]`); if (e) e.classList.add("foco"); }
+  if (typeof desenharEntrada === "function") desenharEntrada();
 }
 function setFoco(f) { const rel = relAtual(); if (!rel) return; rel.foco = f; salvar(); marcarFoco(f); }
 function focarAlvo(f) {
@@ -263,18 +266,19 @@ function aplicarTema() {
 }
 function montar() {
   aplicarTema();
-  const m = $("#main"); m.replaceChildren(); m.className = vista === "mesa" ? "larga" : "";
+  const m = $("#main"); m.replaceChildren(); m.className = (vista === "mesa" || vista === "pastas" || vista === "revisao") ? "larga" : "";
   const rel = relAtual();
-  desenharLateral();
+  desenharBarra(); desenharLateral();
   if (vista === "rev") telaRevisor(m);
   else if (vista === "est") telaEstado(m);
   else if (vista === "pdf") telaPDF(m);
   else if (vista === "mesa") telaMesa(m);
+  else if (vista === "revisao") telaRevisao(m);
   else if (vista === "pastas") telaPastas(m);
   else if (vista === "colar") telaColar(m);
   else if (!rel) telaInicio(m);
   else telaRelatorio(m, rel);
-  atualizarContador();
+  atualizarContador(); desenharEntrada(); carregarMtimes();
   ajustarTabelas();
   if (rel && rel.foco && vista === "rel") marcarFoco(rel.foco);
   if (refoco) { const e = document.querySelector(refoco); refoco = null; if (e) e.focus({ preventScroll: false }); }
@@ -287,11 +291,45 @@ function atualizarContador() {
   const n = contagens(rel);
   c.replaceChildren(h("b", {}, n.pend), " pendentes · ", h("b", {}, n.feitos), " decididos · ", h("b", {}, n.bloq), " bloqueados");
 }
-$("#b-lat").onclick = () => { DB.ui.lateral = !DB.ui.lateral; salvar(); aplicarTema(); };
-$("#fundo").onclick = () => { DB.ui.lateral = false; salvar(); aplicarTema(); };
+function alternarLateral() { DB.ui.lateral = !DB.ui.lateral; salvar(); aplicarTema(); }
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-lat]")) { alternarLateral(); return; }
+  if (e.target.id === "fundo") { DB.ui.lateral = false; salvar(); aplicarTema(); return; }
+  const mais = $("#mais"); if (mais && !mais.classList.contains("oculto") && !e.target.closest("#mais") && !e.target.closest("#b-mais")) mais.classList.add("oculto");
+});
 const movel = () => /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
-function nomeRel(r, i) { return `${r.dados.numero || (i != null ? i + 1 : "")} ${r.dados.pasta.rotulo || r.dados.titulo}`.trim(); }
-function idsOrdenados() { return Object.keys(DB.rels).sort((a, b) => (parseFloat(DB.rels[a].dados.numero) || 1e9) - (parseFloat(DB.rels[b].dados.numero) || 1e9) || DB.rels[a].atualizado - DB.rels[b].atualizado); }
+
+/* ---- códigos numéricos, categorias e nomes de arquivo ---- */
+const CATS_PADRAO = { "1": "Licitações", "2": "Aditivos", "3": "Jurídico", "4": "Comunicações" };
+function cats() { return Object.assign({}, CATS_PADRAO, DB.cats || {}); }
+const segs = c => String(c || "").split(".").map(x => parseInt(x, 10) || 0);
+function cmpCod(a, b) { const A = segs(a), B = segs(b); for (let i = 0; i < Math.max(A.length, B.length); i++) { const d = (A[i] || 0) - (B[i] || 0); if (d) return d; } return 0; }
+function proximoCodigo(pai) {
+  const nivel = pai ? pai.split(".").length + 1 : 1;
+  const usados = Object.values(DB.rels).map(r => String(r.dados.numero || "")).filter(n => n && n.split(".").length === nivel && (!pai || n.startsWith(pai + ".")));
+  return (pai ? pai + "." : "") + (Math.max(0, ...usados.map(n => parseInt(n.split(".").pop(), 10) || 0)) + 1);
+}
+function novoCodigoDoc(rel) { rel.cont = Math.max(rel.cont || 0, (rel.entrada || []).length) + 1; return (rel.dados.numero ? rel.dados.numero + "." : "") + rel.cont; }
+/* tudo em maiúsculas, partes separadas por underline, sem "N." nem barra, sem parênteses */
+function nomeArquivo(partes) {
+  return partes.map(p => String(p == null ? "" : p).replace(/\bN[º°.]\s*/gi, "").replace(/[\/\\]+/g, "-").normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase().replace(/[^A-Z0-9.\-]+/g, "_").replace(/^[_.]+|[_.]+$/g, "")).filter(Boolean).join("_");
+}
+function grupoDe(r) { const n = String(r.dados.numero || ""); return n.includes(".") ? n.split(".")[0] : "0"; }
+function nomeRel(r, i) { return `${r.dados.numero || ""} ${r.dados.pasta.rotulo || r.dados.titulo}`.trim(); }
+function idsOrdenados() { return Object.keys(DB.rels).sort((a, b) => cmpCod(DB.rels[a].dados.numero || "999", DB.rels[b].dados.numero || "999") || DB.rels[a].atualizado - DB.rels[b].atualizado); }
+let mtimes = {}, mtimesEm = 0;
+async function carregarMtimes() {
+  if (!API.ok || Date.now() - mtimesEm < 20000) return; mtimesEm = Date.now();
+  const caminhos = Object.values(DB.rels).map(r => r.dados.pasta.caminho).filter(Boolean); if (!caminhos.length) return;
+  try { mtimes = await (await api("mtimes", { caminhos })).json(); if (DB.ui.ordem === "rec") desenharLateral(); } catch (e) {}
+}
+const ultimoTrabalho = r => Math.max(mtimes[r.dados.pasta.caminho] || 0, r.atualizado || 0);
+function relativo(ms) {
+  const d = (Date.now() - ms) / 86400000;
+  if (d < 1) return new Date(ms).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return d < 2 ? "ontem" : `há ${Math.floor(d)} dias`;
+}
+
 async function abrirPasta(rel) {
   const p = rel.dados.pasta || {};
   if (movel()) { if (p.drive) window.open(p.drive, "_blank", "noopener"); else aviso("Este relatório não tem link do Drive. Peça ao Claude para incluir pasta.drive no relatório."); return; }
@@ -302,21 +340,110 @@ async function abrirPasta(rel) {
   const ok = await copiar(p.caminho);
   aviso(ok ? "Caminho copiado. No Explorador (Win+E) cole na barra de endereço e tecle Enter. Pelo Iniciar Omega.bat abre direto." : "Caminho: " + p.caminho);
 }
-function abrirConversa(id) {
-  const r = DB.rels[id]; if (!r) return;
-  if (r.conversa) { window.open(r.conversa, "_blank", "noopener"); return; }
-  DB.atual = id; vista = "rel"; DB.ui.lateral = true; salvar(); montar();
-  const i = $("#in-conv"); if (i) i.focus();
-  aviso("Cole o link da conversa deste relatório no campo da lateral e tecle Enter.");
-}
+function abrirGrupo(id) { const g = grupoDe(DB.rels[id]); const s = new Set(DB.ui.abertos || []); s.add(g); DB.ui.abertos = [...s]; }
 function abrirRelatorio(id, num, par) {
-  DB.atual = id; vista = "rel"; salvar(); montar(); scrollTo(0, 0);
+  DB.atual = id; vista = "rel"; abrirGrupo(id); salvar(); montar(); scrollTo(0, 0);
   if (num) setTimeout(() => irPara(num), 30);
   if (par) setTimeout(() => { const e = document.querySelector(`[data-fk="${CSS.escape(par)}"]`); if (e) { e.scrollIntoView({ block: "center", behavior: "smooth" }); e.classList.add("alvo"); const pf = e.querySelector("[data-pf]"); if (pf) pf.focus(); } }, 30);
   fecharLateralPequena();
 }
 
-/* ---- barra lateral: busca por número/nome e atalhos ---- */
+/* ---- barra superior congelada ---- */
+function textosDe(rel) { return rel.dados.secoes.filter(s => s.tipo === "texto"); }
+function respostasDe(rel) { return (rel.entrada || []).map(e => e.resposta && DB.rels[e.resposta]).filter(Boolean); }
+function previaDe(rel, sec) { if (sec) previaImpressao(rel, sec); }
+function escolherSecao(ancora, lista, vazio) {
+  if (!lista.length) { aviso(vazio); return; }
+  if (lista.length === 1) { previaDe(lista[0].rel, lista[0].sec); return; }
+  menuSimples(ancora, lista.map(x => ({ rotulo: x.rotulo, fn: () => previaDe(x.rel, x.sec) })));
+}
+function barraBotoes(rel) {
+  const bt = (txt, ic, fn, attr, cls) => h("button", Object.assign({ class: "bt" + (cls ? " " + cls : ""), onclick: fn }, attr || {}), h("span", { class: "ic" }, ic), h("span", { class: "tx" }, txt));
+  return [
+    bt("Relatório (PDF)", "▤", () => previaImpressaoBlocos(rel.dados.titulo, textoRelatorio(rel).split("\n\n").map(x => ({ t: "p", x }))), { id: "b-pdf", title: "Visualizar o relatório em folha A4 (imprimir / salvar PDF)" }, "pr"),
+    bt("Documento", "▭", ev => escolherSecao(ev.currentTarget, textosDe(rel).map(s => ({ rel, sec: s, rotulo: s.titulo })), "Este objeto não tem documento de texto."), { id: "b-doc", title: "Visualizar o documento" }),
+    bt("Resposta", "↩", ev => escolherSecao(ev.currentTarget, respostasDe(rel).flatMap(r => textosDe(r).map(s => ({ rel: r, sec: s, rotulo: nomeRel(r) + " — " + s.titulo }))), "Ainda não há resposta. Use Responder em Recebidos ou na Mesa PDF."), { id: "b-resp", title: "Visualizar a resposta" }),
+    bt("CI", "✉", ev => { const todos = [rel, ...respostasDe(rel)]; escolherSecao(ev.currentTarget, todos.flatMap(r => textosDe(r).filter(s => /\bCI\b|comunica[çc][aã]o interna/i.test(s.titulo + " " + (r.dados.pasta.rotulo || ""))).map(s => ({ rel: r, sec: s, rotulo: nomeRel(r) }))), "Nenhuma CI neste objeto. Crie em Novo documento → Comunicação interna."); }, { id: "b-ci", title: "Visualizar a CI" }),
+    bt("Copiar relatório", "⧉", () => copiarSaida(false), { id: "b-cop", title: "Copia só as suas decisões e comentários" }),
+    bt("Copiar item", "◎", () => copiarSaida(true), { id: "b-copf", title: "Copia só o item em foco" }, "s"),
+    bt("Foco", "⌖", () => { const f = rel.foco; if (!f) { aviso("Nada em foco ainda."); return; } if (!focarAlvo(f)) { const e = document.querySelector(`[data-pf="${CSS.escape(chave(f))}"]`) || document.querySelector(`[data-fk="${CSS.escape(chave(f))}"]`); if (e) { e.scrollIntoView({ block: "center", behavior: "smooth" }); if (e.focus) e.focus(); } } }, { id: "b-foco", title: "Ir para o item em foco" }, "s"),
+    bt("Pasta", "📁", () => abrirPasta(rel), { id: "b-pasta", title: "Abrir a pasta deste objeto" }, "s"),
+    bt("Conversa", "💬", () => irConversa(rel.dados.id), { id: "b-conv", title: "Ir para a conversa (copia a mensagem e salva o retorno na pasta)" }, "s")
+  ];
+}
+function desenharBarra() {
+  const B = $("#barra"); if (!B) return; B.replaceChildren();
+  const rel = relAtual();
+  B.append(h("button", { class: "bt ic-so", "data-lat": "1", id: "b-lat", title: "Abrir ou recolher a lateral", "aria-label": "Menu lateral" }, "☰"),
+    h("span", { class: "tt", title: rel ? nomeRel(rel) : "" }, rel && vista === "rel" ? nomeRel(rel) : "Omega"));
+  if (rel && vista === "rel") barraBotoes(rel).forEach(b => B.append(b));
+  B.append(h("span", { class: "esp" }),
+    h("button", { class: "bt ic-so" + (audioOn ? " gravando" : ""), id: "b-aud", "data-aud": "1", title: "Ditado por voz (Ctrl+Shift+Espaço)", "aria-label": "Ditado", onclick: () => alternarAudio() }, "🎙"),
+    h("button", { class: "bt ic-so", id: "b-mais", title: "Mais opções", "aria-label": "Mais opções", onclick: () => { const m = $("#mais"); desenharMais(); m.classList.toggle("oculto"); } }, "⋯"));
+}
+function desenharMais() {
+  const M = $("#mais"); M.replaceChildren();
+  const it = (txt, ic, fn, extra) => h("button", Object.assign({ class: "lat-bt", onclick: () => { $("#mais").classList.add("oculto"); fn(); } }, extra || {}), h("span", { class: "ic" }, ic), txt);
+  const rel = relAtual();
+  M.append(h("h4", {}, "Objetos"),
+    it("Novo objeto", "＋", () => novoObjeto(), { id: "m-novo-obj" }), it("Novo documento", "▭", () => novoDocumento(), { id: "m-novo-doc" }),
+    it("Mesa PDF", "📄", () => abrirMesaLocal(), { id: "m-mesa" }), it("Pastas do computador", "🗂", () => abrirPastaView(null)),
+    it("Revisar PDFs separados pelo script", "✔", () => abrirRevisao(), { id: "m-revisao" }), it("Criar a hierarquia base de pastas", "🗃", () => criarHierarquia(), { id: "m-hier" }));
+  M.append(h("h4", {}, "Abrir relatório"),
+    it("Abrir arquivo .json", "▫", () => $("#arq").click()), it("Colar relatório", "▫", () => { vista = "colar"; montar(); }),
+    it("Acompanhar arquivo (Chrome)", "▫", () => acompanharArquivo()), it("Procurar na pasta dados", "▫", () => { servidorOk = null; procurarPasta(true); }), it("Ver exemplo", "▫", () => abrirExemplo()));
+  M.append(h("h4", {}, "Conversa e e-mail"),
+    it("Conversa deste objeto (link e mensagem)", "💬", () => modalConversa(), { id: "m-conv" }),
+    it("Claude (nova conversa)", "✦", () => window.open(URLS.claude, "_blank", "noopener")), it("Gemini (nova conversa)", "✧", () => window.open(URLS.gemini, "_blank", "noopener")),
+    it("Gmail", "✉", () => window.open("https://mail.google.com/", "_blank", "noopener"), { id: "b-gmail" }));
+  M.append(h("h4", {}, "Ferramentas"),
+    it("Copiar relatório inteiro", "▤", () => copiarInteiro()), it("Copiar tudo e enviar relatório", "➤", () => copiarTudoEnviar(), { id: "b-env" }),
+    it("Revisor de texto livre", "✎", () => { vista = "rev"; montar(); }), it("Levar estado para outro aparelho", "⇄", () => { vista = "est"; montar(); }),
+    h("button", { class: "lat-bt" + (DB.ui.revisar ? " on" : ""), id: "b-rev", onclick: () => { DB.ui.revisar = !DB.ui.revisar; salvar(); remontar(); desenharMais(); aviso(DB.ui.revisar ? "Revisão de texto ligada." : "Revisão de texto desligada."); } }, h("span", { class: "ic" }, "✎"), "Revisar texto"));
+  M.append(h("h4", {}, "Iluminação"), h("div", { class: "seg" }, [["claro", "Claro"], ["escuro", "Escuro"], ["maisescuro", "Mais escuro"]].map(([k, t]) => h("button", { class: DB.ui.tema === k ? "on" : "", "data-tema": k, onclick: () => { DB.ui.tema = k; salvar(); aplicarTema(); desenharMais(); } }, t))));
+  M.append(h("h4", {}, "Ajustes"));
+  [["avancar", "Depois de escolher, ir para o próximo pendente"], ["audioSempre", "Áudio sempre ligado"], ["revisar", "Revisar texto ao abrir capítulo"]].forEach(([k, t]) => {
+    const c = h("input", { type: "checkbox", onchange: e => { DB.ui[k] = e.target.checked; salvar(); if (k === "audioSempre" && e.target.checked && !audioOn) ligarAudio(); if (k === "revisar") remontar(); } });
+    c.checked = !!DB.ui[k]; M.append(h("label", { class: "lat-chk" }, c, t));
+  });
+  const vel = h("input", { type: "range", min: "0", max: "12", id: "aj-vel", value: String(DB.ui.vel ?? 4), oninput: e => { DB.ui.vel = +e.target.value; salvar(); } });
+  M.append(h("label", { class: "lat-chk" }, "Velocidade da rolagem automática ", vel));
+  M.append(h("h4", {}, "Contador"), h("div", { id: "cont", class: "contador" })); atualizarContador();
+}
+function modalConversa() {
+  const rel = relAtual(); if (!rel) { aviso("Abra um objeto primeiro."); return; }
+  const link = h("input", { type: "url", id: "mc-link", placeholder: "https://claude.ai/chat/…" }), msg = h("input", { type: "text", id: "mc-msg", placeholder: `Leia o relatório de retorno do Omega do objeto ${nomeRel(rel)} (rev ${rel.dados.rev}).` });
+  link.value = rel.conversa || ""; msg.value = rel.msg || "";
+  const ov = sobreposicao(h("div", {}, h("label", { class: "campo" }, h("span", {}, "Link da conversa do Claude deste objeto"), link), h("label", { class: "campo" }, h("span", {}, "Mensagem que vai copiada ao clicar em Conversa"), msg),
+    h("div", { class: "linha" }, h("button", { class: "btn", id: "mc-salvar", onclick: () => {
+      const v = link.value.trim(); if (v && !/^https?:\/\//i.test(v)) { aviso("O link precisa começar com https://"); return; }
+      rel.conversa = v; rel.msg = msg.value.trim(); salvar(); ov.remove(); desenharBarra(); aviso(v ? "Conversa salva." : "Link removido.");
+    } }, "Salvar"))), "Conversa deste objeto");
+  setTimeout(() => link.focus(), 50);
+}
+function irConversa(id) { return irConversaReal(id); }
+
+/* ---- caixa de entrada arredondada na base: comentário do item em foco ---- */
+function desenharEntrada() {
+  const E = $("#entrada"); if (!E) return;
+  const rel = relAtual(), f = rel && rel.foco;
+  if (document.activeElement && document.activeElement.id === "ent-ta") return;
+  E.replaceChildren();
+  if (!rel || vista !== "rel" || !f || f.t === "V") return;
+  const inf = infoAlvo(rel, f); if (!inf) return;
+  const k = chave(f), s = rel.st[k] || {}, rot = (f.t === "I" ? f.num : f.t === "P" ? f.id : f.t === "K" ? "cap. " + f.cap : f.t === "C" ? f.num : "recebido");
+  const ta = h("textarea", { id: "ent-ta", rows: "1", placeholder: `Comentário de ${rot}… (Enter salva; Ctrl+Shift+Espaço dita)`, "aria-label": "Comentário do item em foco" });
+  ta.value = s.obs || "";
+  const ajusta = () => { ta.style.height = "auto"; ta.style.height = Math.min(140, ta.scrollHeight) + "px"; };
+  const salvarObs = (remount) => { const v = ta.value.trim(); if (v === (s.obs || "")) return; const ss = stOf(rel, k); ss.obs = v; ss.tocado = true; rel.atualizado = Date.now(); salvar(); if (remount) { refoco = `[data-chip="${k}"], [data-pf="${k}"]`; remontar(); } };
+  ta.addEventListener("input", ajusta);
+  ta.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); salvarObs(true); aviso("Comentário salvo."); } });
+  ta.addEventListener("blur", () => salvarObs(false));
+  E.append(h("div", { class: "ent-caixa" }, h("span", { class: "rot" }, rot), ta, h("button", { class: "mic", title: "Ditar o comentário", "aria-label": "Ditar", onmousedown: e => e.preventDefault(), onclick: () => { ta.focus(); ditarEm(ta); } }, "🎙")));
+  setTimeout(ajusta, 0);
+}
+
+/* ---- lateral enxuta: busca, organização e pastas numeradas ---- */
 function resultadosBusca(q) {
   const toks = norm(q).split(/\s+/).filter(Boolean); if (!toks.length) return null;
   const res = { rels: [], itens: [] };
@@ -343,9 +470,9 @@ function desenharBusca() {
   box.replaceChildren();
   const res = resultadosBusca(buscaQ);
   if (!res) return;
-  if (res.rels.length) { box.append(h("h4", {}, "Relatórios")); res.rels.forEach(id => box.append(h("button", { class: "lat-bt res", onclick: () => abrirRelatorio(id) }, nomeRel(DB.rels[id])))); }
+  if (res.rels.length) { box.append(h("h4", {}, "Pastas")); res.rels.forEach(id => box.append(h("button", { class: "lat-bt res", onclick: () => abrirRelatorio(id) }, nomeRel(DB.rels[id])))); }
   if (res.itens.length) { box.append(h("h4", {}, `Itens (${res.itens.length})`)); res.itens.forEach(x => box.append(h("button", { class: "lat-bt res", onclick: () => abrirRelatorio(x.id, x.par ? null : x.num, x.par) }, h("span", { class: "rn" }, x.num), h("span", { class: "rt" }, x.titulo || "(sem título)"), h("span", { class: "rs" }, x.st + (res.rels.length !== 1 ? " · " + x.rotulo : "")))));}
-  if (!res.rels.length && !res.itens.length) box.append(h("p", { class: "suave", style: "padding:4px 8px" }, "Nada encontrado nos relatórios."));
+  if (!res.rels.length && !res.itens.length) box.append(h("p", { class: "suave", style: "padding:4px 8px;font-size:13px" }, "Nada encontrado nos relatórios."));
   if (API.ok && buscaQ.trim().length >= 2) {
     const pb = h("div", { id: "res-pastas" }); box.append(pb);
     clearTimeout(tPastas);
@@ -360,70 +487,35 @@ function desenharBusca() {
   }
 }
 function desenharLateral() {
-  const L = $("#lateral"), sy = L.scrollTop, tinhaFoco = document.activeElement && document.activeElement.id === "busca"; L.replaceChildren();
-  const rel = relAtual();
-  L.append(h("div", { class: "lat-topo" }, h("span", { class: "marca" }, "Omega")));
+  const L = $("#lateral"), tinhaFoco = document.activeElement && document.activeElement.id === "busca"; L.replaceChildren();
+  L.append(h("div", { class: "lat-topo" }, h("button", { class: "bt ic-so", "data-lat": "1", "aria-label": "Recolher a lateral", title: "Recolher a lateral" }, "☰"), h("span", { class: "marca" }, "Omega")));
   const busca = h("input", { id: "busca", type: "search", placeholder: "Buscar por número ou nome…  ( / )", "aria-label": "Buscar", autocomplete: "off",
     oninput: e => { buscaQ = e.target.value; desenharBusca(); },
-    onkeydown: e => { if (e.key === "Enter") { const b = $("#busca-res .res"); if (b) b.click(); } else if (e.key === "ArrowDown") { const b = $("#busca-res .res"); if (b) { e.preventDefault(); b.focus(); } } else if (e.key === "Escape") { buscaQ = ""; e.target.value = ""; desenharBusca(); } } });
+    onkeydown: e => { if (e.key === "Enter") { const b = $("#busca-res .res"); if (b) b.click(); } else if (e.key === "ArrowDown") { const b = $("#busca-res .res") || $(".lat-lista .li"); if (b) { e.preventDefault(); b.focus(); } } else if (e.key === "Escape") { buscaQ = ""; e.target.value = ""; desenharBusca(); } } });
   busca.value = buscaQ;
   L.append(h("div", { class: "busca-caixa" }, busca), h("div", { id: "busca-res" }));
-  L.append(h("h4", {}, "Relatórios"));
-  const ids = idsOrdenados();
-  if (!ids.length) L.append(h("p", { class: "suave", style: "padding:0 8px" }, "Nenhum ainda."));
-  ids.forEach((id, i) => {
+  const ordem = DB.ui.ordem === "rec" ? "rec" : "num";
+  L.append(h("div", { class: "seg2" }, h("button", { class: ordem === "num" ? "on" : "", id: "ord-num", onclick: () => { DB.ui.ordem = "num"; salvar(); desenharLateral(); } }, "Numérica"), h("button", { class: ordem === "rec" ? "on" : "", id: "ord-rec", onclick: () => { DB.ui.ordem = "rec"; salvar(); carregarMtimes(); desenharLateral(); } }, "Últimos trabalhados")));
+  const lista = h("div", { class: "lat-lista", id: "lat-lista" }), ids = idsOrdenados();
+  if (!ids.length) lista.append(h("p", { class: "suave", style: "padding:0 8px;font-size:13px" }, "Nenhuma pasta ainda. Use ⋯ → Novo objeto."));
+  const linha = (id, sub) => {
     const r = DB.rels[id], n = contagens(r), sel = id === DB.atual && vista === "rel";
-    L.append(h("div", { class: "caixa-l" + (sel ? " sel" : "") },
-      h("button", { class: "caixinha", onclick: () => { DB.atual = id; vista = "rel"; salvar(); montar(); scrollTo(0, 0); fecharLateralPequena(); } }, h("span", { class: "n" }, nomeRel(r, i)), h("span", { class: "c" }, n.pend || "✓")),
-      h("button", { class: "ico", title: "Arquivos: abrir a pasta deste relatório", "aria-label": "Arquivos", onclick: () => abrirPasta(r) }, "📁"),
-      h("button", { class: "ico" + (r.conversa ? " tem" : ""), title: r.conversa ? "Ir para a conversa (copia a mensagem e salva o retorno na pasta)" : "Colar o link da conversa", "aria-label": "Conversa", onclick: () => irConversa(id) }, "💬")));
-  });
-  if (rel) {
-    const inp = h("input", { id: "in-conv", type: "url", placeholder: "Link da conversa deste relatório", "aria-label": "Link da conversa", onchange: e => {
-      const v = e.target.value.trim();
-      if (v && !/^https?:\/\//i.test(v)) { aviso("O link precisa começar com https://"); return; }
-      rel.conversa = v; salvar(); aviso(v ? "Link da conversa salvo." : "Link da conversa removido."); desenharLateral();
-    } });
-    inp.value = rel.conversa || "";
-    const msg = h("input", { id: "in-msg", type: "text", placeholder: "Mensagem ao ir para a conversa (padrão: Leia o relatório de retorno…)", "aria-label": "Mensagem para a conversa", onchange: e => { rel.msg = e.target.value.trim(); salvar(); } });
-    msg.value = rel.msg || "";
-    L.append(h("div", { class: "conv" }, inp, h("button", { class: "mini", onclick: () => irConversa(DB.atual) }, "Ir")), h("div", { class: "conv" }, msg));
+    return h("button", { class: "li" + (sub ? " sub" : "") + (sel ? " sel" : ""), "data-pasta": id, onclick: () => { DB.atual = id; vista = "rel"; abrirGrupo(id); salvar(); montar(); scrollTo(0, 0); fecharLateralPequena(); } },
+      h("span", { class: "cod" }, r.dados.numero || "·"), h("span", { class: "n" }, r.dados.pasta.rotulo || r.dados.titulo), ordem === "rec" ? h("span", { class: "cod" }, relativo(ultimoTrabalho(r))) : h("span", { class: "cod" }, n.pend || "✓"));
+  };
+  if (ordem === "rec") ids.slice().sort((a, b) => ultimoTrabalho(DB.rels[b]) - ultimoTrabalho(DB.rels[a])).forEach(id => lista.append(linha(id, false)));
+  else {
+    const grupos = {}; ids.forEach(id => (grupos[grupoDe(DB.rels[id])] = grupos[grupoDe(DB.rels[id])] || []).push(id));
+    const abertos = new Set(DB.ui.abertos || []);
+    Object.keys(grupos).sort(cmpCod).forEach(g => {
+      const ab = abertos.has(g), nome = g === "0" ? "Sem categoria" : (cats()[g] || "Categoria " + g);
+      lista.append(h("button", { class: "li", "data-grupo": g, "aria-expanded": ab ? "true" : "false", onclick: () => { const s = new Set(DB.ui.abertos || []); s.has(g) ? s.delete(g) : s.add(g); DB.ui.abertos = [...s]; salvar(); desenharLateral(); } },
+        h("span", { class: "seta" }, ab ? "▾" : "▸"), h("span", { class: "cod" }, g === "0" ? "·" : g), h("span", { class: "n" }, nome)));
+      if (ab) { grupos[g].forEach(id => lista.append(linha(id, true))); lista.append(h("div", { class: "div-curto" })); }
+    });
   }
-  const acao = (txt, ic, fn, on, attr) => h("button", Object.assign({ class: "lat-bt" + (on ? " on" : ""), onclick: fn }, attr || {}), h("span", { class: "ic" }, ic), txt);
-  L.append(h("h4", {}, "Copiar"));
-  L.append(acao("Copiar relatório", "⧉", () => { copiarSaida(false); fecharLateralPequena(); }, false, { id: "b-cop", title: "Só as decisões e os comentários" }),
-    acao("Copiar item em foco", "◎", () => { copiarSaida(true); fecharLateralPequena(); }, false, { id: "b-copf" }),
-    acao("Copiar relatório inteiro", "▤", () => { copiarInteiro(); fecharLateralPequena(); }),
-    acao("Copiar tudo e enviar relatório", "➤", () => { copiarTudoEnviar(); fecharLateralPequena(); }, false, { id: "b-env" }));
-  L.append(h("h4", {}, "Texto"));
-  L.append(acao("Revisar texto", "✎", () => { DB.ui.revisar = !DB.ui.revisar; salvar(); remontar(); aviso(DB.ui.revisar ? "Revisão de texto ligada." : "Revisão de texto desligada."); }, DB.ui.revisar, { id: "b-rev" }),
-    acao("Áudio (ditado)", "🎙", () => alternarAudio(), audioOn, { id: "b-aud", "data-aud": "1" }),
-    acao("Novo objeto", "＋", () => { novoObjeto(); fecharLateralPequena(); }, false, { id: "b-novo-obj" }),
-    acao("Novo documento", "▭", () => { novoDocumento(); fecharLateralPequena(); }),
-    acao("Mesa PDF", "📄", () => { abrirMesaLocal(); }, false, { id: "b-mesa" }),
-    acao("Pastas do computador", "🗂", () => { abrirPastaView(null); fecharLateralPequena(); }));
-  L.append(h("h4", {}, "Conversa e e-mail"));
-  L.append(acao("Claude (nova conversa)", "✦", () => { window.open(URLS.claude, "_blank", "noopener"); fecharLateralPequena(); }),
-    acao("Gemini (nova conversa)", "✧", () => { window.open(URLS.gemini, "_blank", "noopener"); fecharLateralPequena(); }),
-    acao("Gmail", "✉", () => { window.open("https://mail.google.com/", "_blank", "noopener"); fecharLateralPequena(); }, false, { id: "b-gmail" }));
-  L.append(h("h4", {}, "Iluminação"));
-  L.append(h("div", { class: "seg" }, [["claro", "Claro"], ["escuro", "Escuro"], ["maisescuro", "Mais escuro"]].map(([k, t]) => h("button", { class: DB.ui.tema === k ? "on" : "", "data-tema": k, onclick: () => { DB.ui.tema = k; salvar(); aplicarTema(); desenharLateral(); } }, t))));
-  L.append(h("h4", {}, "Contador"), h("div", { id: "cont", class: "contador" }));
-  L.append(h("h4", {}, "Abrir relatório"));
-  L.append(h("button", { class: "lat-bt", onclick: () => $("#arq").click() }, "Abrir arquivo .json"),
-    h("button", { class: "lat-bt", onclick: () => { vista = "colar"; montar(); fecharLateralPequena(); } }, "Colar relatório"),
-    h("button", { class: "lat-bt", onclick: acompanharArquivo }, "Acompanhar arquivo (Chrome)"),
-    h("button", { class: "lat-bt", onclick: () => { servidorOk = null; procurarPasta(true); } }, "Procurar na pasta dados"),
-    h("button", { class: "lat-bt", onclick: abrirExemplo }, "Ver exemplo"));
-  L.append(h("h4", {}, "Ferramentas"));
-  L.append(h("button", { class: "lat-bt", onclick: () => { vista = "rev"; montar(); fecharLateralPequena(); } }, "Revisor de texto livre"),
-    h("button", { class: "lat-bt", onclick: () => { vista = "est"; montar(); fecharLateralPequena(); } }, "Levar estado para outro aparelho"));
-  L.append(h("h4", {}, "Ajustes"));
-  [["avancar", "Depois de escolher, ir para o próximo pendente"], ["audioSempre", "Áudio sempre ligado"], ["revisar", "Revisar texto ao abrir capítulo"]].forEach(([k, t]) => {
-    const c = h("input", { type: "checkbox", onchange: e => { DB.ui[k] = e.target.checked; salvar(); if (k === "audioSempre" && e.target.checked && !audioOn) ligarAudio(); if (k === "revisar") remontar(); } });
-    c.checked = !!DB.ui[k]; L.append(h("label", { class: "lat-chk" }, c, t));
-  });
-  L.scrollTop = sy;
+  L.append(lista);
+  L.append(h("div", { class: "lat-rod" }, h("span", {}, API.ok ? "Servidor local ligado" : "Sem servidor local")));
   desenharBusca();
   if (tinhaFoco) { busca.focus(); const n = busca.value.length; try { busca.setSelectionRange(n, n); } catch (e) {} }
 }
@@ -637,11 +729,12 @@ function paragrafoEl(rel, sec, p) {
     onfocus: () => { rel.foco = f; marcarFoco(f); },
     onkeydown: ev => { if (campo.isContentEditable) return; if (ev.key === "Enter" || ev.key === "F2") { ev.preventDefault(); editarPar(campo, rel, sec, p); } } });
   renderTexto(campo, txt, novo => alterarPar(rel, sec, p, novo));
-  const mic = h("button", { class: "mic" + (audioOn && rel.foco && chave(rel.foco) === k ? " gravando" : ""), tabindex: "-1", title: "Ditar uma nota para este parágrafo", onclick: e => { e.stopPropagation(); setFoco(f); alternarAudio(); } }, "🎙");
+  const mic = h("button", { class: "mic" + (audioOn && rel.foco && chave(rel.foco) === k ? " gravando" : ""), tabindex: "-1", title: "Ditar uma nota para este parágrafo", onclick: e => { e.stopPropagation(); setFoco(f); ditarEm(campo); } }, "🎙");
   const tdT = h("td", {}, h("div", { class: "pid" }, p.id, st.alterado ? h("span", { class: "alt" }, "alterado por você") : null, h("button", { class: "mini", tabindex: "-1", onclick: ev => { ev.stopPropagation(); copiarTexto(textoDe(rel, sec, p), "Parágrafo copiado."); } }, "Copiar parágrafo")), campo,
     st.obs ? h("div", { class: "comentario" }, h("b", {}, "Comentário: "), st.obs) : null, notasEl(rel, k));
   if (DB.ui.revisar && rel.foco && chave(rel.foco) === k) tdT.append(h("div", { class: "rev-acoes" }, h("a", { onclick: async () => { const t = PERGUNTA + "\n\n" + textoDe(rel, sec, p); const ok = await copiar(t); window.open(URLS.gemini, "_blank", "noopener"); ok ? aviso("Copiado, cole no Gemini") : caixaCopia(t, "Texto para o Gemini"); } }, "Revisar no Gemini")));
   const tr = h("tr", { "data-fk": k, onclick: ev => { if (!ev.target.closest("button,a")) { const antes = rel.foco && chave(rel.foco); setFoco(f); if (DB.ui.revisar && antes !== k) remontar(); } } }, tdT, h("td", { class: "col-s" }, chipEl(f, ROTULO_SIT[sit]), mic));
+  campo.addEventListener("omega-editar", () => editarPar(campo, rel, sec, p));
   campo.addEventListener("dblclick", () => editarPar(campo, rel, sec, p));
   let ult = 0;
   campo.addEventListener("pointerup", ev => { if (ev.pointerType === "mouse") return; const t = Date.now(); if (t - ult < 350) editarPar(campo, rel, sec, p); ult = t; });
@@ -673,7 +766,7 @@ function alterarPar(rel, sec, p, novo) {
 }
 
 /* ================= caixa de opções (o "dropdown" do chip) ================= */
-const COR_OPC = { "A fazer": "#4a90e2", "Aguardando": "#4a90e2", "Feito": "#1f9d6b", "Seguir": "#1f9d6b", "Ignorar": "#2e9c3a", "Não consegui": "#f0a020", "Pendente": "#d6453d", "Aprovado": "#2f8f4e", "Ajustar": "#3f6fd1", "Em análise": "#4a90e2", "Responder": "#3f6fd1", "Respondido": "#2f8f4e", "Arquivar": "#8a8f98" };
+const COR_OPC = { "Arquivado": "#2f8f4e", "Corrigir": "#f0a020", "A fazer": "#4a90e2", "Aguardando": "#4a90e2", "Feito": "#1f9d6b", "Seguir": "#1f9d6b", "Ignorar": "#2e9c3a", "Não consegui": "#f0a020", "Pendente": "#d6453d", "Aprovado": "#2f8f4e", "Ajustar": "#3f6fd1", "Em análise": "#4a90e2", "Responder": "#3f6fd1", "Respondido": "#2f8f4e", "Arquivar": "#8a8f98" };
 function corOpcao(o, f) {
   if (f.t === "K") return o === OPC_CAP[0] ? "#2f8f4e" : o === OPC_CAP[1] ? "#3f6fd1" : "#d6453d";
   return COR_OPC[o] || "#1f9d6b";
@@ -689,7 +782,7 @@ function abrirPop(f, ancora) {
   const q = h("input", { id: "pop-q", type: "text", placeholder: "Procurar ou adicionar opção…", "aria-label": "Procurar ou adicionar opção", autocomplete: "off", oninput: e => { pop.q = e.target.value; pop.hl = 0; listar(); } });
   const lista = h("div", { class: "pop-ops", role: "listbox" });
   const com = h("textarea", { id: "pop-com", placeholder: "Escreva um comentário (opcional)…", rows: "2", "aria-label": "Comentário" }); com.value = s.obs || "";
-  const mic = h("button", { id: "pop-mic", class: "mini", type: "button", title: "Ditar o comentário", onclick: () => { audioOn && audioAlvo === com ? desligarAudio() : (desligarAudio(), ligarAudio(com)); } }, "🎙 Ditar");
+  const mic = h("button", { id: "pop-mic", class: "mini", type: "button", title: "Ditar o comentário", onmousedown: e => e.preventDefault(), onclick: () => { audioOn && audioAlvo === com ? pararDitado() : (pararDitado(), com.focus(), ditarEm(com)); } }, "🎙 Ditar");
   P.append(h("div", { class: "pop-cab" }, h("b", {}, inf.titulo), inf.sub ? h("span", {}, inf.sub.length > 90 ? inf.sub.slice(0, 90) + "…" : inf.sub) : null),
     h("div", { class: "pop-busca" }, h("span", { class: "lupa" }, "⌕"), q), lista, h("div", { class: "pop-sep" }),
     h("div", { class: "pop-com" }, com, h("div", { class: "pop-com-b" }, mic, h("span", { class: "suave" }, "Enter salva só o comentário"))),
@@ -745,7 +838,7 @@ function escolherDoPop(item) {
   const valor = item.add != null ? item.add : item.valor;
   fecharPop(false);
   aplicarValor(rel, f, valor, item.limpar ? "" : obsCampo, item.add != null);
-  if (item.limpar) { const s = stOf(rel, chave(f)); if (f.t === "I" || f.t === "C" || f.t === "E") delete s.v; s.tocado = true; }
+  if (item.limpar) { const s = stOf(rel, chave(f)); if (f.t === "I" || f.t === "C" || f.t === "E" || f.t === "V") delete s.v; s.tocado = true; }
   refoco = `[data-chip="${chave(f)}"]`;
   salvar();
   const prox = DB.ui.avancar && !item.limpar && kind(valor) !== "pend" ? vizinho(rel, 1) : null;
@@ -835,6 +928,10 @@ function montarSaida(rel, soFoco) {
     });
     if (ls.length) blocos.push(`## Recebidos\n\n${ls.join("\n\n")}`);
   }
+  if (!soFoco) {
+    const ls = []; Object.keys(rel.st).filter(k => k.startsWith("V:")).forEach(k => { const s = rel.st[k]; if (tocou(s) && (s.v || s.obs)) ls.push(`${k.slice(2).split(/[\\/]/).pop()} [${s.v || "Pendente"}]` + (s.obs ? ` — comentário: ${s.obs}` : "")); });
+    if (ls.length) blocos.push(`## Revisão de arquivos\n\n${ls.join("\n\n")}`);
+  }
   if (!soFoco) (rel.notasGeral || []).forEach(n => notas.push(`(geral) ${aspas(n)}`));
   let t = `[OMEGA] ${rotuloRel(rel)} · relatório ${d.id} rev ${d.rev} | ${agora()}\n\n`;
   t += blocos.length ? blocos.join("\n\n") + "\n" : "Nada decidido ou alterado desde a última leva.\n";
@@ -876,7 +973,7 @@ async function copiarTudoEnviar() {
   if (rel.conversa) { window.open(rel.conversa, "_blank", "noopener"); ok ? aviso("Copiado. Na conversa, toque no campo de texto e cole.") : caixaCopia(t, "Tudo"); }
   else {
     ok ? aviso("Copiado. Cole o link da conversa deste relatório na lateral para abrir direto da próxima vez.") : caixaCopia(t, "Tudo");
-    DB.ui.lateral = true; salvar(); aplicarTema(); const i = $("#in-conv"); if (i) i.focus();
+    modalConversa();
   }
 }
 
@@ -884,42 +981,113 @@ async function copiarTudoEnviar() {
 const URLS = { claude: "https://claude.ai/new", gemini: "https://gemini.google.com/app" };
 const PERGUNTA = "Revise apenas o português (ortografia, acentuação, concordância e pontuação) do texto abaixo. Não mude o sentido nem o vocabulário jurídico. Devolva o texto corrigido e, depois, uma lista curta das alterações.";
 
-/* ================= áudio (ditado) ================= */
+/* ================= ditado por voz (voz para texto) em qualquer caixa ================= */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let reconhecedor = null, audioOn = false, audioAlvo = null;
+let reconhecedor = null, audioOn = false, audioAlvo = null, ditPediu = false, ditErros = 0, ditInt = null, ultimoCampo = null;
 function corrigirSiglas(t) {
   return t.replace(/\b(l[aá]\s+n[ao])\s+(?:s[eé]\s*)?in?fra\b/gi, (m, a) => a + " SEINFRA")
     .replace(/\b(?:isso\s+[eé]|s[eé]|sei|cei|ce)\s*[- ]?\s*in?fra\b/gi, "SEINFRA")
     .replace(/\bseinfra\b/gi, "SEINFRA");
 }
+const ehCampo = a => a && (a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && /^(text|search|url|)$/.test(a.type)) || a.isContentEditable || (a.dataset && a.dataset.pf));
+function campoAtivo() { const a = document.activeElement; return ehCampo(a) ? a : null; }
+function rolarCampo(el) {
+  if (el.tagName === "TEXTAREA") el.scrollTop = el.scrollHeight;
+  let r = null;
+  if (el.isContentEditable) { const s = getSelection(); if (s.rangeCount) { const rr = s.getRangeAt(0).cloneRange(); rr.collapse(false); r = rr.getBoundingClientRect(); } }
+  if (!r || (!r.bottom && !r.top)) r = el.getBoundingClientRect();
+  const margem = 150;
+  if (r.bottom > innerHeight - margem) scrollBy({ top: r.bottom - innerHeight + margem + 40, behavior: "smooth" });
+  else if (r.top < 70) scrollBy({ top: r.top - 90, behavior: "smooth" });
+}
+/* insere (ou troca o trecho provisório) no ponto do cursor */
+function inserirDitado(el, texto, final) {
+  if (el.tagName === "TEXTAREA" || el.tagName === "INPUT") {
+    let ini = el.selectionStart ?? el.value.length, v = el.value;
+    if (ditInt && ditInt.el === el) { v = v.slice(0, ditInt.ini) + v.slice(ditInt.ini + ditInt.len); ini = ditInt.ini; }
+    const pre = v.slice(0, ini), esp = pre && !/\s$/.test(pre) && !/^[,.;:!?]/.test(texto) ? " " : "", ins = esp + texto;
+    el.value = pre + ins + v.slice(ini);
+    const fim = ini + ins.length; el.setSelectionRange(fim, fim);
+    ditInt = final ? null : { el, ini, len: ins.length };
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  } else if (el.isContentEditable) {
+    const s = getSelection();
+    if (ditInt && ditInt.no && el.contains(ditInt.no)) { ditInt.no.data = ditInt.base + texto; const r = document.createRange(); r.setStart(ditInt.no, ditInt.no.data.length); r.collapse(true); s.removeAllRanges(); s.addRange(r); }
+    else {
+      if (!s.rangeCount || !el.contains(s.anchorNode)) { const r = document.createRange(); r.selectNodeContents(el); r.collapse(false); s.removeAllRanges(); s.addRange(r); }
+      const r = s.getRangeAt(0); r.deleteContents();
+      const ant = (r.startContainer.textContent || "").slice(0, r.startOffset), esp = ant && !/\s$/.test(ant) && !/^[,.;:!?]/.test(texto) ? " " : "";
+      const no = document.createTextNode(esp + texto); r.insertNode(no);
+      const r2 = document.createRange(); r2.setStart(no, no.data.length); r2.collapse(true); s.removeAllRanges(); s.addRange(r2);
+      ditInt = { no, base: esp };
+    }
+    if (final) ditInt = null;
+  }
+  rolarCampo(el);
+}
 function anexarNota(t) {
   const rel = relAtual(); if (!rel || !t) return;
-  if (audioAlvo && document.contains(audioAlvo)) { audioAlvo.value = (audioAlvo.value ? audioAlvo.value + " " : "") + t; return; }
   if (rel.foco) { const s = stOf(rel, chave(rel.foco)); (s.notas = s.notas || []).push(t); s.tocado = true; }
   else (rel.notasGeral = rel.notasGeral || []).push(t);
-  salvar(); if (!eh(document.activeElement)) remontar();
+  rel.atualizado = Date.now(); salvar(); if (!eh(document.activeElement)) remontar();
 }
 function mostrarOuvindo(t) { const o = $("#ouvindo"); o.style.display = t ? "block" : "none"; o.textContent = t ? "🎙 " + t : ""; }
-function ligarAudio(alvo) {
-  if (!SR) { aviso("Este navegador não tem ditado por voz. Use o Chrome."); return; }
-  if (audioOn) { if (alvo) audioAlvo = alvo; return; }
-  audioOn = true; audioAlvo = alvo || null;
+function ditarEm(alvo) {
+  if (!SR) { aviso("Este navegador não tem ditado por voz. Use o Chrome (no celular, use o microfone do teclado Gboard)."); return; }
+  if (alvo && alvo.dataset && alvo.dataset.pf && !alvo.isContentEditable) alvo.dispatchEvent(new Event("omega-editar"));
+  const el = alvo && document.contains(alvo) ? alvo : (alvo && alvo.dataset && alvo.dataset.pf ? document.querySelector(`[data-pf="${CSS.escape(alvo.dataset.pf)}"]`) : null);
+  audioAlvo = el || null; ditPediu = true; ditInt = null;
+  if (el) { ultimoCampo = el; el.focus(); }
+  if (audioOn) { atualizarAudioBt(); return; }
+  audioOn = true; ditErros = 0;
   reconhecedor = new SR(); reconhecedor.lang = "pt-BR"; reconhecedor.continuous = true; reconhecedor.interimResults = true;
   reconhecedor.onresult = e => {
-    let parcial = "";
-    for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) anexarNota(corrigirSiglas(r[0].transcript.trim())); else parcial += r[0].transcript; }
-    mostrarOuvindo(corrigirSiglas(parcial.trim()) || "ouvindo…");
+    ditErros = 0; let parcial = "";
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const r = e.results[i], t = corrigirSiglas(r[0].transcript.trim());
+      if (r.isFinal) { if (audioAlvo && document.contains(audioAlvo)) inserirDitado(audioAlvo, t, true); else anexarNota(t); } else parcial += " " + t;
+    }
+    parcial = parcial.trim();
+    if (audioAlvo && document.contains(audioAlvo)) { if (parcial) inserirDitado(audioAlvo, parcial, false); mostrarOuvindo("ouvindo… (continua mesmo se você pausar)"); }
+    else mostrarOuvindo(parcial || "ouvindo…");
   };
   reconhecedor.onerror = e => {
-    if (e.error === "not-allowed" || e.error === "service-not-allowed") { audioOn = false; aviso("O microfone está bloqueado. Libere o microfone nas permissões do site (e use localhost ou https)."); atualizarAudioBt(); }
+    if (e.error === "not-allowed" || e.error === "service-not-allowed") { ditPediu = false; audioOn = false; aviso("O microfone está bloqueado. Libere o microfone nas permissões do site (use localhost ou https)."); atualizarAudioBt(); }
+    else if (e.error !== "no-speech" && e.error !== "aborted") ditErros++;
   };
-  reconhecedor.onend = () => { if (audioOn) setTimeout(() => { try { reconhecedor.start(); } catch (e) {} }, 300); else { mostrarOuvindo(""); atualizarAudioBt(); } };
-  try { reconhecedor.start(); mostrarOuvindo("ouvindo…"); } catch (e) { audioOn = false; }
+  reconhecedor.onend = () => {
+    ditInt = null;
+    if (ditPediu && ditErros < 6) setTimeout(() => { try { reconhecedor.start(); } catch (e) {} }, 250 + ditErros * 400);   // não para na pausa: religa e segue
+    else { audioOn = false; audioAlvo = null; mostrarOuvindo(""); atualizarAudioBt(); }
+  };
+  try { reconhecedor.start(); mostrarOuvindo("ouvindo…"); } catch (e) { audioOn = false; ditPediu = false; }
   atualizarAudioBt();
 }
-function desligarAudio() { audioOn = false; audioAlvo = null; try { reconhecedor && reconhecedor.stop(); } catch (e) {} mostrarOuvindo(""); atualizarAudioBt(); }
-function alternarAudio() { audioOn ? desligarAudio() : ligarAudio(); }
-function atualizarAudioBt() { document.querySelectorAll("[data-aud]").forEach(b => { b.classList.toggle("gravando", audioOn); b.classList.toggle("on", audioOn); }); }
+function pararDitado() { ditPediu = false; audioOn = false; audioAlvo = null; ditInt = null; try { reconhecedor && reconhecedor.stop(); } catch (e) {} mostrarOuvindo(""); atualizarAudioBt(); }
+function ligarAudio(alvo) { ditarEm(alvo || null); }
+function desligarAudio() { pararDitado(); }
+function alternarAudio() { if (audioOn) { pararDitado(); return; } const c = campoAtivo() || (ultimoCampo && document.contains(ultimoCampo) ? ultimoCampo : null); ditarEm(c); }
+function atualizarAudioBt() {
+  document.querySelectorAll("[data-aud]").forEach(b => b.classList.toggle("gravando", audioOn));
+  const f = $("#mic-flut"); if (f) f.classList.toggle("gravando", audioOn);
+}
+/* microfone flutuante junto de qualquer caixa de texto */
+(function () {
+  const fl = $("#mic-flut"); let alvo = null, esconder = null;
+  const pos = el => { const r = el.getBoundingClientRect(); fl.style.display = "block"; fl.style.left = Math.max(8, Math.min(innerWidth - 48, r.right - 46)) + "px"; fl.style.top = Math.max(60, Math.min(innerHeight - 52, r.bottom - 44)) + "px"; };
+  document.addEventListener("focusin", e => {
+    const a = e.target; if (a === fl) return;
+    if (ehCampo(a) && a.id !== "pop-q" && a.id !== "busca") { alvo = a; ultimoCampo = a; clearTimeout(esconder); pos(a); }
+  });
+  document.addEventListener("focusout", () => { esconder = setTimeout(() => { if (document.activeElement !== fl && !ehCampo(document.activeElement)) fl.style.display = "none"; }, 250); });
+  window.addEventListener("scroll", () => { if (alvo && fl.style.display === "block" && document.contains(alvo)) pos(alvo); }, { passive: true });
+  fl.addEventListener("mousedown", e => e.preventDefault());
+  fl.addEventListener("click", () => { if (audioOn) { pararDitado(); return; } if (alvo && document.contains(alvo)) ditarEm(alvo); });
+})();
+/* atalho: Ctrl+Shift+Espaço liga/desliga o ditado no campo onde está o cursor */
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey && e.shiftKey && e.code === "Space") { e.preventDefault(); e.stopPropagation(); alternarAudio(); }
+}, true);
 
 /* ================= revisar tudo, impressão, novo documento ================= */
 function sobreposicao(conteudo, titulo) {
@@ -954,8 +1122,10 @@ function revisarTudo(rel, sec) {
   });
 }
 function previaImpressao(rel, sec) {
-  const folha = h("div", { class: "folha" }, h("div", { class: "f-tit" }, sec.titulo),
-    sec.capitulos.map(c => [h("div", { class: "f-cap" }, `${c.num}. ${c.titulo}`), c.paragrafos.map(p => h("p", { class: "f-par" }, textoDe(rel, sec, p)))]));
+  previaImpressaoBlocos(sec.titulo, sec.capitulos.flatMap(c => [{ t: "c", x: `${c.num}. ${c.titulo}` }, ...c.paragrafos.map(p => ({ t: "p", x: textoDe(rel, sec, p) }))]));
+}
+function previaImpressaoBlocos(titulo, blocos) {
+  const folha = h("div", { class: "folha" }, h("div", { class: "f-tit" }, titulo), blocos.map(b => b.t === "c" ? h("div", { class: "f-cap" }, b.x) : h("p", { class: "f-par" }, b.x)));
   const ov = h("div", { id: "impressao" },
     h("div", { class: "imp-barra nao-imprimir" }, h("b", {}, "Visualização de impressão (A4)"), h("span", { class: "esp" }),
       h("button", { class: "btn", onclick: () => window.print() }, "Imprimir / Salvar como PDF"), h("button", { class: "btn sec", onclick: () => { ov.remove(); document.body.classList.remove("imprimindo"); } }, "Fechar")),
@@ -972,7 +1142,7 @@ const MODELOS = {
 function novoDocumento(vinculo) {
   const corpo = h("div", {}, h("p", { class: "suave" }, "Cria um documento em branco, em campos, para você escrever (Tab passa de campo em campo). Dá para visualizar a impressão e copiar para o Claude."),
     Object.keys(MODELOS).map(nome => h("button", { class: "op", onclick: () => {
-      const num = Math.max(0, ...Object.values(DB.rels).map(r => parseFloat(r.dados.numero) || 0)) + 1;
+      const pai = vinculo && DB.rels[vinculo.relId] ? DB.rels[vinculo.relId] : relAtual(), num = pai ? novoCodigoDoc(pai) : proximoCodigo("");
       const d = normalizar({ id: "doc-" + Date.now().toString(36), rev: 1, numero: num, titulo: `${nome} (novo)`, pasta: { rotulo: nome }, secoes: [{ num: "T1", titulo: nome, tipo: "texto", capitulos: [{ num: "1", titulo: "Documento", paragrafos: MODELOS[nome].map((t, i) => ({ id: `1.${i + 1}`, texto: t })) }] }] });
       DB.rels[d.id] = novaRel(d);
       if (vinculo && DB.rels[vinculo.relId]) { const o = DB.rels[vinculo.relId], e = (o.entrada || []).find(x => x.id === vinculo.entradaId); if (e) { e.resposta = d.id; const s = stOf(o, "E:" + e.id); s.v = "Em análise"; s.tocado = true; } d.pasta.caminho = o.dados.pasta.caminho || ""; d.pasta.rotulo = nome + " — " + (e ? e.arquivo : ""); }
@@ -1320,7 +1490,7 @@ function painelArquivos(rel) {
   const aberto = !rel.rec.__arq, corpo = h("div", { class: "arq-corpo" });
   let atual = cam;
   const abrir = d => { atual = d; recarga(); };
-  const recarga = () => { corpo.replaceChildren(); const topo = h("div", { class: "migalhas" }, h("code", {}, atual), atual !== cam ? botao("↑ Subir", () => abrir(atual.replace(/[\\/][^\\/]*$/, "") || cam)) : null, botaoSubir(atual, recarga), botao("Atualizar", recarga), botao("Abrir no Explorador", () => api("abrir-pasta", { caminho: atual }).catch(() => aviso("Não consegui abrir."))));
+  const recarga = () => { corpo.replaceChildren(); const topo = h("div", { class: "migalhas" }, h("code", {}, atual), atual !== cam ? botao("↑ Subir", () => abrir(atual.replace(/[\\/][^\\/]*$/, "") || cam)) : null, botaoSubir(atual, recarga), botao("Atualizar", recarga), botao("Abrir no Explorador", () => api("abrir-pasta", { caminho: atual }).catch(() => aviso("Não consegui abrir."))), botao("Atualizar README", async () => { (await gravarReadme(rel)) ? aviso("README.md atualizado na pasta.") : aviso("Não consegui gravar o README."); recarga(); }), botao("Revisar PDFs separados", () => abrirRevisao(atual)));
     const lista = h("div", {}); corpo.append(topo, lista); listaArquivos(lista, atual, { aoPasta: abrir }); };
   if (aberto) recarga();
   return h("section", { class: "sec" + (aberto ? "" : " rec"), id: "sec-__arq" },
@@ -1347,118 +1517,256 @@ function tabelaRecebidos(rel) {
     h("table", { class: "rel" }, h("thead", {}, h("tr", {}, ["Arquivo", "Páginas", "O que fazer", "Situação"].map(t => h("th", {}, t)))), tb));
 }
 
-/* ---- Novo objeto ---- */
+/* ---- Novo objeto: categoria → código numérico → pasta + README ---- */
+function readmeObjeto(rel) {
+  const d = rel.dados, ent = rel.entrada || [], data = agora();
+  const docs = ent.map(e => `${e.codigo || "·"}  ${e.arquivo}  p. ${e.paginas}  [${(rel.st["E:" + e.id] || {}).v || "Pendente"}]`).join("\n") || "(nenhum ainda)";
+  return `# ${d.numero || ""} ${d.pasta.rotulo || d.titulo}\n\n` +
+    `Código: ${d.numero || "—"}\nObjeto: ${d.pasta.rotulo || d.titulo}\nRelatório do Omega: id ${d.id}, rev ${d.rev}\nAtualizado: ${data}\nConversa (Claude): ${rel.conversa || "—"}\n\n` +
+    `## O que é esta pasta\nMemorial descritivo e ficha central do objeto. Todo documento recebido ou enviado tem código (${d.numero || "N"}.1, ${d.numero || "N"}.2…).\n\n` +
+    `## Documentos (código, arquivo, páginas, situação)\n${docs}\n\n## Decisões e notas\n- \n\n## Pendências ligadas\n(as que estiverem em vermelho no relatório)\n`;
+}
+async function gravarReadme(rel) {
+  if (!API.ok || !rel.dados.pasta.caminho) return false;
+  try { await api("salvar", { caminho: rel.dados.pasta.caminho, nome: "README.md", texto: readmeObjeto(rel) }); return true; } catch (e) { return false; }
+}
 function novoObjeto() {
-  const proximo = Math.max(0, ...Object.values(DB.rels).map(r => parseFloat(r.dados.numero) || 0)) + 1;
   const campo = (rot, el) => h("label", { class: "campo" }, h("span", {}, rot), el);
-  const nome = h("input", { type: "text", placeholder: "Ex.: Canal do Malhado" }), num = h("input", { type: "text" }), cam = h("input", { type: "text", placeholder: "C:\\CL\\... (opcional)" }), conv = h("input", { type: "url", placeholder: "https://claude.ai/chat/… (opcional)" });
-  num.value = proximo;
-  const criar = h("input", { type: "checkbox" }); criar.checked = API.ok;
+  const catSel = h("select", { id: "obj-cat" }, Object.entries(cats()).sort((a, b) => cmpCod(a[0], b[0])).map(([k, n]) => h("option", { value: k }, `${k} ${n}`)), h("option", { value: "" }, "Sem categoria (código solto)"));
+  const cod = h("input", { type: "text", id: "obj-cod" }), nome = h("input", { type: "text", id: "obj-nome", placeholder: "Ex.: Canal do Malhado" }), cam = h("input", { type: "text", id: "obj-cam", placeholder: "C:\\CL\\... (opcional)" }), conv = h("input", { type: "url", id: "obj-conv", placeholder: "https://claude.ai/chat/… (opcional)" });
+  const criar = h("input", { type: "checkbox", id: "obj-criar-pasta" }); criar.checked = API.ok;
+  const sugere = () => {
+    cod.value = proximoCodigo(catSel.value);
+    const raiz = (API.raizes && API.raizes[0]) || "", sep = raiz.includes("\\") ? "\\" : "/";
+    if (raiz && !cam.dataset.mexeu) { const c = catSel.value ? `${catSel.value}_${nomeArquivo([cats()[catSel.value]])}` : ""; cam.value = [raiz.replace(/[\\/]+$/, ""), c, nomeArquivo([cod.value, nome.value || "NOVO"])].filter(Boolean).join(sep); }
+  };
+  catSel.addEventListener("change", sugere); nome.addEventListener("input", sugere); cod.addEventListener("input", sugere);
+  cam.addEventListener("input", () => { cam.dataset.mexeu = "1"; }); sugere();
   const corpo = h("div", {},
-    campo("Nome do objeto (o mesmo da pasta e da conversa)", nome), campo("Número", num), campo("Pasta no computador", cam),
-    h("label", { class: "lat-chk" }, criar, "Criar a pasta se não existir (precisa do Iniciar Omega.bat)"), campo("Link da conversa no Claude", conv),
+    campo("Categoria", catSel), campo("Código (só números e pontos; todo documento tem código)", cod), campo("Nome do objeto (o mesmo da pasta e da conversa)", nome), campo("Pasta no computador", cam),
+    h("label", { class: "lat-chk" }, criar, "Criar a pasta e o README (precisa do Iniciar Omega.bat)"), campo("Link da conversa no Claude", conv),
     h("div", { class: "linha" }, h("button", { class: "btn", id: "obj-criar", onclick: async () => {
       const rot = nome.value.trim(); if (!rot) { aviso("Dê um nome ao objeto."); nome.focus(); return; }
+      if (!/^\d+(\.\d+)*$/.test(cod.value.trim())) { aviso("O código só pode ter números e pontos (ex.: 1.7)."); return; }
+      if (Object.values(DB.rels).some(r => r.dados.numero === cod.value.trim())) { aviso("Já existe um objeto com o código " + cod.value.trim() + "."); return; }
       const id = "obj-" + slug(rot) + "-" + Date.now().toString(36).slice(-4);
       if (conv.value.trim() && !/^https?:\/\//i.test(conv.value.trim())) { aviso("O link da conversa precisa começar com https://"); return; }
-      if (cam.value.trim() && criar.checked && API.ok) { try { await api("criar-pasta", { caminho: cam.value.trim() }); } catch (e) { aviso("Não consegui criar a pasta (fora das pastas liberadas?). O objeto será criado mesmo assim."); } }
-      const d = normalizar({ id, rev: 1, numero: num.value.trim() || proximo, titulo: rot, pasta: { rotulo: rot, caminho: cam.value.trim() }, secoes: [] });
+      const d = normalizar({ id, rev: 1, numero: cod.value.trim(), titulo: rot, pasta: { rotulo: rot, caminho: cam.value.trim() }, secoes: [] });
       DB.rels[id] = novaRel(d); if (conv.value.trim()) DB.rels[id].conversa = conv.value.trim();
-      DB.atual = id; vista = "rel"; salvar(); document.querySelectorAll(".sobre").forEach(x => x.remove()); montar(); scrollTo(0, 0);
+      if (cam.value.trim() && criar.checked && API.ok) { try { await api("criar-pasta", { caminho: cam.value.trim() }); await gravarReadme(DB.rels[id]); } catch (e) { aviso("Não consegui criar a pasta (fora das pastas liberadas?). O objeto foi criado mesmo assim."); } }
+      DB.atual = id; vista = "rel"; abrirGrupo(id); salvar(); document.querySelectorAll(".sobre").forEach(x => x.remove()); montar(); scrollTo(0, 0);
       aviso("Objeto criado. Suba arquivos, use a Mesa PDF ou peça o relatório ao Claude com o id " + id);
     } }, "Criar objeto")));
   sobreposicao(corpo, "Novo objeto"); setTimeout(() => nome.focus(), 50);
 }
+/* cria no disco as pastas das categorias, cada uma com README */
+function criarHierarquia() {
+  if (!API.ok || !(API.raizes || []).length) { aviso("Precisa do Iniciar Omega.bat e de dados/config.json com a pasta raiz (veja COMO_USAR.md)."); return; }
+  const sel = h("select", { id: "hier-raiz" }, API.raizes.map(r => h("option", { value: r }, r)));
+  const ov = sobreposicao(h("div", {}, h("p", { class: "suave", style: "text-align:left" }, "Cria, dentro da pasta escolhida: " + Object.entries(cats()).map(([k, n]) => `${k}_${nomeArquivo([n])}`).join(", ") + ", cada uma com um README."), h("label", { class: "campo" }, h("span", {}, "Pasta raiz"), sel),
+    h("div", { class: "linha" }, h("button", { class: "btn", id: "hier-criar", onclick: async () => {
+      const sep = sel.value.includes("\\") ? "\\" : "/"; let n = 0;
+      for (const [k, nome] of Object.entries(cats()).sort((a, b) => cmpCod(a[0], b[0]))) {
+        const dir = sel.value.replace(/[\\/]+$/, "") + sep + `${k}_${nomeArquivo([nome])}`;
+        try { await api("criar-pasta", { caminho: dir }); await api("salvar", { caminho: dir, nome: "README.md", texto: `# ${k} ${nome}\n\nCódigo: ${k}\nCategoria: ${nome}\n\nObjetos desta categoria têm código ${k}.1, ${k}.2… e uma pasta cada, com README.\n` }); n++; } catch (e) {}
+      }
+      ov.remove(); aviso(`${n} pasta(s) de categoria criadas (ou já existiam) em ${sel.value}.`);
+    } }, "Criar pastas"))), "Hierarquia base");
+}
 
-/* ---- Mesa PDF: ler, escolher páginas, extrair, cadastrar como recebido, responder, imprimir, e-mail ---- */
-let mesa = null, pdfLibPronto = null;
-function carregarPDFLib() {
-  if (window.PDFLib) return Promise.resolve();
-  return pdfLibPronto || (pdfLibPronto = new Promise((ok, no) => { const s = h("script", { src: "pdf-lib.min.js" }); s.onload = ok; s.onerror = () => { pdfLibPronto = null; no(new Error("pdf-lib.min.js não encontrado")); }; document.head.append(s); }));
+/* ---- Revisão dos PDFs que o script separou (OCR + tipo + nome) ---- */
+const OPC_REV = ["Pendente", "Arquivado", "Corrigir", "Responder"];
+let revPasta = null;
+function abrirRevisao(pasta) {
+  const rel = relAtual(); const p = pasta || (rel && rel.dados.pasta.caminho);
+  if (!API.ok) { aviso("A revisão lê a pasta do computador: abra pelo Iniciar Omega.bat."); return; }
+  if (!p) { aviso("Abra um objeto que tenha pasta (ou use Pastas do computador)."); return; }
+  revPasta = p; vista = "revisao"; montar();
+}
+async function telaRevisao(m) {
+  const rel = relAtual();
+  m.append(h("div", { class: "mesa-topo" }, h("button", { class: "btn sec", onclick: () => { vista = "rel"; montar(); } }, "← Voltar"), h("b", {}, "Revisão dos arquivos separados"), h("code", {}, revPasta), h("span", { class: "esp" }), h("button", { class: "btn sec", onclick: () => api("abrir-pasta", { caminho: revPasta }).catch(() => {}) }, "Abrir no Explorador")),
+    h("p", { class: "suave", style: "text-align:left;font-size:13px" }, "O script já separou, fez OCR e renomeou. Aqui você só confere: Arquivado (sem ação pendente), Corrigir (muda o nome ou refaz pela Mesa PDF) ou Responder."));
+  if (!rel) { m.append(h("p", {}, "Abra um objeto para registrar a revisão.")); return; }
+  const corpo = h("tbody", {}); m.append(h("table", { class: "revi", id: "tb-revi" }, h("thead", {}, h("tr", {}, ["Nome", "Tipo", "Págs.", "Título → fecho", "Situação", ""].map(t => h("th", {}, t)))), corpo));
+  let arqs = [], man = null;
+  try { arqs = await (await api("listar-tudo?caminho=" + encodeURIComponent(revPasta))).json(); } catch (e) { m.append(h("p", { class: "suave" }, "Não consegui listar esta pasta (fora das liberadas?).")); return; }
+  try { man = await (await api("arquivo?caminho=" + encodeURIComponent(juntar(revPasta, "_pipeline.json")))).json(); } catch (e) {}
+  const det = {}; ((man && man.docs) || []).forEach(d => { det[(d.arquivo || "").toLowerCase()] = d; }); (((man && man.blocos) || []).flatMap(b => b.docs || [])).forEach(d => { det[(d.arquivo || "").toLowerCase()] = d; });
+  if (!arqs.length) corpo.append(h("tr", {}, h("td", { colspan: "6", class: "suave" }, "Nenhum PDF nesta pasta.")));
+  arqs.forEach(a => {
+    const f = { t: "V", p: a.caminho }, s = rel.st[chave(f)] || {}, v = s.v || "Pendente", d = det[a.nome.toLowerCase()] || {}, tipo = d.tipo || (a.rel || "").split(/[\\/]/)[0] || "";
+    const celNome = h("td", {});
+    if (v === "Corrigir") { const inp = h("input", { type: "text", value: a.nome.replace(/\.pdf$/i, ""), "aria-label": "Novo nome" }); const ok = async () => { const nn = nomeArquivo([inp.value]); if (!nn || nn + ".pdf" === a.nome) return; try { await api("renomear", { caminho: a.caminho, novoNome: nn + ".pdf" }); aviso("Renomeado para " + nn + ".pdf"); const e2 = stOf(rel, chave(f)); e2.v = "Arquivado"; e2.tocado = true; salvar(); abrirRevisao(revPasta); } catch (e) { aviso("Não consegui renomear (nome já existe?)."); } }; inp.addEventListener("keydown", e => { if (e.key === "Enter") ok(); }); celNome.append(inp, botao("Renomear", ok)); }
+    else celNome.append(a.nome);
+    const ac = h("div", { class: "arq-ac" }, botao("Ver", () => abrirArquivoView(a.caminho)), botao("Mesa PDF", () => abrirMesaServidor(a.caminho, a.nome)), botao("Responder", () => { const e = registrarRecebido(rel, a.nome, d.paginas || "todas", a.caminho); const s2 = stOf(rel, chave(f)); s2.v = "Responder"; s2.tocado = true; salvar(); novoDocumento({ relId: rel.dados.id, entradaId: e.id }); }));
+    corpo.append(h("tr", { "data-fk": chave(f) }, celNome, h("td", { class: "suave" }, tipo), h("td", { class: "suave" }, d.paginas || ""), h("td", { class: "suave", style: "font-size:12.5px" }, d.titulo ? `${d.titulo} → ${d.fecho || "?"}` : ""), h("td", {}, chipEl(f, v)), h("td", {}, ac)));
+    if (s.obs) corpo.lastChild.children[4].append(h("div", { class: "comentario" }, s.obs));
+  });
+}
+
+/* ---- Mesa PDF por gesto: miniaturas, arrastar para a direita extrai, segurar seleciona ---- */
+let mesa = null, pdfLibPronto = null, pdfJsPronto = null, mesaTimer = null, mesaPausa = false;
+const carregaScript = (src, teste) => teste() ? Promise.resolve() : new Promise((ok, no) => { const s = h("script", { src }); s.onload = ok; s.onerror = () => no(new Error(src + " não encontrado")); document.head.append(s); });
+function carregarPDFLib() { return pdfLibPronto || (pdfLibPronto = carregaScript("pdf-lib.min.js", () => window.PDFLib)); }
+function carregarPDFJs() {
+  return pdfJsPronto || (pdfJsPronto = carregaScript("pdf-mesa.js", () => window.pdfjsLib).then(() => { pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([window.__PDF_WORKER_SRC], { type: "text/javascript" })); }));
 }
 function abrirMesaLocal() {
-  const i = h("input", { type: "file", accept: "application/pdf", onchange: () => { const f = i.files[0]; if (!f) return; mesa = { blob: f, url: URL.createObjectURL(f), nome: f.name, caminho: null, total: null, relId: DB.atual, extraido: null }; vista = "mesa"; montar(); fecharLateralPequena(); } });
+  const i = h("input", { type: "file", accept: "application/pdf", onchange: () => { const f = i.files[0]; if (!f) return; mesa = { blob: f, url: URL.createObjectURL(f), nome: f.name, caminho: null, total: null, relId: DB.atual, sels: [], modo: false }; vista = "mesa"; montar(); fecharLateralPequena(); } });
   i.click();
 }
-function abrirMesaServidor(caminho, nome) { mesa = { blob: null, url: "api/arquivo?caminho=" + encodeURIComponent(caminho), nome, caminho, total: null, relId: DB.atual, extraido: null }; vista = "mesa"; montar(); }
+function abrirMesaServidor(caminho, nome) { mesa = { blob: null, url: "api/arquivo?caminho=" + encodeURIComponent(caminho), nome, caminho, total: null, relId: DB.atual, sels: [], modo: false }; vista = "mesa"; montar(); }
 async function bytesMesa() { return mesa.blob ? await mesa.blob.arrayBuffer() : await (await fetch(mesa.url)).arrayBuffer(); }
-function lerPaginas(txt, total) {
-  const out = new Set();
-  String(txt || "").split(/[,;\s]+/).filter(Boolean).forEach(p => {
-    const m = p.match(/^(\d+)(?:-(\d*))?$/); if (!m) return;
-    const a = +m[1], b = m[2] === undefined ? a : (m[2] === "" ? total : +m[2]);
-    for (let i = Math.max(1, a); i <= Math.min(b, total || b); i++) out.add(i);
-  });
-  return [...out].sort((x, y) => x - y);
-}
 function rotuloPaginas(ps) { const r = []; for (let i = 0; i < ps.length;) { let j = i; while (ps[j + 1] === ps[j] + 1) j++; r.push(j > i ? `${ps[i]}-${ps[j]}` : `${ps[i]}`); i = j + 1; } return r.join(","); }
+function pararRolagem() { clearInterval(mesaTimer); mesaTimer = null; }
 function telaMesa(m) {
+  pararRolagem();
   if (!mesa) { m.append(h("p", {}, "Nenhum PDF aberto."), h("button", { class: "btn", onclick: abrirMesaLocal }, "Escolher PDF")); return; }
-  const visor = h("iframe", { class: "visor", id: "mesa-visor", src: mesa.url, title: mesa.nome });
-  const info = h("p", { class: "suave", id: "mesa-info" }, "Contando páginas…"), pags = h("input", { type: "text", id: "mesa-pags", placeholder: "Ex.: 2-4, 7", "aria-label": "Páginas" });
-  const ext = h("div", { id: "mesa-ext" });
-  const sel = h("select", { id: "mesa-obj" }, Object.keys(DB.rels).map(id => h("option", { value: id }, nomeRel(DB.rels[id])))); if (mesa.relId && DB.rels[mesa.relId]) sel.value = mesa.relId;
-  const escolhidas = () => lerPaginas(pags.value, mesa.total);
-  const ir = () => { const e = escolhidas(); visor.src = mesa.url + "#page=" + (e[0] || 1); };
-  carregarPDFLib().then(async () => { try { const d = await PDFLib.PDFDocument.load(await bytesMesa(), { ignoreEncryption: true }); mesa.total = d.getPageCount(); info.textContent = `${mesa.total} página(s). Escreva as páginas que quer (ex.: 2-4, 7).`; } catch (e) { info.textContent = "Não consegui ler este PDF para contar páginas (o botão Extrair pode não funcionar)."; } }).catch(e => { info.textContent = e.message; });
-  async function extrair() {
-    const e = escolhidas(); if (!e.length) { aviso("Escreva as páginas, por exemplo 2-4, 7."); return; }
-    try {
-      await carregarPDFLib(); const src = await PDFLib.PDFDocument.load(await bytesMesa(), { ignoreEncryption: true }), out = await PDFLib.PDFDocument.create();
-      (await out.copyPages(src, e.map(x => x - 1))).forEach(p => out.addPage(p));
-      const blob = new Blob([await out.save()], { type: "application/pdf" }), base = mesa.nome.replace(/\.pdf$/i, "");
-      mesa.extraido = { blob, nome: `${base}_p${rotuloPaginas(e)}.pdf`, paginas: rotuloPaginas(e), n: e.length, url: URL.createObjectURL(blob) };
-      desenhaExt();
-    } catch (er) { aviso("Não consegui extrair: " + er.message); }
-  }
-  function desenhaExt() {
-    ext.replaceChildren(); const x = mesa.extraido; if (!x) return;
-    ext.append(h("p", {}, h("b", {}, "Pronto: "), `${x.nome} (${x.n} página(s))`),
-      h("div", { class: "linha" },
-        h("button", { class: "btn sec", onclick: () => { visor.src = x.url; } }, "Ver o extraído"),
-        h("button", { class: "btn sec", onclick: () => { const a = h("a", { href: x.url, download: x.nome }); document.body.append(a); a.click(); a.remove(); } }, "Baixar"),
-        h("button", { class: "btn sec", id: "mesa-salvar", onclick: salvarNaPasta }, "Salvar na pasta do objeto"),
-        h("button", { class: "btn sec", onclick: () => { try { visor.contentWindow.focus(); visor.contentWindow.print(); } catch (e) { window.open(x.url, "_blank"); } } }, "Imprimir"),
-        h("button", { class: "btn sec", onclick: () => { emailGmail("Documento: " + x.nome, "Segue em anexo: " + x.nome + "\n\n(anexe o arquivo: ele está na pasta do objeto ou nos Downloads)"); } }, "E-mail (Gmail)")));
-  }
-  async function salvarNaPasta() {
-    const rel = DB.rels[sel.value], dir = rel && rel.dados.pasta.caminho, x = mesa.extraido;
-    if (!dir) { aviso("O objeto escolhido não tem pasta. Defina em Novo objeto."); return null; }
-    if (!API.ok) { aviso("Para gravar na pasta, abra o Omega pelo Iniciar Omega.bat. Use Baixar por enquanto."); return null; }
-    try { const f = new File([x.blob], x.nome, { type: "application/pdf" }); const c = await enviarArquivo(dir, f); aviso("Salvo na pasta: " + c); x.caminho = c; return c; } catch (e) { aviso("Não consegui salvar na pasta."); return null; }
-  }
-  function cadastrar() {
-    const rel = DB.rels[sel.value]; if (!rel) return null;
-    const e = escolhidas(), x = mesa.extraido;
-    const reg = { id: "R" + Date.now().toString(36), arquivo: x ? x.nome : mesa.nome, paginas: x ? x.paginas : (e.length ? rotuloPaginas(e) : "todas"), caminho: (x && x.caminho) || mesa.caminho || "", criado: Date.now() };
-    (rel.entrada = rel.entrada || []).push(reg); const s = stOf(rel, "E:" + reg.id); s.v = "Pendente"; s.tocado = true; salvar();
-    aviso(`Cadastrado como recebido em ${nomeRel(rel)} (Pendente).`); return { rel, reg };
-  }
+  const grade = h("div", { class: "grade", id: "grade", role: "listbox", "aria-label": "Páginas do PDF", "aria-multiselectable": "true" });
+  const rel0 = DB.rels[mesa.relId], sel = h("select", { id: "mesa-obj", "aria-label": "Objeto" }, Object.keys(DB.rels).map(id => h("option", { value: id }, nomeRel(DB.rels[id])))); if (mesa.relId && DB.rels[mesa.relId]) sel.value = mesa.relId;
+  const info = h("span", { class: "suave", id: "mesa-info" }, "Lendo as páginas…");
+  const vel = h("input", { type: "range", min: "0", max: "12", id: "mesa-vel", value: String(DB.ui.vel ?? 4), "aria-label": "Velocidade da rolagem automática", oninput: e => { DB.ui.vel = +e.target.value; salvar(); } });
   const scs = scriptsPara(mesa.nome, false);
-  m.append(h("div", { class: "linha", style: "margin-top:0" }, h("button", { class: "btn sec", onclick: () => { vista = mesa.caminho ? "pastas" : "rel"; if (mesa.caminho) pastaAtual = mesa.caminho.replace(/[\\/][^\\/]*$/, ""); montar(); } }, "← Voltar"), h("b", { style: "align-self:center" }, "Mesa PDF — " + mesa.nome)),
-    h("div", { class: "mesa-grade" }, visor, h("div", { class: "mesa-ctrl" }, info,
-      h("label", { class: "campo" }, h("span", {}, "Páginas"), pags),
-      h("div", { class: "linha" }, h("button", { class: "btn sec", id: "mesa-ir", onclick: ir }, "Ir para a página"), h("button", { class: "btn", id: "mesa-extrair", onclick: extrair }, "Extrair páginas")),
-      ext, h("hr"),
-      h("label", { class: "campo" }, h("span", {}, "Objeto"), sel),
-      h("div", { class: "linha" },
-        h("button", { class: "btn sec", id: "mesa-cadastrar", onclick: () => { cadastrar(); } }, "Cadastrar como recebido (Pendente)"),
-        h("button", { class: "btn sec", id: "mesa-responder", onclick: () => { const c = cadastrar(); if (c) novoDocumento({ relId: c.rel.dados.id, entradaId: c.reg.id }); } }, "Responder (novo documento)")),
-      h("div", { class: "linha" }, h("button", { class: "btn sec", onclick: () => { try { visor.contentWindow.focus(); visor.contentWindow.print(); } catch (e) { window.open(mesa.url, "_blank"); } } }, "Imprimir o PDF aberto"),
-        h("button", { class: "btn sec", onclick: () => emailGmail("PDF: " + mesa.nome, "Segue em anexo: " + mesa.nome) }, "E-mail (Gmail)")),
-      h("hr"),
-      h("div", {}, h("b", {}, "Scripts do C:"),
-        API.ok ? (scs.length ? h("div", { class: "linha" }, scs.map(s => h("button", { class: "btn sec", onclick: async () => {
-          let cam = mesa.caminho;
-          if (!cam) { const rel = DB.rels[sel.value], dir = rel && rel.dados.pasta.caminho; if (!dir) { aviso("Escolha um objeto que tenha pasta para enviar o PDF antes."); return; } try { cam = await enviarArquivo(dir, mesa.blob instanceof File ? mesa.blob : new File([mesa.blob], mesa.nome)); mesa.caminho = cam; } catch (e) { aviso("Não consegui enviar o PDF para a pasta."); return; } }
-          executarScript(s, cam);
-        } }, s.nome))) : h("p", { class: "suave" }, "Nenhum script cadastrado para PDF em dados/config.json.")) : h("p", { class: "suave" }, "Abra pelo Iniciar Omega.bat para usar os scripts (OCR, notas, renomear)."))))); 
+  m.append(h("div", { class: "mesa-topo" },
+    h("button", { class: "btn sec", onclick: () => { pararRolagem(); vista = mesa.caminho ? "pastas" : "rel"; if (mesa.caminho) pastaAtual = mesa.caminho.replace(/[\\/][^\\/]*$/, ""); montar(); } }, "← Voltar"),
+    h("b", {}, mesa.nome), info, h("span", { class: "esp" }),
+    h("label", { class: "suave", style: "display:flex;gap:8px;align-items:center;font-size:12.5px" }, "Objeto", sel),
+    h("label", { class: "suave", style: "display:flex;gap:8px;align-items:center;font-size:12.5px" }, "Rolagem", vel),
+    h("button", { class: "btn sec", onclick: () => window.open(mesa.url, "_blank") }, "Abrir inteiro"),
+    API.ok && scs.length ? h("button", { class: "btn sec", onclick: ev => menuSimples(ev.currentTarget, scs.map(s => ({ rotulo: s.nome, fn: async () => {
+      let cam = mesa.caminho; if (!cam) { const r = DB.rels[sel.value], dir = r && r.dados.pasta.caminho; if (!dir) { aviso("Escolha um objeto que tenha pasta."); return; } try { cam = await enviarArquivo(dir, mesa.blob instanceof File ? mesa.blob : new File([mesa.blob], mesa.nome)); mesa.caminho = cam; } catch (e) { aviso("Não consegui enviar o PDF para a pasta."); return; } }
+      executarScript(s, cam); } }))) }, "Scripts do C: ▾") : null),
+    h("p", { class: "suave", style: "font-size:12.5px;margin:-4px 0 12px;text-align:left" }, "Arraste uma página para a direita para extrair. Segure uma página para selecionar várias (a lista rola sozinha; toque num espaço vazio para pausar). Teclado: setas, Espaço seleciona, Enter extrai."),
+    grade);
+  const faixa = h("div", { class: "faixa oculto", id: "faixa" }, h("div", {}, h("span", { id: "faixa-t", style: "font-size:13.5px;white-space:nowrap" }, "Selecionadas: nenhuma"),
+    h("div", { class: "trilho", id: "trilho" }, h("span", {}, "arraste para a direita para extrair →"), h("button", { class: "knob", id: "knob", "aria-label": "Arrastar para extrair as selecionadas", onkeydown: e => { if (e.key === "Enter") extrairSel(); } }, "➜")),
+    h("button", { class: "mini", id: "faixa-pausa", onclick: () => { mesaPausa = !mesaPausa; $("#faixa-pausa").textContent = mesaPausa ? "▶ rolar" : "⏸ pausar"; } }, "⏸ pausar"),
+    h("button", { class: "mini", id: "faixa-x", onclick: () => sairSelecao() }, "✕")));
+  m.append(faixa);
+  const pg = n => grade.querySelector(`.pg[data-n="${n}"]`);
+  const atualiza = () => {
+    grade.querySelectorAll(".pg").forEach(p => { const on = mesa.sels.includes(+p.dataset.n); p.classList.toggle("sel", on); p.setAttribute("aria-selected", on ? "true" : "false"); p.classList.remove("prox"); });
+    faixa.classList.toggle("oculto", !mesa.modo); $("#faixa-t").textContent = "Selecionadas: " + (mesa.sels.length ? rotuloPaginas(mesa.sels.slice().sort((a, b) => a - b)) : "nenhuma");
+  };
+  function sairSelecao() { mesa.modo = false; mesa.sels = []; mesaPausa = false; pararRolagem(); atualiza(); }
+  function iniciaRolagem() { pararRolagem(); mesaTimer = setInterval(() => { if (mesaPausa || !mesa.modo) return; const v = (DB.ui.vel ?? 4) * 0.6; if (v) scrollBy(0, v); }, 30); }
+  function alterna(n) {
+    const i = mesa.sels.indexOf(n);
+    if (i > -1) mesa.sels.splice(i, 1); else { mesa.sels.push(n); const nx = pg(n + 1); atualiza(); if (nx) { nx.classList.add("prox"); nx.scrollIntoView({ block: "center", behavior: "smooth" }); } return; }
+    atualiza();
+  }
+  function extrairSel() { if (!mesa.sels.length) { aviso("Marque páginas antes."); return; } extrair(mesa.sels.slice().sort((a, b) => a - b)); }
+  window.__mesaExtrairSel = extrairSel;
+  /* gestos nas páginas */
+  let g = null;
+  grade.addEventListener("pointerdown", e => {
+    const p = e.target.closest(".pg"); if (!p) return;
+    g = { p, n: +p.dataset.n, x: e.clientX, y: e.clientY, dx: 0, longo: false, arrasta: false };
+    g.t = setTimeout(() => { if (!g || g.arrasta) return; g.longo = true; mesa.modo = true; if (!mesa.sels.includes(g.n)) mesa.sels.push(g.n); atualiza(); iniciaRolagem(); aviso("Seleção ligada: toque nas páginas; a lista rola sozinha."); }, 500);
+  });
+  grade.addEventListener("pointermove", e => {
+    if (!g) return; const dx = e.clientX - g.x, dy = e.clientY - g.y;
+    if (!g.arrasta && Math.abs(dy) > 14 && Math.abs(dy) > Math.abs(dx)) { clearTimeout(g.t); g = null; return; }
+    if (!mesa.modo && !g.longo && dx > 10 && Math.abs(dx) > Math.abs(dy)) { clearTimeout(g.t); g.arrasta = true; g.dx = dx; g.p.style.transition = "none"; g.p.style.transform = `translateX(${dx}px)`; g.p.setPointerCapture && g.p.setPointerCapture(e.pointerId); }
+  });
+  grade.addEventListener("pointerup", e => {
+    if (!g) return; clearTimeout(g.t); const q = g; g = null; q.p.style.transition = "";
+    if (q.arrasta) { q.p.style.transform = ""; if (q.dx > 110) extrair([q.n]); return; }
+    if (mesa.modo && !q.longo) alterna(q.n);
+  });
+  grade.addEventListener("pointercancel", () => { if (g) { clearTimeout(g.t); g.p.style.transition = ""; g.p.style.transform = ""; g = null; } });
+  grade.addEventListener("keydown", e => {
+    const p = e.target.closest(".pg"); if (!p) return; const n = +p.dataset.n;
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "ArrowDown" || e.key === "ArrowUp") { const cols = Math.max(1, Math.floor(grade.clientWidth / (p.clientWidth + 18))), d = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: cols, ArrowUp: -cols }[e.key], nx = pg(n + d); if (nx) { e.preventDefault(); nx.focus(); } }
+    else if (e.key === " ") { e.preventDefault(); if (!mesa.modo) { mesa.modo = true; iniciaRolagem(); } alterna(n); }
+    else if (e.key === "Enter") { e.preventDefault(); if (mesa.sels.length) extrairSel(); else extrair([n]); }
+    else if (e.key === "Escape") sairSelecao();
+  });
+  document.addEventListener("click", function f(e) { if (vista !== "mesa") { document.removeEventListener("click", f); return; } if (mesa.modo && !e.target.closest(".pg,.faixa,.mesa-topo,#painel,.sobre")) { mesaPausa = !mesaPausa; $("#faixa-pausa").textContent = mesaPausa ? "▶ rolar" : "⏸ pausar"; } });
+  /* barra de extrair (arrastar para a direita) */
+  (function () {
+    const k = $("#knob"), tr = $("#trilho"); let d = null;
+    k.addEventListener("pointerdown", e => { d = { x: e.clientX, l: k.offsetLeft }; k.setPointerCapture(e.pointerId); });
+    k.addEventListener("pointermove", e => { if (d) k.style.left = Math.max(4, Math.min(tr.clientWidth - 76, d.l + e.clientX - d.x)) + "px"; });
+    k.addEventListener("pointerup", () => { if (!d) return; const ok = k.offsetLeft > tr.clientWidth - 160; d = null; k.style.left = "4px"; if (ok) extrairSel(); });
+  })();
+  /* miniaturas (pdf.js) */
+  carregarPDFJs().then(async () => {
+    const data = await bytesMesa(); mesa.doc = await pdfjsLib.getDocument({ data: new Uint8Array(data) }).promise; mesa.total = mesa.doc.numPages;
+    info.textContent = `${mesa.total} página(s)`;
+    const obs = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting && !en.target.dataset.ok) { en.target.dataset.ok = "1"; fila.push(en.target); roda(); } }), { rootMargin: "400px" }), fila = []; let rodando = false;
+    async function roda() { if (rodando) return; rodando = true; while (fila.length) { const el = fila.shift(); try { const page = await mesa.doc.getPage(+el.dataset.n), vp0 = page.getViewport({ scale: 1 }), sc = 240 / vp0.width, vp = page.getViewport({ scale: sc }), cv = el.querySelector("canvas"); cv.width = vp.width; cv.height = vp.height; await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise; } catch (e) {} } rodando = false; }
+    for (let n = 1; n <= mesa.total; n++) { const p = h("div", { class: "pg", "data-n": String(n), tabindex: "0", role: "option", "aria-label": "Página " + n, "aria-selected": "false" }, h("canvas", {}), h("span", { class: "num" }, n)); grade.append(p); obs.observe(p); }
+    atualiza(); if (!mesa.modo) { const p1 = pg(1); if (p1) p1.dataset.primeira = "1"; }
+  }).catch(e => { info.textContent = "Não consegui abrir este PDF para mostrar as páginas (" + e.message + ")."; });
+  /* extrair → renomear → salvar onde */
+  async function extrair(lista) {
+    lista.forEach(n => { const p = pg(n); if (p) p.classList.add("sai"); });
+    const rel = DB.rels[sel.value], cod = rel ? novoCodigoDocPrevia(rel) : "";
+    const base = mesa.nome.replace(/\.pdf$/i, ""), sugestao = nomeArquivo([cod, base, "P" + rotuloPaginas(lista).replace(/,/g, "-")]);
+    const nome = h("input", { type: "text", id: "mesa-nome", value: sugestao, "aria-label": "Nome do arquivo extraído" });
+    const desfaz = () => { grade.querySelectorAll(".pg.sai").forEach(p => p.classList.remove("sai")); };
+    const ov = sobreposicao(h("div", {}, h("p", { class: "suave", style: "text-align:left" }, `Páginas ${rotuloPaginas(lista)} de ${mesa.nome}. Tudo em maiúsculas, partes separadas por underline.`), h("label", { class: "campo" }, h("span", {}, "Nome do arquivo"), nome),
+      h("div", { class: "linha" }, h("button", { class: "btn", id: "mesa-continuar", onclick: async () => {
+        const nm = nomeArquivo([nome.value]) || sugestao; ov.remove(); await escolherDestino(lista, nm, rel);
+      } }, "Continuar"), h("button", { class: "btn sec", onclick: () => { ov.remove(); desfaz(); } }, "Cancelar"))), "Extrair e renomear");
+    setTimeout(() => { nome.focus(); nome.select(); }, 60);
+    nome.addEventListener("keydown", e => { if (e.key === "Enter") $("#mesa-continuar").click(); });
+    ov.addEventListener("click", e => { if (e.target === ov) desfaz(); });
+  }
+  async function gerarPDF(lista) {
+    await carregarPDFLib(); const src = await PDFLib.PDFDocument.load(await bytesMesa(), { ignoreEncryption: true }), out = await PDFLib.PDFDocument.create();
+    (await out.copyPages(src, lista.map(x => x - 1))).forEach(p => out.addPage(p));
+    return new Blob([await out.save()], { type: "application/pdf" });
+  }
+  async function escolherDestino(lista, nm, rel) {
+    let blob; try { blob = await gerarPDF(lista); } catch (e) { aviso("Não consegui extrair: " + e.message); grade.querySelectorAll(".pg.sai").forEach(p => p.classList.remove("sai")); return; }
+    const nomePdf = nm + ".pdf", dirObj = rel && rel.dados.pasta.caminho, dirAqui = mesa.caminho ? mesa.caminho.replace(/[\\/][^\\/]*$/, "") : dirObj, servidor = API.ok;
+    const fim = (msg, caminho, resp) => {
+      const e = registrarRecebido(rel, nomePdf, rotuloPaginas(lista), caminho || "", nm);
+      grade.querySelectorAll(".pg.sai").forEach(p => { p.classList.remove("sai"); p.style.opacity = ".55"; p.title = "extraída: " + nomePdf; });
+      sairSelecao(); aviso(msg); if (resp && e) novoDocumento({ relId: rel.dados.id, entradaId: e.id });
+    };
+    const gravar = async (dir, extra) => { try { const f = new File([blob], nomePdf, { type: "application/pdf" }); const c = await enviarArquivo(dir, f); return c; } catch (e) { aviso("Não consegui salvar nessa pasta (fora das liberadas?)."); return null; } };
+    const baixar = () => { const u = URL.createObjectURL(blob), a = h("a", { href: u, download: nomePdf }); document.body.append(a); a.click(); a.remove(); };
+    const bt = (id, txt, fn, off, pr) => h("button", { class: "op", id, disabled: off ? true : null, style: off ? "opacity:.45" : "", onclick: fn }, txt);
+    const ov = sobreposicao(h("div", {}, h("p", { class: "suave", style: "text-align:left" }, nomePdf), 
+      bt("dest-aqui", "Na mesma pasta" + (dirAqui ? "" : " (sem pasta)"), async () => { const c = await gravar(dirAqui); if (c) { ov.remove(); fim("Salvo em " + c, c); } }, !servidor || !dirAqui),
+      bt("dest-outra", "Em outra pasta que já existe…", () => { ov.remove(); escolherPasta(dirObj || dirAqui, async dir => { const c = await gravar(dir); if (c) fim("Salvo em " + c, c); }); }, !servidor),
+      bt("dest-nova", "Criar pasta nova…", async () => { const n = prompt("Nome da pasta nova (dentro de " + (dirAqui || "?") + "):", nm); if (!n) return; const dir = juntar(dirAqui, nomeArquivo([n])); try { await api("criar-pasta", { caminho: dir }); } catch (e) { aviso("Não consegui criar a pasta."); return; } const c = await gravar(dir); if (c) { ov.remove(); fim("Pasta criada e arquivo salvo em " + c, c); } }, !servidor || !dirAqui),
+      bt("dest-resposta", "Criar resposta (pasta com o nome do arquivo)", async () => {
+        let c = ""; if (servidor && (dirObj || dirAqui)) { const dir = juntar(dirObj || dirAqui, nm); try { await api("criar-pasta", { caminho: dir }); await api("salvar", { caminho: dir, nome: "README.md", texto: `# ${nm}\n\nResposta criada pelo Omega a partir de ${mesa.nome} (páginas ${rotuloPaginas(lista)}).\n` }); } catch (e) { aviso("Não consegui criar a pasta da resposta."); return; } c = await gravar(dir); if (!c) return; }
+        ov.remove(); fim(c ? "Criada a pasta da resposta e salvo o arquivo: " + c : "Resposta criada (sem pasta: abra pelo Iniciar Omega.bat para gravar no C:).", c, true);
+      }, !rel),
+      bt("dest-baixar", "Só baixar o PDF (e cadastrar como recebido)", () => { baixar(); ov.remove(); fim("PDF baixado.", ""); }, false)), "Salvar onde?");
+    ov.addEventListener("click", e => { if (e.target === ov) grade.querySelectorAll(".pg.sai").forEach(p => p.classList.remove("sai")); });
+  }
+}
+function novoCodigoDocPrevia(rel) { return (rel.dados.numero ? rel.dados.numero + "." : "") + (Math.max(rel.cont || 0, (rel.entrada || []).length) + 1); }
+function registrarRecebido(rel, arquivo, paginas, caminho, nomeBase) {
+  if (!rel) return null;
+  const e = { id: "R" + Date.now().toString(36) + Math.random().toString(36).slice(2, 4), codigo: novoCodigoDoc(rel), arquivo, paginas: paginas || "todas", caminho: caminho || "", criado: Date.now() };
+  (rel.entrada = rel.entrada || []).push(e); const s = stOf(rel, "E:" + e.id); s.v = "Pendente"; s.tocado = true; rel.atualizado = Date.now(); salvar(); return e;
+}
+/* escolher uma pasta já existente (navegando pelas subpastas) */
+function escolherPasta(inicio, aoEscolher) {
+  let atual = inicio || (API.raizes && API.raizes[0]) || "";
+  const topo = h("div", { class: "migalhas" }), lista = h("div", {});
+  const ov = sobreposicao(h("div", {}, topo, lista), "Escolher a pasta");
+  async function carrega() {
+    topo.replaceChildren(h("code", {}, atual), h("button", { class: "btn", id: "pasta-aqui", onclick: () => { ov.remove(); aoEscolher(atual); } }, "Salvar aqui"));
+    if (API.raizes && !API.raizes.some(r => atual.toLowerCase() === r.toLowerCase())) topo.append(botao("↑ Subir", () => { atual = atual.replace(/[\\/][^\\/]*$/, ""); carrega(); }));
+    lista.replaceChildren(h("p", { class: "suave" }, "Carregando…"));
+    try { const j = await (await api("listar?caminho=" + encodeURIComponent(atual))).json(); lista.replaceChildren(...j.filter(x => x.dir).map(x => h("button", { class: "op", onclick: () => { atual = x.caminho; carrega(); } }, "📁 " + x.nome))); if (!lista.children.length) lista.append(h("p", { class: "suave" }, "Sem subpastas aqui.")); } catch (e) { lista.replaceChildren(h("p", { class: "suave" }, "Não consegui listar esta pasta.")); }
+  }
+  carrega();
 }
 
 /* ---- 💬: copia a mensagem (e salva o retorno na pasta) e vai para a conversa ---- */
-async function irConversa(id) {
+async function irConversaReal(id) {
   const r = DB.rels[id]; if (!r) return;
-  if (!r.conversa) { DB.atual = id; vista = "rel"; DB.ui.lateral = true; salvar(); montar(); const i = $("#in-conv"); if (i) i.focus(); aviso("Cole o link da conversa deste objeto no campo da lateral e tecle Enter."); return; }
+  if (!r.conversa) { DB.atual = id; vista = "rel"; salvar(); montar(); modalConversa(); return; }
   const rotulo = nomeRel(r), msg = r.msg || `Leia o relatório de retorno do Omega do objeto ${rotulo} (rev ${r.dados.rev}).`, texto = montarSaida(r, false);
   let salvo = null;
   if (API.ok && r.dados.pasta.caminho) { try { salvo = (await (await api("salvar", { caminho: r.dados.pasta.caminho, nome: `RETORNO_OMEGA_rev${r.dados.rev}.txt`, texto })).json()).caminho; } catch (e) {} }

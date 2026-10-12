@@ -19,3 +19,6 @@
 - OCR dentro do navegador (só se o script do C: deixar de servir).
 - Fila de scripts em lote (várias páginas/arquivos de uma vez) com progresso.
 - Anexar arquivo automaticamente ao e-mail (exige integração com o Gmail).
+- Editar os nomes das categorias (1 Licitações…) pela tela.
+- Mesa PDF: girar e juntar páginas.
+- Sessão 2: scripts de OCR, detecção (título→fecho), separação e renomeação (ver PIPELINE_SPEC.md).
