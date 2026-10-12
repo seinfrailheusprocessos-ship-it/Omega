@@ -1,0 +1,8 @@
+# Dependências (instaladas pelo INSTALAR.bat). Todas gratuitas e offline depois de instaladas.
+pymupdf>=1.24
+numpy>=1.24
+opencv-python-headless>=4.8
+pillow>=10.0
+pyyaml>=6.0
+openpyxl>=3.1
+rapidocr-onnxruntime>=1.2.3      # motor de OCR reserva (só pip, sem admin)

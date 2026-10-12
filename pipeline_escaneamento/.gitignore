@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+tools/
+instalacao_log.txt
+INSTALACAO_OK.txt

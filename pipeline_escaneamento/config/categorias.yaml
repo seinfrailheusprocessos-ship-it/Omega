@@ -1,0 +1,99 @@
+# ============================================================================
+#  CATEGORIAS E REGRAS DE CLASSIFICAÇÃO (editável)
+#  Cada categoria soma pontos das regras que "batem". Vence a de maior soma, desde
+#  que passe de "minimo". Tudo é comparado em MAIÚSCULAS e SEM ACENTO.
+#
+#  Campos de uma regra:
+#    peso   : pontos (negativo desconta)
+#    onde   : titulo | cabecalho | topo | pagina1 | ultima | destinatario | doc
+#               titulo       = 45% de cima da 1ª página
+#               cabecalho    = linhas acima do título/endereçamento (quem EMITE o documento)
+#               topo         = 28% de cima da 1ª página
+#               destinatario = trecho "Para:/Ao/À/Exmo/Ilmo" da 1ª página
+#    regex  : expressão regular (ou use "palavras": [lista] = qualquer uma)
+#    nome   : rótulo que aparece no motivo (auditoria)
+# ============================================================================
+minimo: 3.0          # pontuação mínima para sair de OUTROS
+margem_referencia: 6 # pontuação que dá confiança máxima
+
+categorias:
+  CI:
+    pasta: SAIDACI
+    regras:
+      - {nome: titulo_comunicacao_interna, peso: 6, onde: titulo, regex: 'COMUNICACAO INTERNA'}
+      - {nome: titulo_CI_numero, peso: 6, onde: titulo, regex: '(^|\s)C\.?I\.?\s*(N|NO|N\.)?\s*\d+\s*[/-]'}
+      - {nome: de_para_interno, peso: 1.5, onde: pagina1, regex: '^\s*DE\s*:.*\n(.*\n)?\s*PARA\s*:'}
+      - {nome: prefeitura_no_topo, peso: 1, onde: cabecalho, regex: 'PREFEITURA MUNICIPAL DE ILHEUS'}
+      - {nome: nao_ci_se_oficio, peso: -4, onde: titulo, regex: 'OFICIO\s*(CIRCULAR)?\s*(N|NO)'}
+
+  OFICIO_EXTERNO:
+    pasta: SAIDAOFICIO_EXTERNO
+    regras:
+      - {nome: titulo_oficio, peso: 5, onde: titulo, regex: 'OFICIO\s*(CIRCULAR\s*)?(N|NO|N\.)\s*[\dº]'}
+      - {nome: prefeitura_no_topo, peso: 2, onde: cabecalho, regex: 'PREFEITURA MUNICIPAL DE ILHEUS|SECRETARIA MUNICIPAL'}
+      - {nome: emissor_externo_nao_municipal, peso: -3, onde: cabecalho, regex: 'LTDA|EIRELI|S\.?A\.?\b|ASSOCIACAO|SINDICATO|COOPERATIVA|CAMARA MUNICIPAL|MINISTERIO PUBLICO|PODER JUDICIARIO'}
+      - {nome: dirigido_ao_mp, peso: -4, onde: destinatario, regex: 'PROMOTOR|MINISTERIO PUBLICO|PROMOTORIA'}
+      - {nome: dirigido_a_justica, peso: -4, onde: destinatario, regex: 'JUIZ|JUIZA|VARA|FORUM|TRIBUNAL|COMARCA'}
+
+  OFICIO_MP:
+    pasta: SAIDAOFICIO_MP
+    regras:
+      - {nome: titulo_oficio, peso: 3, onde: titulo, regex: 'OFICIO\s*(CIRCULAR\s*)?(N|NO|N\.)\s*[\dº]'}
+      - {nome: prefeitura_no_topo, peso: 1.5, onde: cabecalho, regex: 'PREFEITURA MUNICIPAL DE ILHEUS|SECRETARIA MUNICIPAL'}
+      - {nome: destinatario_mp, peso: 6, onde: destinatario, regex: 'PROMOTOR|MINISTERIO PUBLICO|PROMOTORIA'}
+      - {nome: cita_procedimento_mp, peso: 1.5, onde: pagina1, regex: 'INQUERITO CIVIL|PROCEDIMENTO (PREPARATORIO|ADMINISTRATIVO)|NOTICIA DE FATO|PROCEDIMENTO N'}
+      - {nome: emissor_mp_nao, peso: -8, onde: cabecalho, regex: 'MINISTERIO PUBLICO'}
+
+  OFICIO_JUSTICA:
+    pasta: SAIDAOFICIO_JUSTICA
+    regras:
+      - {nome: titulo_oficio, peso: 3, onde: titulo, regex: 'OFICIO\s*(CIRCULAR\s*)?(N|NO|N\.)\s*[\dº]'}
+      - {nome: prefeitura_no_topo, peso: 1.5, onde: cabecalho, regex: 'PREFEITURA MUNICIPAL DE ILHEUS|SECRETARIA MUNICIPAL|PROCURADORIA'}
+      - {nome: destinatario_justica, peso: 6, onde: destinatario, regex: 'JUIZ|JUIZA|VARA|FORUM|TRIBUNAL|COMARCA'}
+      - {nome: cita_processo_cnj, peso: 1.5, onde: pagina1, regex: '\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}'}
+      - {nome: emissor_judiciario_nao, peso: -8, onde: cabecalho, regex: 'PODER JUDICIARIO|TRIBUNAL DE JUSTICA'}
+
+  PEDIDO_VEREADOR:
+    pasta: SAIDAPEDIDO_VEREADOR
+    regras:
+      - {nome: camara_no_topo, peso: 5, onde: cabecalho, regex: 'CAMARA (MUNICIPAL )?(DE VEREADORES )?(DE )?ILHEUS|CAMARA MUNICIPAL'}
+      - {nome: titulo_requerimento_indicacao, peso: 3, onde: titulo, regex: '^\W*(REQUERIMENTO|INDICACAO|MOCAO)\b'}
+      - {nome: vereador_citado, peso: 3, onde: doc, regex: '\bVEREADOR(A)?\b'}
+      - {nome: gabinete_vereador, peso: 2, onde: cabecalho, regex: 'GABINETE DO VEREADOR|GABINETE DA VEREADORA'}
+
+  MP:
+    pasta: SAIDAMP
+    regras:
+      - {nome: mp_no_topo, peso: 7, onde: cabecalho, regex: 'MINISTERIO PUBLICO'}
+      - {nome: promotoria, peso: 3, onde: cabecalho, regex: 'PROMOTORIA'}
+      - {nome: notificacao_recomendacao, peso: 2, onde: titulo, regex: '^\W*(NOTIFICACAO|RECOMENDACAO|REQUISICAO|PORTARIA|NOTICIA DE FATO)'}
+      - {nome: assinatura_promotor, peso: 2, onde: ultima, regex: 'PROMOTOR(A)? DE JUSTICA'}
+
+  JUSTICA:
+    pasta: SAIDAJUSTICA
+    regras:
+      - {nome: judiciario_no_topo, peso: 7, onde: cabecalho, regex: 'PODER JUDICIARIO|TRIBUNAL DE JUSTICA|JUSTICA FEDERAL'}
+      - {nome: vara_comarca, peso: 3, onde: cabecalho, regex: '\bVARA\b|COMARCA|JUIZADO|FORUM'}
+      - {nome: titulo_judicial, peso: 3, onde: titulo, regex: '^\W*(INTIMACAO|DECISAO|SENTENCA|DESPACHO|MANDADO|CITACAO|NOTIFICACAO JUDICIAL)\b'}
+      - {nome: cnj_no_inicio, peso: 2, onde: titulo, regex: '\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}'}
+      - {nome: assinatura_juiz, peso: 2, onde: ultima, regex: 'JUIZ(A)? (DE DIREITO|FEDERAL|SUBSTITUT)|DIREITO TITULAR'}
+
+  AUTORIZACAO:
+    pasta: SAIDAAUTORIZACAO
+    regras:
+      - {nome: pede_autorizacao, peso: 5, onde: pagina1, regex: 'SOLICIT\w*.{0,60}AUTORIZACAO|AUTORIZACAO PARA|PEDIDO DE AUTORIZACAO|PEDIMOS AUTORIZACAO|AUTORIZAR'}
+      - {nome: empresa, peso: 2, onde: cabecalho, regex: 'LTDA|EIRELI|S\.?A\.?\b|CONSTRUTORA|ENGENHARIA|SERVICOS|CNPJ'}
+      - {nome: intervencao_rede, peso: 3, onde: pagina1, regex: 'INTERVENCAO|REDE DE DRENAGEM|DRENAGEM PLUVIAL|PAVIMENTACAO|ESCAVACAO|LICENCA'}
+      - {nome: nao_se_municipal, peso: -3, onde: cabecalho, regex: 'PREFEITURA MUNICIPAL DE ILHEUS'}
+      - {nome: nao_se_associacao, peso: -3, onde: cabecalho, regex: 'ASSOCIACAO|SINDICATO|COOPERATIVA'}
+
+  ASSOCIACAO:
+    pasta: SAIDAASSOCIACAO
+    regras:
+      - {nome: associacao_no_topo, peso: 7, onde: cabecalho, regex: 'ASSOCIACAO|SINDICATO|COOPERATIVA|CONSELHO COMUNITARIO|FEDERACAO'}
+      - {nome: moradores, peso: 2, onde: pagina1, regex: 'MORADORES|COMUNIDADE|BAIRRO|ASSOCIADOS'}
+      - {nome: presidente_assina, peso: 1.5, onde: ultima, regex: 'PRESIDENTE'}
+
+  OUTROS:
+    pasta: SAIDAOUTROS
+    regras: []
