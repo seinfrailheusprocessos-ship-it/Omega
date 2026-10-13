@@ -8,3 +8,8 @@ dados/config.json
 mp_levantamento/*
 !mp_levantamento/mp_indice.json
 !mp_levantamento/mp_objetos.json
+!mp_levantamento/triagem_provisoria.json
+!mp_levantamento/levantamento_parametrico.xlsx
+!mp_levantamento/nota_tecnica.md
+!mp_levantamento/prazos.md
+!mp_levantamento/proposta_bdi_contingencia_fator.md

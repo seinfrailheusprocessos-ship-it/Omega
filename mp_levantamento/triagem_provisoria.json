@@ -1,0 +1,632 @@
+{
+  "status": "PROVISORIO - aguarda aprovacao",
+  "criterio": "Triagem provisória = campo sugestao_triagem do mp_objetos.json (Etapa A). Substituir pelo triagem.json do Cowork quando houver; os objetos que mudarem serão recalculados.",
+  "gerado_em": "2026-10-13",
+  "totais": {
+    "levantamento": 22,
+    "responder_ja": 11,
+    "licitacao_em_curso": 6,
+    "contrato_assinado": 5,
+    "resolvido": 32
+  },
+  "levantamento": [
+    "JUSTICA_0006323-71.2012.8.05.0103",
+    "JUSTICA_8003152-18.2022.8.05.0103",
+    "JUSTICA_8005263-04.2024.8.05.0103",
+    "JUSTICA_8005837-61.2023.8.05.0103",
+    "MPBA_001.9.102305.2021",
+    "MPBA_001.9.190096.2025",
+    "MPBA_001.9.24192.2024",
+    "MPBA_001.9.250850.2021",
+    "MPBA_001.9.379764.2023",
+    "MPBA_001.9.52800.2024",
+    "MPBA_003.9.153337.2023",
+    "MPBA_003.9.198543.2025",
+    "MPBA_003.9.476383.2022",
+    "MPF_1.14.001.000105-2023",
+    "MPF_1.14.001.000183-2023",
+    "MPT_000120.2022.05.001.7",
+    "MPT_000252.2024.05.001.5",
+    "MPT_000282.2023.05.001.4",
+    "MPT_000393.2023.05.001.6",
+    "SN_COMPLEXO_ESPORTIVO_CAMPO_DO_RODAO",
+    "SN_MPF-OBRAS_FNDE_2023",
+    "TCM_03973e23-CRECHE_TEOTONIO_VILELA"
+  ],
+  "responder_ja": [
+    "JUSTICA_TRABALHO_0000917-10.2015.5.05.0493",
+    "MPBA_001.9.159804.2023",
+    "MPBA_001.9.1829.2023",
+    "MPBA_001.9.230302.2024",
+    "MPBA_001.9.254842.2021",
+    "MPBA_001.9.256878.2026",
+    "MPBA_001.9.375062.2025",
+    "MPBA_001.9.71615.2025",
+    "MPBA_003.9.121114.2026",
+    "MPT_000170.2025.05.001.9",
+    "TCM_06003e23-CANAL_DA_URBIS"
+  ],
+  "licitacao_em_curso": [
+    "MPBA_001.9.592238.2025",
+    "MPF_1.14.001.000153-2023",
+    "MPF_1.14.001.000195-2023",
+    "MPF_1.14.001.000240-2023",
+    "MPF_1.14.001.000254-2022",
+    "SN_COMPLEXO_ESPORTIVO_CAMINHO_40"
+  ],
+  "contrato_assinado": [
+    "JUSTICA_8006615-65.2022.8.05.0103",
+    "JUSTICA_8007670-17.2023.8.05.0103",
+    "MPBA_001.9.251397.2021",
+    "TCM_03276e23-ESCOLA_TIBINA",
+    "TCM_03969e23-RUA_RODOLFO_VIEIRA"
+  ],
+  "resolvido": [
+    "MPBA_001.0.118634.2014",
+    "MPBA_001.9.124971.2021",
+    "MPBA_001.9.132108.2026",
+    "MPBA_001.9.135161.2026",
+    "MPBA_001.9.138224.2025",
+    "MPBA_001.9.163539.2024",
+    "MPBA_001.9.170075.2019",
+    "MPBA_001.9.193438.2024",
+    "MPBA_001.9.199639.2025",
+    "MPBA_001.9.24267.2024",
+    "MPBA_001.9.2558.2025",
+    "MPBA_001.9.416277.2023",
+    "MPBA_001.9.420822.2023",
+    "MPBA_001.9.482927.2024",
+    "MPBA_001.9.523638.2022",
+    "MPBA_001.9.95137.2026",
+    "MPBA_003.9.279781.2022-US_IGUAPE_II",
+    "MPBA_003.9.391415.2023",
+    "MPBA_003.9.409530.2023",
+    "MPBA_003.9.462708.2023",
+    "MPBA_003.9.51186.2023",
+    "MPBA_003.9.79540.2026",
+    "MPF_1.14.001.000076-2025",
+    "MPF_1.14.001.000097-2024",
+    "MPF_1.14.001.000188-2025",
+    "MPF_1.14.001.000299-2025",
+    "MPF_1.14.001.000300-2025",
+    "MPF_1.14.001.000321-2023",
+    "MPF_1.14.001.000321-2025",
+    "MPT_000170.2024.05.001.9",
+    "SN_MPF-AEROPORTO_OBSTACULOS",
+    "TCM_00568e20-09243e19-RESIDUOS_SOLIDOS"
+  ],
+  "por_objeto": {
+    "MPBA_001.0.118634.2014": {
+      "triagem": "resolvido",
+      "titulo": "Requalificação da Escola Municipal Manoel Malaquias Reis",
+      "origem": "MPBA",
+      "categoria": "escola/creche",
+      "motivo": "A SEINFRA respondeu em 27/11/2023 (Ofício nº 67/2023) e indicou a devolução do imóvel locado, sem obra a executar. A lista de controle do MPBA marca o procedimento como 'OK' e não há prazo pendente."
+    },
+    "MPBA_001.9.102305.2021": {
+      "triagem": "levantamento",
+      "titulo": "Proteção e estabilização do prédio da Sociedade União Protetora dos Artífices e Operários (Centro)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "A demanda exige serviços de engenharia (tapumes, escoramento, rede, lona e plano emergencial de estabilização), e o dossiê não registra licitação nem contrato; a perícia citada no Ofício nº 317/2025 diz que nada foi feito. Também há resposta pendente: o relatório prometido em 01/09/2025 não consta, e as planilhas de 2026 marcam ‘PENDENTE’ e ‘FALTA – reunião Casa Civil comissão’."
+    },
+    "MPBA_001.9.124971.2021": {
+      "triagem": "resolvido",
+      "titulo": "Requalificação da Unidade Escolar de Pimenteira",
+      "origem": "MPBA",
+      "categoria": "escola/creche",
+      "motivo": "A planilha de controle registra que a conclusão da obra foi informada ao MP em 22/02/2024 (Ofício 034/2024, da Gerência de Fiscalização). A lista MPBA marca o item como 'OK'."
+    },
+    "MPBA_001.9.132108.2026": {
+      "triagem": "resolvido",
+      "titulo": "Melhorias na iluminação pública (local não informado)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "O Ofício nº 016/2026/SEINFRA/RSMP (08/04/2026) informou que a demanda é da Secretaria de Serviços Urbanos e remeteu o expediente a ela. A planilha registra \"RESPOSTA OK\" e não há pendência da SEINFRA."
+    },
+    "MPBA_001.9.135161.2026": {
+      "triagem": "resolvido",
+      "titulo": "Melhorias na iluminação pública (local não informado)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "Demanda fora da competência da SEINFRA, já respondida e redirecionada à Secretaria de Serviços Urbanos (Ofício RSMP 020/2026). A planilha registra 'RESPOSTA OK'."
+    },
+    "MPBA_001.9.138224.2025": {
+      "triagem": "resolvido",
+      "titulo": "Árvores com risco de queda em imóvel particular (propriedade e supressão)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "A SEINFRA respondeu pelo Ofício nº 017/2026/SEINFRA/RSMP (08/04/2026) que o tema é da Secretaria de Serviços Urbanos e remeteu a demanda a ela. A planilha de 2026 registra ‘RESPOSTA OK’."
+    },
+    "MPBA_001.9.159804.2023": {
+      "triagem": "responder_ja",
+      "titulo": "Transparência em obras públicas (QR code nas placas e portal)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "As planilhas de 2026 marcam o procedimento como ‘PENDENTE’ e ‘FALTA – QR CODE’, e o dossiê não traz resposta posterior à retomada do PA em 2025. A demanda é de informação e gestão, sem obra a orçar."
+    },
+    "MPBA_001.9.163539.2024": {
+      "triagem": "resolvido",
+      "titulo": "Alagamentos na Av. Governador Paulo Souto (Teotônio Vilela)",
+      "origem": "MPBA",
+      "categoria": "drenagem",
+      "motivo": "A SEINFRA respondeu (Ofício 032/2024, de 12/08/2024; envio registrado em 16/08/2024) que a causa são construções irregulares em área pública e pediu o envio do caso à Secretaria de Desenvolvimento Econômico. A lista MPBA marca 'OK'."
+    },
+    "MPBA_001.9.170075.2019": {
+      "triagem": "resolvido",
+      "titulo": "Segurança do imóvel histórico do Instituto N. Sra. da Piedade (Irmãs Ursulinas)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "A SEINFRA respondeu em 26/08/2024 (Ofício 034/2024), com o laudo da Defesa Civil e a notificação ao Instituto (Ofício 08/2024) para adotar as providências. A lista MPBA marca 'OK'."
+    },
+    "MPBA_001.9.1829.2023": {
+      "triagem": "responder_ja",
+      "titulo": "Adequação do prédio anexo da Prefeitura de Ilhéus",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "O prazo de 30 dias venceu em ago/2025 e houve pedido de prorrogação em 04/09/2025. As planilhas de 2026 marcam 'PENDENTE'/'FALTA', com a nota 'RF OK. INFORMAR LICITAÇÃO EM CURSO': o relatório fotográfico existe e a resposta depende de informar a licitação."
+    },
+    "MPBA_001.9.190096.2025": {
+      "triagem": "levantamento",
+      "titulo": "Conclusão de unidades escolares paralisadas (Recomendação MPBA 02/2025)",
+      "origem": "MPBA",
+      "categoria": "escola/creche",
+      "motivo": "A Recomendação exige retomar e concluir obras escolares paralisadas, sem licitação ou contrato registrados (ex.: obra paralisada da Escola Municipal Vovó Isaac). Também há resposta pendente: o prazo do MP venceu (estimado em 11/10/2025) e não há resposta da SEINFRA no dossiê."
+    },
+    "MPBA_001.9.193438.2024": {
+      "triagem": "resolvido",
+      "titulo": "Imóvel em risco de desabamento no Basílio (demolição)",
+      "origem": "MPBA",
+      "categoria": "habitação",
+      "motivo": "A resposta da SEINFRA (sem data) informa que o imóvel já foi demolido, e a CI nº 006/2025/SEINFRA/GAB (09/01/2025) comunicou a demolição com base no RVP nº 63/2024. Uma planilha de controle registra o procedimento como ‘ARQUIVADO’."
+    },
+    "MPBA_001.9.199639.2025": {
+      "triagem": "resolvido",
+      "titulo": "Gastos com festas (tema fora da competência da SEINFRA)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "A SEINFRA respondeu pelo Ofício nº 018/2026/SEINFRA/RSMP (08/04/2026) que trata só de obras públicas e infraestrutura urbana e não pode contribuir. A planilha de 2026 registra ‘RESPOSTA OK’."
+    },
+    "MPBA_001.9.230302.2024": {
+      "triagem": "responder_ja",
+      "titulo": "Reforma da UBS de Olivença e garantia das obras de PSF (Olivença)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "A resposta da SEINFRA (ofício sem número e sem data) foi enviada à PGM para protocolo (CI Processo nº 14525/2025) e houve pedido de prorrogação em 04/09/2025, mas não há comprovante de protocolo no MPBA. As planilhas marcam 'PENDENTE'/'CONSULTAR' e 'elaboração jurídica' com prazo previsto de 14/07/2026, já vencido."
+    },
+    "MPBA_001.9.24192.2024": {
+      "triagem": "levantamento",
+      "titulo": "Requalificação da drenagem pluvial da Av. Soares Lopes",
+      "origem": "MPBA",
+      "categoria": "drenagem",
+      "motivo": "Obra de drenagem sem licitação nem contrato registrado; o projeto ainda estava em estudo. Também há resposta pendente: o prazo de 30/11/2024 para apresentar o projeto venceu e a planilha CONTROLE PROCESSOS não registra resposta após a suspensão."
+    },
+    "MPBA_001.9.24267.2024": {
+      "triagem": "resolvido",
+      "titulo": "Alvará e licenciamento de prédio de 84 apartamentos (zona sul)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "Demanda fora da competência da SEINFRA: os Ofícios 005/2024 (01/02/2024) e 007/2024 (22/02/2024) indicaram a Secretaria de Desenvolvimento Econômico (LOPE) e a de Meio Ambiente. A planilha de controle registra resposta por e-mail em 22/02/2024 e marca 'OK'."
+    },
+    "MPBA_001.9.250850.2021": {
+      "triagem": "levantamento",
+      "titulo": "Banheiro com chuveiro e grade na sede do Conselho Municipal de Educação",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "Não há contratação, em andamento ou concluída: o objeto não entrou no QDD 2025, e a SEINFRA aguarda confirmação de orçamento da Educação para iniciar o ETP. A planilha de 2026 marca 'FALTA – informar data de conclusão do ETP'. Também há resposta pendente, pois o MP reiterou a cobrança e o prazo venceu."
+    },
+    "MPBA_001.9.251397.2021": {
+      "triagem": "contrato_assinado",
+      "titulo": "Reforma geral e ampliação do CAIC Darcy Ribeiro",
+      "origem": "MPBA",
+      "categoria": "escola/creche",
+      "motivo": "Contrato nº 086/2024, com ordem de serviço de 19/03/2024 e obra em execução (19,73% em outubro/2024). A lista de controle do MPBA marca 'OK' e não há prazo pendente."
+    },
+    "MPBA_001.9.254842.2021": {
+      "triagem": "responder_ja",
+      "titulo": "Inspeção das condições da Creche Amotara (Olivença)",
+      "origem": "MPBA",
+      "categoria": "escola/creche",
+      "motivo": "A data da vistoria (07/05/2026) já passou e não há registro de participação da SEINFRA nem do resultado. Convém obter o relatório da vistoria e verificar se houve providência cobrada do Município."
+    },
+    "MPBA_001.9.2558.2025": {
+      "triagem": "resolvido",
+      "titulo": "Pedido de supressão de árvore particular de grande porte",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "NF indeferida e arquivada. A SEINFRA respondeu em 07/04/2025 e encaminhou o caso à Secretaria de Serviços Urbanos (CI 2025.04.07.001). A planilha e o levantamento de custos marcam 'ARQUIVADO'."
+    },
+    "MPBA_001.9.256878.2026": {
+      "triagem": "responder_ja",
+      "titulo": "Inspeção de construção com risco de desabamento (local não informado)",
+      "origem": "MPBA",
+      "categoria": "habitação",
+      "motivo": "Reiteração com prazo a vencer em 14/10/2026 (estimado) e sem resposta registrada. A demanda é vistoria e informação de risco, sem obra a orçar por ora."
+    },
+    "MPBA_001.9.375062.2025": {
+      "triagem": "responder_ja",
+      "titulo": "Intervenção na área verde menor do Loteamento Jardim Atlântico",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "O prazo de 30 dias (estimado em 13 a 14/11/2025) venceu e não há resposta registrada; as planilhas marcam 'RESPONDER' e 'PENDENTE'. O MP pede só informação sobre projeto ou intervenção na área, não uma obra."
+    },
+    "MPBA_001.9.379764.2023": {
+      "triagem": "levantamento",
+      "titulo": "Valetão aberto pela EMBASA em via pública (local não identificado)",
+      "origem": "MPBA",
+      "categoria": "drenagem",
+      "motivo": "A própria SEINFRA reconheceu, no Ofício nº 077/2023, que é preciso uma intervenção maior que o fechamento da valeta, e não há licitação, contrato nem registro de execução. A resposta ao MP já foi enviada, e a lista de controle marca ‘OK’."
+    },
+    "MPBA_001.9.416277.2023": {
+      "triagem": "resolvido",
+      "titulo": "Equipamentos de iluminação pública (Av. Vila Nazaré)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "A SEINFRA respondeu que a iluminação pública é da Secretaria de Serviços Urbanos (Ofícios 005/2024 e 010/2024). Sobre a calçada, informou passeio de 1,10 m, fora da NBR 9050, com poste no passeio (Ofício 011/2024). A lista MPBA marca 'OK'."
+    },
+    "MPBA_001.9.420822.2023": {
+      "triagem": "resolvido",
+      "titulo": "Requalificação da Praça Misael Tavares",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "O Ofício nº 001/2024 da SEINFRA (22/01/2024) informou que a requalificação da praça foi concluída. As planilhas registram \"Praça Concluída\" e \"OK\"."
+    },
+    "MPBA_001.9.482927.2024": {
+      "triagem": "resolvido",
+      "titulo": "Lista de beneficiários das casas populares da CONDER (Salobrinho)",
+      "origem": "MPBA",
+      "categoria": "habitação",
+      "motivo": "A SEINFRA respondeu (ofício sem número e sem data, enviado à PGM para protocolo pela CI processo 14540/2025) que a gestão anterior não deixou documentos sobre o convênio e que não tem como contribuir. O levantamento de custos marca 'Atendido'. É demanda de informação, sem obra."
+    },
+    "MPBA_001.9.523638.2022": {
+      "triagem": "resolvido",
+      "titulo": "Área verde contígua ao novo Fórum e adoção da Praça Cairu",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "A SEINFRA respondeu em 14/04/2025 (Ofício nº 2025.04.14.003/SEINFRA/GAB) e remeteu o tema da Praça Cairu à Secretaria de Gestão. O Ofício nº 260/2025 da 8ª PJ (21/07/2025) comunica o arquivamento do inquérito civil."
+    },
+    "MPBA_001.9.52800.2024": {
+      "triagem": "levantamento",
+      "titulo": "Quadra poliesportiva do distrito de Banco do Pedro",
+      "origem": "MPBA",
+      "categoria": "quadra/esporte",
+      "motivo": "Os Contratos 111/2017 e 134/2023 terminaram sem concluir a quadra. Após a repactuação do repasse federal, só a quadra do Salobrinho foi relicitada; para Banco do Pedro há apenas levantamento técnico para projeto e orçamento. Também há resposta pendente: a planilha de 2026 marca 'FALTA – informar se vai relicitar'."
+    },
+    "MPBA_001.9.592238.2025": {
+      "triagem": "licitacao_em_curso",
+      "titulo": "Obra do Canal do Malhado",
+      "origem": "MPBA",
+      "categoria": "drenagem",
+      "motivo": "A planilha de licitações registra o Canal do Malhado (processo nº 10071/2025, remanescente do fechamento do canal) como \"LICITANDO\", e a resposta da SEINFRA previa publicar o certame. A planilha também marca \"FALTA – informar sessão licitação\", ou seja, há complemento de resposta pendente."
+    },
+    "MPBA_001.9.71615.2025": {
+      "triagem": "responder_ja",
+      "titulo": "Muros sobre o córrego e alagamentos no bairro Hernani Sá",
+      "origem": "MPBA",
+      "categoria": "drenagem",
+      "motivo": "Não há registro de envio da identificação dos imóveis com muros sobre o córrego, objeto do pedido. A planilha marca 'PENDENTE' e 'elaboração jurídica' com prazo previsto de 14/07/2026, vencido; a SEINFRA também deve ao MPBA o edital prometido."
+    },
+    "MPBA_001.9.95137.2026": {
+      "triagem": "resolvido",
+      "titulo": "Áreas de risco de Ilhéus – Plano Municipal de Redução de Riscos",
+      "origem": "MPBA",
+      "categoria": "encosta/contenção",
+      "motivo": "A resposta foi enviada por e-mail em 08/04/2026 (Ofício RSMP 015/2026), e a planilha registra 'RESPOSTA OK'. Não há prazo pendente."
+    },
+    "MPBA_003.9.121114.2026": {
+      "triagem": "responder_ja",
+      "titulo": "Laudo de risco de desabamento de imóvel abandonado no Caminho 48 (Hernani Sá)",
+      "origem": "MPBA",
+      "categoria": "habitação",
+      "motivo": "O prazo de 30 dias (estimado em 01/05/2026) venceu. O Ofício nº 022/2026/SEINFRA/RSMP só informou o repasse à Defesa Civil, e o MPBA reiterou o pedido. A demanda é um laudo, não uma obra."
+    },
+    "MPBA_003.9.153337.2023": {
+      "triagem": "levantamento",
+      "titulo": "Reforma do Instituto Municipal de Ensino Eusínio Lavigne – IME (Av. Canavieiras, Centro)",
+      "origem": "MPBA",
+      "categoria": "escola/creche",
+      "motivo": "A SEINFRA informou em 14/08/2025 que não há licitação em curso nem contrato vigente para a reforma; o último contrato (AMF Engenharia e Serviços Ltda., 2020) foi encerrado em 20/02/2021, e há só manutenção com equipe própria. Também há resposta pendente: as planilhas de 2026 marcam ‘PENDENTE – relatório fotográfico atualizado do IME’."
+    },
+    "MPBA_003.9.198543.2025": {
+      "triagem": "levantamento",
+      "titulo": "Drenagem da Rua Jardim Alice (Banco da Vitória)",
+      "origem": "MPBA",
+      "categoria": "drenagem",
+      "motivo": "Obra não executada e sem licitação ou contrato: o Ofício RSMP 019/2026 (08/04/2026) informa que a demanda ainda não foi atendida, embora o problema esteja identificado. O levantamento de custos da SEINFRA já estima R$ 667.425 (faixa de R$ 510.215 a R$ 1.037.430; confiança baixa)."
+    },
+    "MPBA_003.9.279781.2022-US_IGUAPE_II": {
+      "triagem": "resolvido",
+      "titulo": "Manutenção e reparos da Unidade de Saúde do Iguape II",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "O Ofício nº 035/2024 da SEINFRA (04/09/2024) enviou as medições dos reparos de 2024 e afirma que todas as necessidades da unidade foram sanadas. A lista do MPBA marca o número como \"OK\"."
+    },
+    "MPBA_003.9.391415.2023": {
+      "triagem": "resolvido",
+      "titulo": "Vazamento de esgoto na Av. 2 de Julho",
+      "origem": "MPBA",
+      "categoria": "saneamento",
+      "motivo": "Demanda fora da competência da SEINFRA (rede de esgoto, a cargo da EMBASA), respondida em 27/10/2023 pelo Ofício nº 065/2023. A lista de controle do MPBA marca 'OK' e não há novo pedido."
+    },
+    "MPBA_003.9.409530.2023": {
+      "triagem": "resolvido",
+      "titulo": "Obra irregular em área de risco (Tapera)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "A SEINFRA respondeu pelo Ofício 066/2023 (27/10/2023): houve vistoria, a Defesa Civil emitiu laudo e não constatou obra irregular. A planilha de controle marca 'OK'."
+    },
+    "MPBA_003.9.462708.2023": {
+      "triagem": "resolvido",
+      "titulo": "Obras de modernização do Aeroporto Jorge Amado (alvará)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "motivo": "A SEINFRA respondeu pelo Ofício nº 003/2024 (22/01/2024, reenviado em 18/03/2024) que as obras são do Governo do Estado e da União e que o alvará deve ser pedido a esses órgãos; anunciou CI à Secretaria de Desenvolvimento Econômico. A lista de controle marca ‘OK’."
+    },
+    "MPBA_003.9.476383.2022": {
+      "triagem": "levantamento",
+      "titulo": "Drenagem da Rua Praia Dourada",
+      "origem": "MPBA",
+      "categoria": "drenagem",
+      "motivo": "O Ofício nº 002/2024 informa caixas coletoras e patrolamento já feitos, mas o projeto macro da rede de drenagem aguardava disponibilidade orçamentária. O controle registra só projeto básico inicial à espera de autorização para licitar; não há licitação nem contrato."
+    },
+    "MPBA_003.9.51186.2023": {
+      "triagem": "resolvido",
+      "titulo": "Pavimentação e microdrenagem da Rua Boa Vista (Nelson Costa)",
+      "origem": "MPBA",
+      "categoria": "drenagem+pavimentação",
+      "motivo": "A planilha de controle registra 'obra já finalizada' e resposta ao MP em 20/07/2023. Relatórios da SEINFRA em outros procedimentos citam decisão já emitida pela 11ª PJ sobre a obra. A lista MPBA marca 'OK'."
+    },
+    "MPBA_003.9.79540.2026": {
+      "triagem": "resolvido",
+      "titulo": "Buraco em rodovia federal na região da UESC",
+      "origem": "MPBA",
+      "categoria": "pavimentação",
+      "motivo": "Demanda fora da competência municipal: o Ofício RSMP 021/2026 (08/04/2026) informou que a via é rodovia federal, de responsabilidade do DNIT. A planilha registra 'RESPOSTA OK'."
+    },
+    "MPF_1.14.001.000076-2025": {
+      "triagem": "resolvido",
+      "titulo": "Duplicação da BA-001, trecho Ilhéus–Olivença (Orla Sul)",
+      "origem": "MPF",
+      "categoria": "outro",
+      "motivo": "Demanda fora da competência da SEINFRA municipal: o Ofício RSMP 023/2026, protocolado no MPF em 08/04/2026 (PRM-ILH-BA-00003641/2026), informou que a obra é da SEINFRA estadual e redirecionou a parte ambiental à SEMA. A planilha registra 'RESPOSTA OK'."
+    },
+    "MPF_1.14.001.000097-2024": {
+      "triagem": "resolvido",
+      "titulo": "Autorização de construção de três prédios privados e faixa de rodovia federal",
+      "origem": "MPF",
+      "categoria": "outro",
+      "motivo": "Obra privada, fora da competência da SEINFRA: redirecionada à Gerência de Controle do Uso do Solo (CI de 09/12/2024) e respondida ao MPF em 09/11/2025 (PRM-ILH-BA-00014867/2025), 08/04/2026 (RSMP 024/2026) e 20/07/2026. A planilha registra 'RESPOSTA OK'."
+    },
+    "MPF_1.14.001.000105-2023": {
+      "triagem": "levantamento",
+      "titulo": "Contenção de encosta da Rua Alto do Socorro (Conquista)",
+      "origem": "MPF",
+      "categoria": "encosta/contenção",
+      "motivo": "O Contrato nº 116/2022 parou em jan/2023 com 58,60% executado e não há contrato vigente registrado. A nova obra depende do PAC Seleções 2025, com projeto em análise na Caixa e sem número de licitação no dossiê. Também há resposta pendente: o expediente do MPF de 20/07/2026 está em elaboração jurídica e a minuta RSMP 003.1/2026 ficou incompleta."
+    },
+    "MPF_1.14.001.000153-2023": {
+      "triagem": "licitacao_em_curso",
+      "titulo": "Requalificação e acesso da Escola Nucleada Aritaguá II (Aritaguá)",
+      "origem": "MPF",
+      "categoria": "escola/creche",
+      "motivo": "A licitação 9841/2025, que incluía a escola, foi homologada, mas suspensa pelo TCM; a SEINFRA elaborou a licitação 8550/2026, só para unidades da Educação (ofício de 20/07/2026). O poço artesiano está em ETP, e as estradas foram remetidas à Secretaria de Interior."
+    },
+    "MPF_1.14.001.000183-2023": {
+      "triagem": "levantamento",
+      "titulo": "96 casas e parques lineares pós-chuvas de 2021 (Salobrinho, Banco da Vitória e Vila Cachoeira)",
+      "origem": "MPF",
+      "categoria": "habitação",
+      "motivo": "Obra habitacional sem licitação nem contrato: a licitação não foi aberta por falta de contrapartida e de desapropriações (CI 058/2024; RSMP 005/2026, de 04/05/2026). Há orçamentos de referência do Plano de Trabalho a atualizar (R$ 14.783.607,50 nas metas; custo total estimado de R$ 17.156.213,45). Respostas recentes foram enviadas (RSMP 027/2026 e 005/2026)."
+    },
+    "MPF_1.14.001.000188-2025": {
+      "triagem": "resolvido",
+      "titulo": "Licenciamento dos empreendimentos Ocean Park, Maré e Oceânico (zona sul)",
+      "origem": "MPF",
+      "categoria": "outro",
+      "motivo": "Licenciamento de obra privada, fora da competência da SEINFRA: procedimento redirecionado à Gerência de Controle do Uso do Solo, com respostas protocoladas no MPF em 09/11/2025 (PRM-ILH-BA-00014869/2025), 08/04/2026 (RSMP 028/2026) e 20/07/2026. A planilha registra 'RESPOSTA OK'."
+    },
+    "MPF_1.14.001.000195-2023": {
+      "triagem": "licitacao_em_curso",
+      "titulo": "Plano Municipal de Saneamento Básico (PMSB) de Ilhéus",
+      "origem": "MPF",
+      "categoria": "saneamento",
+      "motivo": "O Ofício nº 007/2026/SEINFRA/RSMPF (04/05/2026) informa a licitação do PMSB em análise de propostas, com sessão em 08/05/2026 e conclusão prevista para maio/2026; o número do certame não consta. Há também resposta pendente ao expediente de 20/07/2026, em elaboração jurídica."
+    },
+    "MPF_1.14.001.000240-2023": {
+      "triagem": "licitacao_em_curso",
+      "titulo": "Reconstrução de abrigo demolido em obra de alargamento de via",
+      "origem": "MPF",
+      "categoria": "outro",
+      "motivo": "A CI nº 246/2023 cita o Pregão Eletrônico nº 027/2022 (processo nº 16793/2022), então em fase de homologação, para atender ao objeto. Não há registro posterior de contrato ou execução, o que precisa ser verificado."
+    },
+    "MPF_1.14.001.000254-2022": {
+      "triagem": "licitacao_em_curso",
+      "titulo": "Prevenção a desastres: contenção de 14 encostas do Novo PAC e PMRR (Ilhéus)",
+      "origem": "MPF",
+      "categoria": "encosta/contenção",
+      "motivo": "A Concorrência Pública Eletrônica CP 006/2026 (projetos executivos e obras de 12 encostas, lotes 1 a 4, R$ 47.191.697,09) teve abertura marcada para 24/09/2026, conforme a resposta de 20/07/2026. As requisições foram respondidas em 13/04/2026, 04/05/2026 e 20/07/2026."
+    },
+    "MPF_1.14.001.000299-2025": {
+      "triagem": "resolvido",
+      "titulo": "Licença de construção do empreendimento Maunakai Beach Tower (Praia dos Milionários)",
+      "origem": "MPF",
+      "categoria": "outro",
+      "motivo": "Obra privada, fora da competência da SEINFRA. A SEINFRA respondeu e redirecionou à Gerência de Controle do Uso do Solo, com protocolos no MPF em 13/11/2025 e 08/04/2026 (Ofício nº 030/2026/SEINFRA/RSMP) e nova resposta em 20/07/2026; a planilha marca 'RESPOSTA OK'."
+    },
+    "MPF_1.14.001.000300-2025": {
+      "triagem": "resolvido",
+      "titulo": "Licenciamento de empreendimento privado na Praia dos Milionários (zona sul)",
+      "origem": "MPF",
+      "categoria": "outro",
+      "motivo": "Licenciamento de obra privada, fora da competência da SEINFRA: redirecionado à Gerência de Controle do Uso do Solo (CI de 01/09/2025) e respondido ao MPF em 09/11/2025 (PRM-ILH-BA-00014872/2025), 08/04/2026 (RSMP 031/2026) e 20/07/2026. A planilha registra 'RESPOSTA OK'."
+    },
+    "MPF_1.14.001.000321-2023": {
+      "triagem": "resolvido",
+      "titulo": "Regularidade de obra privada (objeto não identificado)",
+      "origem": "MPF",
+      "categoria": "outro",
+      "motivo": "A SEINFRA respondeu pelo Ofício 078/2023 (06/12/2023) e pediu o envio da demanda à Secretaria de Desenvolvimento Econômico (Gerência de Uso e Ocupação do Solo). A planilha registra 'respondido em 06/12/2023' e nova informação em 05/03/2024."
+    },
+    "MPF_1.14.001.000321-2025": {
+      "triagem": "resolvido",
+      "titulo": "Licença de construção da Capela Marítima (Praia do Sul)",
+      "origem": "MPF",
+      "categoria": "outro",
+      "motivo": "Obra privada, fora da competência da SEINFRA. A SEINFRA encaminhou o caso à Gerência de Controle do Uso do Solo (CI de 01/09/2025) e respondeu ao MPF (protocolo de 09/11/2025 e nova resposta de 20/07/2026)."
+    },
+    "SN_MPF-AEROPORTO_OBSTACULOS": {
+      "triagem": "resolvido",
+      "titulo": "Obstáculos no entorno do Aeroporto Jorge Amado (SBIL)",
+      "origem": "MPF",
+      "categoria": "outro",
+      "motivo": "Demanda fora da competência da SEINFRA. Pela C.I. nº 369/2019 (24/07/2019), a SEINFRA devolveu o ofício à PGM e indicou como competentes a Secretaria de Serviços Urbanos e a Secretaria de Desenvolvimento Econômico, Meio Ambiente e Urbanismo, com cópia a ambas."
+    },
+    "SN_MPF-OBRAS_FNDE_2023": {
+      "triagem": "levantamento",
+      "titulo": "Obras FNDE: Escola Vila Lídia, Quadra do Vilela e Creche Nossa Senhora da Vitória",
+      "origem": "MPF",
+      "categoria": "escola/creche",
+      "motivo": "A CI SEINFRA 0287/2023 (21/12/2023) só informa que as manifestações de interesse ao FNDE aguardam análise; não há licitação, contrato ou conclusão registrados para as três obras. Confirmar a situação atual antes de orçar."
+    },
+    "MPT_000120.2022.05.001.7": {
+      "triagem": "levantamento",
+      "titulo": "Condições de trabalho e reforma do prédio do SAMU de Ilhéus",
+      "origem": "MPT",
+      "categoria": "outro",
+      "motivo": "A SEINFRA informou (Ofício nº 034/2026/SEINFRA/RSMP, de 13/04/2026) que não atendeu às requisições por falta de contrato de requalificação predial: o contrato nº 126/2023 vigeu até setembro/2025 e a licitação nº 9841/2025 (registro de preços) está suspensa por ordem do TCM. A reforma segue sem contrato vigente."
+    },
+    "MPT_000170.2024.05.001.9": {
+      "triagem": "resolvido",
+      "titulo": "Desabamento de laje em obra particular no Conjunto Sítio São Paulo (Jardim Atlântico)",
+      "origem": "MPT",
+      "categoria": "outro",
+      "motivo": "A Defesa Civil respondeu pelo Ofício nº 007/2025/COMPDEC (17/06/2025), com o Relatório de Vistoria com Parecer de 04/07/2024, e a planilha registra o envio do RVP nº 063.2024. Os investigados são particulares e não há pedido de obra ao Município."
+    },
+    "MPT_000170.2025.05.001.9": {
+      "triagem": "responder_ja",
+      "titulo": "Colapso de construção no Sítio São Paulo",
+      "origem": "MPT",
+      "categoria": "outro",
+      "motivo": "A planilha registra o procedimento em 'elaboração jurídica' com prazo previsto de 14/07/2026, já vencido, e marca 'REVISAR'. A resposta foi enviada à PGM para protocolo (CI Processo nº 14535/2025), mas não há comprovante de protocolo no MPT nem texto de resposta."
+    },
+    "MPT_000252.2024.05.001.5": {
+      "triagem": "levantamento",
+      "titulo": "Condições do prédio do Arquivo Público Municipal",
+      "origem": "MPT",
+      "categoria": "outro",
+      "motivo": "O Ofício nº 036/2026/SEINFRA/RSMP (13/04/2026) admite que as requisições não foram atendidas: o contrato de requalificação predial nº 126/2023 terminou em set/2025 e a licitação nº 9841/2025 está suspensa pelo TCM. Também há resposta pendente: o prazo das reiterações venceu (estimado em 15/10/2025) e a planilha marca \"elaboração jurídica\" com prazo de 14/07/2026."
+    },
+    "MPT_000282.2023.05.001.4": {
+      "triagem": "levantamento",
+      "titulo": "Condições estruturais da Clínica Municipal de Atendimento Especializado - CMAE (Av. Canavieiras)",
+      "origem": "MPT",
+      "categoria": "outro",
+      "motivo": "A SEINFRA informou (Ofício nº 037/2026/SEINFRA/RSMP, de 13/04/2026) que não atendeu às requisições por falta de contrato de requalificação predial: o contrato nº 126/2023 terminou em setembro/2025 e a licitação nº 9841/2025 está suspensa pelo TCM. Também há resposta pendente: o prazo da notificação venceu em agosto/2025 e a planilha marca 'REVISAR', com elaboração jurídica prevista até 14/07/2026."
+    },
+    "MPT_000393.2023.05.001.6": {
+      "triagem": "levantamento",
+      "titulo": "Cozinhas e áreas de limpeza das escolas municipais (saúde e segurança do trabalho)",
+      "origem": "MPT",
+      "categoria": "escola/creche",
+      "motivo": "A recomendação exige intervenções físicas nas escolas, e o Ofício nº 038/2026/SEINFRA/RSMP (13/04/2026) informa que não há contrato de requalificação predial vigente. O Contrato nº 126/2023 terminou em setembro/2025, e a licitação nº 9841/2025, homologada com ata de registro de preços, está suspensa por ordem do TCM."
+    },
+    "JUSTICA_0006323-71.2012.8.05.0103": {
+      "triagem": "levantamento",
+      "titulo": "Requalificação do Estádio Municipal Mário Pessoa (Cidade Nova) – TAC",
+      "origem": "Justiça",
+      "categoria": "quadra/esporte",
+      "motivo": "O TAC segue cumprido só em parte, e não há licitação nem contrato registrado para as adequações. A SEINFRA pediu 60 dias (CI de 23/09/2025) e, em 15/09/2026, prazo suplementar, com relatório fotográfico de 04/09/2026 (trâmite 21330/2025). Acompanhar a decisão do Juízo sobre o novo prazo."
+    },
+    "JUSTICA_8003152-18.2022.8.05.0103": {
+      "triagem": "levantamento",
+      "titulo": "Drenagem pluvial e alagamentos nas Ruas Castro Alves e Barão do Rio Branco (Pontal)",
+      "origem": "Justiça",
+      "categoria": "drenagem",
+      "motivo": "A demanda de fundo é a recuperação da drenagem pluvial das duas ruas, sem licitação nem contrato registrado. Também há resposta pendente: o prazo da PGM (08/06/2026) venceu e a planilha da SEINFRA mostra 'elaboração jurídica' com prazo previsto de 14/07/2026, também vencido."
+    },
+    "JUSTICA_8005263-04.2024.8.05.0103": {
+      "triagem": "levantamento",
+      "titulo": "Drenagem e pavimentação da Rua Aracuã (Nossa Senhora das Vitórias)",
+      "origem": "Justiça",
+      "categoria": "drenagem+pavimentação",
+      "motivo": "Obra de drenagem e pavimentação sem licitação nem contrato registrados: as contratações pelo Termo de Compromisso 969321/2024 (Novo PAC), previstas para set/2025, não ocorreram. Também há resposta judicial a acompanhar: o prazo da C.I. PROGER 567/2026 (22/07/2026) venceu, e a lista registra a CI SEINFRA 005.22.0007.26 como resposta, sem texto no dossiê."
+    },
+    "JUSTICA_8005837-61.2023.8.05.0103": {
+      "triagem": "levantamento",
+      "titulo": "Abrigos de ônibus da Rodovia Jorge Amado (BR-415), perto do IFBA",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "motivo": "A sentença exige a instalação de novos abrigos, e o dossiê não registra licitação nem contrato para o objeto. O próprio Juízo anotou que o Município não comprovou a conclusão. Também há resposta a acompanhar: a lista de controle cita a CI 003.22.0007.26 como resposta à C.I. PROGER nº 564/2026, mas sem o texto."
+    },
+    "JUSTICA_8006615-65.2022.8.05.0103": {
+      "triagem": "contrato_assinado",
+      "titulo": "Calçada e guarda-corpo da Rua 2 de Julho (Alto do Amparo, Centro)",
+      "origem": "Justiça",
+      "categoria": "pavimentação",
+      "motivo": "O Relatório nº 5/2024 da SEINFRA informa que o local é objeto do Contrato nº 162/2022 (AMF Engenharia e Serviços Ltda., R$ 3.643.159,14), com avanço físico acima de 90% em maio/2024. O 1º termo aditivo estendeu a vigência só até 20/09/2024, e não há registro posterior de conclusão."
+    },
+    "JUSTICA_8007670-17.2023.8.05.0103": {
+      "triagem": "contrato_assinado",
+      "titulo": "Requalificação da Ladeira Júlio Bagana / Rua Rio Almada (Tapera)",
+      "origem": "Justiça",
+      "categoria": "encosta/contenção",
+      "motivo": "O Relatório nº 6/2024 informa o Contrato nº 129/2023 com a A J Construtora Ltda. (Tomada de Preços nº 003/2022, R$ 1.684.122,83), de estabilização de encosta no local. Em maio/2024, a SEINFRA ainda aguardava autorização para emitir a ordem de serviço."
+    },
+    "JUSTICA_TRABALHO_0000917-10.2015.5.05.0493": {
+      "triagem": "responder_ja",
+      "titulo": "Trabalho infantil no antigo Lixão de Itariri – cercamento e vigilância (ACP do MPT)",
+      "origem": "Justiça",
+      "categoria": "saneamento",
+      "motivo": "O prazo da CI 746/2026 (31/08/2026) venceu e não há resposta registrada no dossiê. A SEINFRA não é destinatária: os pedidos foram às Secretarias de Promoção Social, Serviços Urbanos e Ordem Pública. Confirmar com a PGM se algo cabe à SEINFRA ou registrar que a demanda é de outras secretarias."
+    },
+    "TCM_00568e20-09243e19-RESIDUOS_SOLIDOS": {
+      "triagem": "resolvido",
+      "titulo": "Coleta de resíduos sólidos e limpeza urbana (auditoria e denúncia no TCM)",
+      "origem": "TCM",
+      "categoria": "saneamento",
+      "motivo": "Os dois processos já foram julgados pelo TCM, com sanções pessoais ao gestor da época, e não há pedido nem prazo dirigido à SEINFRA; o último documento é de 04/11/2021. O serviço (coleta e limpeza urbana) é gerido pela Secretaria de Serviços Urbanos."
+    },
+    "TCM_03276e23-ESCOLA_TIBINA": {
+      "triagem": "contrato_assinado",
+      "titulo": "Construção de escola de 2 salas na comunidade da Tibina (zona norte)",
+      "origem": "TCM",
+      "categoria": "escola/creche",
+      "motivo": "Contrato nº 187/2022 (RDC nº 0008/2022, R$ 450.900,00), com ordem de serviço complementar de 21/03/2023 e medições BM 01 a BM 05 (janeiro a junho/2023) que somam cerca de R$ 441,6 mil. A vigência ia até 07/09/2023; confirmar se a obra foi concluída e recebida (nesse caso, 'resolvido')."
+    },
+    "TCM_03969e23-RUA_RODOLFO_VIEIRA": {
+      "triagem": "contrato_assinado",
+      "titulo": "Obra da Rua Rodolfo Vieira – denúncia ao TCM (Contrato nº 208/2022)",
+      "origem": "TCM",
+      "categoria": "outro",
+      "motivo": "O único sinal de andamento é o Contrato nº 208/2022, citado na denúncia como firmado para a obra. Não se sabe se ainda está vigente nem o que a denúncia aponta."
+    },
+    "TCM_03973e23-CRECHE_TEOTONIO_VILELA": {
+      "triagem": "levantamento",
+      "titulo": "Creche Municipal Padrão de 6 salas da Rua Genésio Santos (Teotônio Vilela)",
+      "origem": "TCM",
+      "categoria": "escola/creche",
+      "motivo": "Segundo a denúncia (28/02/2023), a obra do Contrato nº 192/2022 está paralisada, e o dossiê não registra retomada, novo contrato nem licitação. Obra paralisada é candidata à estimativa de custo para conclusão."
+    },
+    "TCM_06003e23-CANAL_DA_URBIS": {
+      "triagem": "responder_ja",
+      "titulo": "Fechamento do Canal da Urbis (Contrato nº 213/2022)",
+      "origem": "TCM",
+      "categoria": "drenagem",
+      "motivo": "Não há resposta, defesa ou andamento registrados desde a autuação (22/03/2023). A demanda é de controle do contrato e não pede obra. Conferir no e-TCM se o Município foi notificado e se há prazo."
+    },
+    "SN_COMPLEXO_ESPORTIVO_CAMINHO_40": {
+      "triagem": "licitacao_em_curso",
+      "titulo": "Construção do Complexo Esportivo do Caminho 40 (Hernani)",
+      "origem": "outro",
+      "categoria": "quadra/esporte",
+      "motivo": "O processo de contratação 8520/2026, aberto em 06/05/2026 pela SEINFRA, está em trâmite. O valor registrado é R$ 0,00; confirmar a fase (interna ou edital publicado)."
+    },
+    "SN_COMPLEXO_ESPORTIVO_CAMPO_DO_RODAO": {
+      "triagem": "levantamento",
+      "titulo": "Requalificação e ampliação do Complexo Esportivo Campo do Rodão (Teotônio Vilela)",
+      "origem": "outro",
+      "categoria": "quadra/esporte",
+      "motivo": "O processo nº 8543/2026 está em trâmite, foi remetido à Contabilidade – SEFAZ em 22/06/2026 e registra valor R$ 0,00, sem fornecedor. Não há licitação nem contrato registrados."
+    }
+  }
+}
