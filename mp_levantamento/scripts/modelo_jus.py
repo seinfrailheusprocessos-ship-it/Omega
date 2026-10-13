@@ -1,4 +1,4 @@
-"""Etapa B-J - estimativa paramétrica da Justiça (PROVISORIO). Mesmo método, preços e parâmetros do modelo.py (MP).
+"""Etapa B-J - estimativa paramétrica da Justiça (parâmetros APROVADOS em 13/10/2026). Mesmo método, preços e parâmetros do modelo.py (MP).
 Calcula só os objetos 'orçamento paramétrico' da Justiça que não foram calculados no MP (sem dupla contagem).
 Uso: python3 -I modelo_jus.py SCRATCH REPO_MP   -> grava SCRATCH/etapa_b/resultado_justica.json
 """
@@ -30,6 +30,16 @@ def dt_acolhimento(p):
     it += [('8. Prevenção contra incêndio', '90838', p['pcf'], 'porta corta-fogo 90x210 na rota de saída de emergência')]
     return it
 
+def dt_cerca(p):
+    """Cercamento de área por metro de perímetro: alambrado 2 m com mourões e mureta de concreto + concertina, portões e placas."""
+    P = p['P']
+    return [('1. Serviços preliminares', '103689', 6, 'placa de obra 3 m x 2 m'),
+            ('1. Serviços preliminares', '98525', 3 * P, 'limpeza da faixa de 3 m ao longo do perímetro'),
+            ('2. Cercamento', '98522', P, 'alambrado com mourões de concreto, tela de arame galvanizado e mureta de concreto'),
+            ('2. Cercamento', '105126', P, 'concertina simples de 300 mm no topo do alambrado (impede a escalada)'),
+            ('3. Portões de controle de acesso', '99861', p['portoes'] * 4 * 2.2, 'portões em gradil de aço, 4,0 m x 2,2 m cada (1/2/3 portões nos cenários mín/prov/máx)'),
+            ('4. Sinalização', 'I34723', 0.5 * math.ceil(P / 100), 'placa de advertência 1,0 x 0,5 m em chapa de aço a cada 100 m')]
+
 PREM_LOT = ('Infraestrutura básica por metro de via: via-tipo (drenagem, pavimentação, meio-fio, sarjeta, passeio e sinalização) + rede de '
             'água PVC DN 50 + rede de esgoto PVC DN 150 com PV a cada 60 m + luminária LED a cada 35 m em poste existente.')
 OBJ_J = [
@@ -44,18 +54,18 @@ OBJ_J = [
             'Face de 600/1.000/1.400 m² (premissa). O levantamento técnico em curso deve indicar o remanescente: parte da obra pode já ter sido executada.',
             'Solução-tipo: solo grampeado com concreto projetado e drenagem; grampos 2,0/1,5/1,25 m com 6/8/12 m; concreto 10/10/15 cm.',
             'Recuperação do pavimento da ladeira não está incluída.']),
- dict(k='JUSTICA_8008589-69.2024.8.05.0103', dt=dt_acolhimento, bdi='edif', fonte='demanda-tipo (área a confirmar)',
-      p={c: {**REF_INT[c], 'A': A, 'pcf': n} for c, A, n in zip(CEN, (200, 300, 450), (1, 1, 2))},
-      prem=['Acordo homologado: reforma da Unidade de Acolhimento Renascer, projeto de segurança contra incêndio, saída de emergência e armários.',
-            'Imóvel de 200/300/450 m² (premissa); 1/1/2 portas corta-fogo na rota de saída.', PREM_REF,
-            'Projeto de segurança contra incêndio na contingência (projetos). Armários de alvenaria não estão incluídos.'])]
+ dict(k='JUSTICA_0000917-10.2015.5.05.0493', dt=dt_cerca, bdi='edif', fonte='demanda-tipo (perímetro da poligonal a medir)',
+      p={c: {'P': P, 'portoes': n} for c, P, n in zip(CEN, (1500, 2500, 3500), (1, 2, 3))},
+      prem=['Sentença da ACP do MPT (1ª Vara do Trabalho de Ilhéus): cercar toda a poligonal do antigo aterro de Itariri. Só o cercamento; vigilância 24 h e ações sociais cabem a outras secretarias.',
+            'Perímetro de 1.500/2.500/3.500 m (premissa): a poligonal não consta do acervo e a base cartográfica aberta não pôde ser acessada. Custo linear: recalcular com o perímetro medido.',
+            'Alambrado de 2 m com tela de arame galvanizado, mourões e mureta de concreto, com concertina no topo; 1/2/3 portões de 4,0 x 2,2 m; placas de advertência a cada 100 m.',
+            'Não inclui recuperação de cerca existente, terraplenagem de taludes, drenagem nem guarita (a vigilância é da Secretaria de Ordem Pública).'])]
 
+TITULO = {'JUSTICA_0000917-10.2015.5.05.0493': 'Cercamento de toda a poligonal do antigo lixão de Itariri (ACP do MPT)'}
 # ---------------------------------------------------------------- cálculo
 JO = {o['grupo_objeto']: o for o in json.load(open(os.path.join(MP, 'justica_objetos.json')))}
-TRI_MP = json.load(open(os.path.join(MP, 'triagem_provisoria.json')))
-ja_calc = set(TRI_MP['levantamento'])
-param = [k for k, o in JO.items() if o['sugestao_triagem']['opcao'] == 'orçamento paramétrico']
-calcular = [k for k in param if JO[k]['ja_no_mp'] not in ja_calc]
+TJ = json.load(open(os.path.join(MP, 'triagem_provisoria_justica.json')))     # triagem aprovada (com as decisões do usuário)
+param, calcular = TJ['levantamento'], TJ['calcular_na_justica']
 assert sorted(calcular) == sorted(o['k'] for o in OBJ_J), (calcular, [o['k'] for o in OBJ_J])
 N0 = json.load(open(os.path.join(S, 'etapa_b', 'resultado.json')))['objetos'][-1]['n']
 res = []
@@ -75,7 +85,7 @@ for i, o in enumerate(OBJ_J, N0 + 1):
     for c in CEN:
         direto = sum(round(x['q'][c], 2) * x['preco'] for x in itens)
         tot[c] = dict(direto=direto, total=direto * (1 + BDI[o['bdi']][c]) * (1 + CONT[c]) * FREG[c])
-    res.append(dict(n=i, grupo_objeto=o['k'], titulo=meta['titulo'], origem=meta['origem'], categoria=meta['categoria'],
+    res.append(dict(n=i, grupo_objeto=o['k'], titulo=TITULO.get(o['k'], meta['titulo']), origem=meta['origem'], categoria=meta['categoria'],
                     local=meta['local'], bdi_tipo=o['bdi'], fonte_quant=o['fonte'], premissas=o['prem'], itens=itens, totais=tot,
                     levantamento='Justiça', ja_no_mp=meta['ja_no_mp']))
 nao = [dict(grupo_objeto=k, titulo=JO[k]['titulo'], ja_no_mp=JO[k]['ja_no_mp']) for k in param if k not in calcular]

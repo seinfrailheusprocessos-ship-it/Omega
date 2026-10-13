@@ -2,6 +2,7 @@
 import json, os, sys, re
 MP, OUT, SCR = sys.argv[1], sys.argv[2], sys.argv[3]
 O = json.load(open(os.path.join(MP, 'justica_objetos.json')))
+TJ = json.load(open(os.path.join(MP, 'triagem_provisoria_justica.json')))['por_objeto']   # triagem aprovada
 src = open(os.path.join(SCR, 'gerar_prazos_jus.py'), encoding='utf-8').read()
 ns = {'__file__': 'x', 'sys': sys}; sys_argv = sys.argv; sys.argv = ['x', MP, '/dev/null']
 exec(src[:src.index("assert all(i['k'] in O")], ns); sys.argv = sys_argv
@@ -15,14 +16,14 @@ def chave(o):
     p = o['prazo_mais_proximo'] or {}
     sit = {'vencido': 0, 'a vencer': 1}.get(p.get('situacao'), 2)
     u = URG.index(o['grupo_objeto']) if o['grupo_objeto'] in URG else 99
-    return (ORD.index(o['sugestao_triagem']['opcao']), u, sit, p.get('data_limite') or '9999', o['grupo_objeto'])
+    return (ORD.index(TJ[o['grupo_objeto']]['triagem']), u, sit, p.get('data_limite') or '9999', o['grupo_objeto'])
 plano = []
 for n, o in enumerate(sorted(O, key=chave), 1):
     p = o['prazo_mais_proximo']
     sit = 'sem prazo' if not p else p['situacao'] + (' (estimado)' if p['data_limite_estimada'] else '')
     plano.append({'n': n, 'grupo_objeto': o['grupo_objeto'], 'titulo': o['titulo'], 'categoria': o['categoria'], 'origem': o['origem'],
                   'local': o['local'], 'prazo_mais_proximo': p['data_limite'] if p else None, 'situacao_prazo': sit,
-                  'sugestao_triagem': o['sugestao_triagem']['opcao'], 'motivo': o['sugestao_triagem']['motivo'],
+                  'sugestao_triagem': TJ[o['grupo_objeto']]['triagem'], 'motivo': TJ[o['grupo_objeto']]['motivo'],
                   'pedido_consolidado': corta(o['pedido_consolidado']), 'docs': o['documentos']})
 assert all(len(x['pedido_consolidado']) <= 700 for x in plano) and len(plano) == len(O)
 json.dump(plano, open(OUT, 'w'), ensure_ascii=False, indent=2)

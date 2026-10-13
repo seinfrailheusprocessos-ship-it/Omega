@@ -1,6 +1,6 @@
 # Prazos e minutas de resposta — Levantamento MP · SEINFRA Ilhéus
 
-Gerado em 13/10/2026. Triagem usada: provisória (PROVISORIO - aguarda aprovacao).
+Gerado em 13/10/2026. Triagem do MP APROVADA em 13/10/2026. O Canal do Malhado, com licitação própria, é tratado à parte e não consta desta lista.
 
 Os 11 objetos com sugestão "responder já" incluem os 6 com prazo vencido sem resposta registrada e a NF 001.9.256878/2026 (prazo a vencer). Ordem de urgência: risco à vida e prazo a vencer; processo judicial; prazo impreterível; demais prazos vencidos (mais antigos e com reiteração primeiro); sem prazo.
 
@@ -105,7 +105,7 @@ Alternativa, se a vistoria não couber no prazo: "A vistoria na construção ind
 - **Prazo:** 31/08/2026 — vencido
 - **Pedido:** A sentença, transitada em julgado e em execução, obriga o Município a cercar toda a poligonal do antigo aterro, manter vigilância humana 24 horas e promover a inclusão social e a matrícula escolar dos menores, além de pagar dano moral coletivo de R$ 200.000,00. O Juízo homologou nova multa de R$ 42.147,00 e elevou as astreintes para R$ 10.000,00 por menor encontrado e R$ 2.000,00 por menor não matriculado. A PGM (CI 746/2026) pediu subsídios até 31/08/2026, às 10h, para a audiência de conciliação no CEJUSC/TRT5 do mesmo dia: relatórios de matrícula, destinação de resíduos à CVR, laudo do cercamento e ocorrências da GCM.
 - **Por que responder já:** O prazo da CI 746/2026 (31/08/2026) venceu e não há resposta registrada no dossiê. A SEINFRA não é destinatária: os pedidos foram às Secretarias de Promoção Social, Serviços Urbanos e Ordem Pública. Confirmar com a PGM se algo cabe à SEINFRA ou registrar que a demanda é de outras secretarias.
-- **O que falta para responder:** Confirmar com a PGM se algo coube à SEINFRA (a CI 746/2026 foi dirigida a outras secretarias). Em processo judicial, a resposta é CI à PGM, não ofício.
+- **O que falta para responder:** Cabe à SEINFRA o cercamento de toda a poligonal do antigo aterro: a estimativa e a minuta completa estão em itariri_cercamento.md (cerca de R$ 288,00 por metro; R$ 737.185,86 para 2.500 m). Em processo judicial, a resposta é CI à PGM, não ofício.
 
 **Minuta**
 
@@ -119,7 +119,7 @@ Alternativa, se a vistoria não couber no prazo: "A vistoria na construção ind
 >
 > 1. Em atenção à CI n. 746/2026, informa-se que os subsídios solicitados para a audiência de conciliação (relatórios de matrícula escolar, destinação de resíduos, laudo do cercamento e ocorrências da Guarda Civil Municipal) foram dirigidos às Secretarias de Promoção Social, de Serviços Urbanos e de Ordem Pública.  
 >
-> 2. No que cabe a esta Secretaria, informa-se {{SITUACAO_DO_CERCAMENTO_DA_POLIGONAL_DO_ANTIGO_ATERRO_OU_INEXISTENCIA_DE_DEMANDA_TECNICA}}.  
+> 2. No que cabe a esta Secretaria, o cercamento de toda a poligonal do antigo aterro, segue a estimativa preliminar de custo: R$ 288,00 por metro de perímetro, com BDI e contingência, e R$ {{VALOR}} para o perímetro medido de {{PERIMETRO}} m (ver itariri_cercamento.md).  
 >
 > 3. Esta Secretaria permanece à disposição para o apoio técnico que a Procuradoria Geral entender necessário.  
 >
@@ -403,13 +403,12 @@ Alternativa, se a vistoria não couber no prazo: "A vistoria na construção ind
 > **{{NOME_DO_SIGNATARIO}}**  
 > **{{CARGO_DO_SIGNATARIO}}**  
 
-## Outros prazos vencidos (objetos em outras categorias da triagem provisória)
+## Outros prazos vencidos (objetos em outras categorias da triagem)
 
 Prazo do documento mais recente com prazo de cada objeto. Vários já têm resposta registrada nas planilhas (ofícios RSMP de 08/04/2026): conferir antes de agir.
 
-| Prazo | Objeto | Triagem provisória | Observação |
+| Prazo | Objeto | Triagem | Observação |
 |---|---|---|---|
-| 14/10/2026 (estimado) | Obra do Canal do Malhado | licitação em curso | Ofício n. 1872/2026 da 11ª PJ (NF 003.9.428295/2026, 15 dias), no mesmo arquivo da NF 001.9.256878/2026: informar contrato, convênio com a CONDER e se a obra está parada. |
 | 23/09/2025 | Requalificação do Estádio Municipal Mário Pessoa (Cidade Nova) – TAC | orçamento paramétrico | Processo judicial: resposta via CI à PGM. |
 | 08/06/2026 | Drenagem pluvial e alagamentos nas Ruas Castro Alves e Barão do Rio Branco (Pontal) | orçamento paramétrico | Processo judicial: resposta via CI à PGM. |
 | 15/07/2026 | Abrigos de ônibus da Rodovia Jorge Amado (BR-415), perto do IFBA | orçamento paramétrico | Processo judicial: resposta via CI à PGM. |

@@ -5,7 +5,7 @@ import csv, json, math, os, sys
 
 S, MP = sys.argv[1], sys.argv[2]
 CEN = ('min', 'prov', 'max')
-PROV = 'PROVISORIO - aguarda aprovacao'
+PROV = 'APROVADO em 13/10/2026'
 
 # ---------------------------------------------------------------- precos SINAPI
 COMP, INS = {}, {}
@@ -23,10 +23,12 @@ def preco(cod):
     return d, u, p, tipo
 
 # ---------------------------------------------------------------- parametros (PROVISORIO)
-BDI = {'edif': {'min': 0.2034, 'prov': 0.2212, 'max': 0.2500},
-       'via': {'min': 0.1960, 'prov': 0.2097, 'max': 0.2423}}
+# APROVADO em 13/10/2026: BDI único por tipo de obra (valor médio do Acórdão 2.622/2013-TCU-Plenário), contingência 5/10/15%
+# e fator regional 1,00 (SINAPI-BA, localidade Salvador, não desonerado, adotado como referência de Ilhéus)
+BDI = {'edif': {'min': 0.2212, 'prov': 0.2212, 'max': 0.2212},
+       'via': {'min': 0.2097, 'prov': 0.2097, 'max': 0.2097}}
 CONT = {'min': 0.05, 'prov': 0.10, 'max': 0.15}
-FREG = {'min': 1.00, 'prov': 1.00, 'max': 1.10}
+FREG = {'min': 1.00, 'prov': 1.00, 'max': 1.00}
 
 # ---------------------------------------------------------------- demandas-tipo
 # cada item: (macroetapa, codigo, quantidade, memoria)
@@ -224,16 +226,21 @@ def dt_abrigo(p):
             ('3. Piso, banco e acessibilidade', '104658', 4 * n, 'piso podotátil, 4 m² por abrigo')]
 
 def dt_estadio(p):
-    it = [('1. Segurança contra incêndio e pânico', '101911', p['ext'], 'extintores PQS 12 kg'),
-          ('1. Segurança contra incêndio e pânico', '97599', p['emerg'], 'luminárias de emergência'),
-          ('1. Segurança contra incêndio e pânico', 'I37558', p['placas'], 'placas de saída de emergência'),
-          ('2. Guarda-corpos', '99844', p['gc'], 'guarda-corpo de aço galvanizado 1,10 m'),
-          ('3. SPDA', '96989', p['capt'], 'captores tipo Franklin'),
-          ('3. SPDA', '96974', p['cord'], 'cordoalha de cobre nu 50 mm²'),
-          ('4. Arquibancadas e acessibilidade', '104642', p['pint'], 'pintura das arquibancadas e muros'),
-          ('4. Arquibancadas e acessibilidade', '105004', p['rampa'], 'rampas de acessibilidade')]
-    it += dt_ref({**p['ref']}, pre='Casas de força, vestiários e áreas cobertas - ')
-    return it
+    """Adequação estrita às normas de segurança previstas no TAC (sem reforma geral, pintura ou acessibilidade)."""
+    return [('1. Extintores', '101911', p['ext'], 'extintores PQS 12 kg nas arquibancadas e circulações'),
+            ('1. Extintores', '101905', p['ext_a'], 'extintores de água pressurizada 10 L (classe A)'),
+            ('1. Extintores', '101907', p['co2'], 'extintores de CO2 6 kg nas casas de força'),
+            ('2. Iluminação e sinalização de emergência', '97599', p['emerg'], 'luminárias de emergência nas rotas de fuga'),
+            ('2. Iluminação e sinalização de emergência', 'I37558', p['placas'], 'placas fotoluminescentes de saída de emergência'),
+            ('2. Iluminação e sinalização de emergência', 'I37560', p['alerta'], 'placas de alerta (risco elétrico, extintores)'),
+            ('3. Saídas de emergência', 'I39621', p['saidas'], 'barras antipânico duplas nos portões de saída (insumo)'),
+            ('4. Guarda-corpos', '99844', p['gc'], 'guarda-corpo de aço galvanizado 1,10 m em arquibancadas e desníveis'),
+            ('5. SPDA', '96989', p['capt'], 'captores tipo Franklin'),
+            ('5. SPDA', '96974', p['cord'], 'cordoalha de cobre nu 50 mm² (captação e descidas)'),
+            ('5. SPDA', '96986', p['hastes'], 'hastes de aterramento 3/4" x 3 m'),
+            ('5. SPDA', '98111', p['hastes'], 'caixas de inspeção do aterramento'),
+            ('6. Casas de força (segurança elétrica)', '101879', p['qd'], 'quadros de distribuição novos'),
+            ('6. Casas de força (segurança elétrica)', 'I39457', p['qd'], 'dispositivo DR 4 polos 30 mA por quadro (insumo)')]
 
 def dt_escora(p):
     it = [('1. Isolamento', '98458', p['tapume'], 'tapume de compensado no perímetro frontal'),
@@ -382,13 +389,14 @@ OBJ = [
       prem=['Adequação-tipo de cozinha escolar: abrigo de GLP, ventilação, revestimentos, caixa de gordura e bancada.',
             '5/10/20 cozinhas (premissa; a SEDUC ainda não enviou a lista).',
             'Exaustores não têm preço no SINAPI-BA usado e não estão incluídos. PGR, PCMSO, exames, EPIs e treinamentos cabem à SEDUC.']),
- dict(k='JUSTICA_0006323-71.2012.8.05.0103', dt=dt_estadio, bdi='edif', fonte='demanda-tipo (itens do TAC)',
-      p=cen(dict(ext=15, emerg=40, placas=40, gc=200, capt=6, cord=300, pint=1500, rampa=10, ref={**REF_INT['min'], 'A': 400}),
-            dict(ext=20, emerg=60, placas=60, gc=300, capt=8, cord=400, pint=2000, rampa=20, ref={**REF_INT['prov'], 'A': 600}),
-            dict(ext=30, emerg=90, placas=90, gc=450, capt=12, cord=600, pint=3000, rampa=30, ref={**REF_INT['max'], 'A': 900})),
-      prem=['Itens do TAC de 2012: extintores, guarda-corpos, sinalização de saídas, casas de força, alarme e SPDA.',
-            'Quantidades-tipo para estádio de pequeno porte (premissa; o relatório técnico pedido pela PGM deve confirmar).',
-            'Central de alarme e acionadores não têm preço no SINAPI-BA usado e não estão incluídos.']),
+ dict(k='JUSTICA_0006323-71.2012.8.05.0103', dt=dt_estadio, bdi='edif', fonte='demanda-tipo (itens de segurança do TAC)',
+      p=cen(dict(ext=15, ext_a=10, co2=2, emerg=40, placas=40, alerta=10, saidas=2, gc=200, capt=6, cord=300, hastes=6, qd=2),
+            dict(ext=20, ext_a=15, co2=3, emerg=60, placas=60, alerta=15, saidas=4, gc=300, capt=8, cord=400, hastes=8, qd=3),
+            dict(ext=30, ext_a=20, co2=4, emerg=90, placas=90, alerta=20, saidas=6, gc=450, capt=12, cord=600, hastes=12, qd=4)),
+      prem=['Escopo estrito, por decisão do usuário (13/10/2026): só a adequação às normas de segurança previstas no TAC de 2012 (extintores, guarda-corpos, sinalização e saídas de emergência, casas de força e SPDA). Sem reforma geral, pintura ou acessibilidade.',
+            'Quantidades-tipo para estádio de pequeno porte (premissa); o relatório técnico e o projeto de segurança contra incêndio e pânico devem confirmá-las.',
+            'Central de alarme, acionadores e sirenes não têm preço no SINAPI-BA usado e não estão incluídos. Brigada de incêndio (treinamento) e projeto de segurança contra incêndio estão na contingência.',
+            'Se o projeto aprovado pelo Corpo de Bombeiros exigir sistema de hidrantes, o custo será acrescido.']),
  dict(k='JUSTICA_8003152-18.2022.8.05.0103', dt=dt_dren, bdi='via', fonte='demanda-tipo (duas ruas)',
       p=dren([300, 500, 800], [0.6, 0.6, 0.8]),
       prem=['Ruas Castro Alves e Barão do Rio Branco (Pontal): 2 ruas de 150/250/400 m (premissa).',
@@ -411,6 +419,7 @@ OBJ = [
             'Iluminação esportiva representada por refletores do SINAPI; o projeto luminotécnico pode elevar o custo.']),
 ]
 
+TITULO = {'JUSTICA_0006323-71.2012.8.05.0103': 'Adequação do Estádio Municipal Mário Pessoa às normas de segurança (TAC de 2012, Cidade Nova)'}
 # ---------------------------------------------------------------- calculo
 objs_mp = {o['grupo_objeto']: o for o in json.load(open(os.path.join(MP, 'mp_objetos.json')))}
 res = []
@@ -431,7 +440,7 @@ for i, o in enumerate(OBJ, 1):
     for c in CEN:
         direto = sum(round(x['q'][c], 2) * x['preco'] for x in itens)
         tot[c] = dict(direto=direto, total=direto * (1 + BDI[o['bdi']][c]) * (1 + CONT[c]) * FREG[c])
-    res.append(dict(n=i, grupo_objeto=o['k'], titulo=meta['titulo'], origem=meta['origem'], categoria=meta['categoria'],
+    res.append(dict(n=i, grupo_objeto=o['k'], titulo=TITULO.get(o['k'], meta['titulo']), origem=meta['origem'], categoria=meta['categoria'],
                     local=meta['local'], bdi_tipo=o['bdi'], fonte_quant=o['fonte'], premissas=o['prem'], itens=itens, totais=tot))
 os.makedirs(os.path.join(S, 'etapa_b'), exist_ok=True)
 json.dump(dict(status=PROV, BDI=BDI, CONT=CONT, FREG=FREG, objetos=res), open(os.path.join(S, 'etapa_b', 'resultado.json'), 'w'),

@@ -1,5 +1,5 @@
 {
-  "status": "PROVISORIO - aguarda aprovacao",
+  "status": "APROVADA em 13/10/2026 (triagem provisória aprovada pelo usuário, com os ajustes registrados em decisoes_usuario)",
   "criterio": "Triagem provisória = campo sugestao_triagem do mp_objetos.json (Etapa A). Substituir pelo triagem.json do Cowork quando houver; os objetos que mudarem serão recalculados.",
   "gerado_em": "2026-10-13",
   "totais": {
@@ -34,7 +34,6 @@
     "TCM_03973e23-CRECHE_TEOTONIO_VILELA"
   ],
   "responder_ja": [
-    "JUSTICA_TRABALHO_0000917-10.2015.5.05.0493",
     "MPBA_001.9.159804.2023",
     "MPBA_001.9.1829.2023",
     "MPBA_001.9.230302.2024",
@@ -44,15 +43,16 @@
     "MPBA_001.9.71615.2025",
     "MPBA_003.9.121114.2026",
     "MPT_000170.2025.05.001.9",
-    "TCM_06003e23-CANAL_DA_URBIS"
+    "TCM_06003e23-CANAL_DA_URBIS",
+    "JUSTICA_TRABALHO_0000917-10.2015.5.05.0493"
   ],
   "licitacao_em_curso": [
-    "MPBA_001.9.592238.2025",
     "MPF_1.14.001.000153-2023",
     "MPF_1.14.001.000195-2023",
     "MPF_1.14.001.000240-2023",
     "MPF_1.14.001.000254-2022",
-    "SN_COMPLEXO_ESPORTIVO_CAMINHO_40"
+    "SN_COMPLEXO_ESPORTIVO_CAMINHO_40",
+    "MPBA_001.9.592238.2025"
   ],
   "contrato_assinado": [
     "JUSTICA_8006615-65.2022.8.05.0103",
@@ -297,7 +297,7 @@
       "titulo": "Obra do Canal do Malhado",
       "origem": "MPBA",
       "categoria": "drenagem",
-      "motivo": "A planilha de licitações registra o Canal do Malhado (processo nº 10071/2025, remanescente do fechamento do canal) como \"LICITANDO\", e a resposta da SEINFRA previa publicar o certame. A planilha também marca \"FALTA – informar sessão licitação\", ou seja, há complemento de resposta pendente."
+      "motivo": "Decisão do usuário (13/10/2026): Canal do Malhado com licitação própria; resposta tratada à parte. Fora do levantamento."
     },
     "MPBA_001.9.71615.2025": {
       "triagem": "responder_ja",
@@ -577,7 +577,7 @@
       "titulo": "Trabalho infantil no antigo Lixão de Itariri – cercamento e vigilância (ACP do MPT)",
       "origem": "Justiça",
       "categoria": "saneamento",
-      "motivo": "O prazo da CI 746/2026 (31/08/2026) venceu e não há resposta registrada no dossiê. A SEINFRA não é destinatária: os pedidos foram às Secretarias de Promoção Social, Serviços Urbanos e Ordem Pública. Confirmar com a PGM se algo cabe à SEINFRA ou registrar que a demanda é de outras secretarias."
+      "motivo": "Decisão do usuário (13/10/2026): o cercamento da poligonal foi estimado no levantamento da Justiça (JUSTICA_0000917-10.2015.5.05.0493), sem dupla contagem."
     },
     "TCM_00568e20-09243e19-RESIDUOS_SOLIDOS": {
       "triagem": "resolvido",
@@ -628,5 +628,19 @@
       "categoria": "quadra/esporte",
       "motivo": "O processo nº 8543/2026 está em trâmite, foi remetido à Contabilidade – SEFAZ em 22/06/2026 e registra valor R$ 0,00, sem fornecedor. Não há licitação nem contrato registrados."
     }
-  }
+  },
+  "decisoes_usuario": [
+    {
+      "grupo_objeto": "MPBA_001.9.592238.2025",
+      "de": "licitação em curso",
+      "para": "licitação em curso",
+      "motivo": "Decisão do usuário (13/10/2026): Canal do Malhado com licitação própria; resposta tratada à parte. Fora do levantamento."
+    },
+    {
+      "grupo_objeto": "JUSTICA_TRABALHO_0000917-10.2015.5.05.0493",
+      "de": "responder já",
+      "para": "responder já",
+      "motivo": "Decisão do usuário (13/10/2026): o cercamento da poligonal foi estimado no levantamento da Justiça (JUSTICA_0000917-10.2015.5.05.0493), sem dupla contagem."
+    }
+  ]
 }

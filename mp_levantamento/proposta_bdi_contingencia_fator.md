@@ -1,8 +1,27 @@
-# Proposta de BDI, contingência e fator regional — PROVISORIO - aguarda aprovacao
+# BDI, contingência e fator regional — APROVADOS em 13/10/2026
 
-Levantamento MP/Justiça · SEINFRA Ilhéus · Etapa B · 13/10/2026.
-Status: **PROVISORIO - aguarda aprovacao**. Os valores abaixo já foram aplicados na estimativa provisória
-(`levantamento_parametrico.xlsx` e `nota_tecnica.md`). Se forem alterados, a planilha é recalculada.
+Levantamento MP/Justiça · SEINFRA Ilhéus · Etapas B e B-J · 13/10/2026.
+Status: **APROVADO em 13/10/2026**. O usuário aprovou a estimativa e deixou a escolha do BDI, da contingência e do fator
+regional a cargo da equipe, com estas diretrizes: SINAPI como base (regime não desonerado, localidade Salvador/BA); outra
+base pública só quando o SINAPI não tiver o serviço (SICRO, também Bahia). Os valores abaixo estão aplicados em
+`levantamento_parametrico.xlsx` e `nota_tecnica.md`. Se forem alterados, a planilha é recalculada.
+
+## 0. Decisão adotada
+
+| Parâmetro | Mínimo | Provável | Máximo |
+|---|---|---|---|
+| BDI de edificações, encostas, quadras, cercamento e outros | 22,12% | 22,12% | 22,12% |
+| BDI de pavimentação, drenagem e infraestrutura de vias | 20,97% | 20,97% | 20,97% |
+| Contingência | 5% | 10% | 15% |
+| Fator regional | 1,00 | 1,00 | 1,00 |
+
+- BDI: um valor único por tipo de obra, igual ao valor médio da faixa do Acórdão n. 2.622/2013-TCU-Plenário (itens 2 e 6).
+  A diferença entre os cenários vem só das quantidades e da contingência.
+- Fator regional 1,00: os preços são do SINAPI-BA (localidade Salvador), regime não desonerado, adotados como referência
+  para Ilhéus. Sai o acréscimo de 10% que a proposta provisória aplicava ao cenário máximo.
+- Contingência: mantida a proposta (item 3).
+
+As seções 1 a 6 abaixo registram a proposta provisória e as fontes conferidas.
 
 ## 1. Fórmula (00_LEIA)
 
@@ -11,7 +30,7 @@ Status: **PROVISORIO - aguarda aprovacao**. Os valores abaixo já foram aplicado
 Preço unitário: SINAPI/CAIXA, ref. 08/2026, Bahia (localidade Salvador), regime não desonerado (encargos sociais
 horista 117,73%, mensalista 72,85%, conforme o arquivo recortado em `_PRECOS/`).
 
-## 2. BDI — PROVISORIO - aguarda aprovacao
+## 2. BDI — proposta provisória (substituída pelo item 0)
 
 Faixas referenciais do Acórdão nº 2.622/2013 – TCU – Plenário, por tipo de obra. Cenário mínimo = 1º quartil;
 provável = valor médio; máximo = 3º quartil.
@@ -33,7 +52,7 @@ provável = valor médio; máximo = 3º quartil.
   - https://www.editais.uff.br/sites/default/files/arquivos/Base%20BDI%20-%20Ac%C3%B3rd%C3%A3o-2622-2013.pdf
   - Nota sobre a CPRB: anexos de BDI do INSS e da Polícia Federal no gov.br, que citam o acórdão.
 
-## 3. Contingência — PROVISORIO - aguarda aprovacao
+## 3. Contingência — aprovada
 
 | Mínimo | Provável | Máximo |
 |---|---|---|
@@ -49,7 +68,7 @@ provável = valor médio; máximo = 3º quartil.
   - https://diario.tcees.tc.br/Noticia/BaixarDocumento?idDocumento=3747830
   - https://repositorio.cgu.gov.br/bitstream/1/65273/3/Artigo_Renato_Camillo.pdf
 
-## 4. Fator regional — PROVISORIO - aguarda aprovacao
+## 4. Fator regional — proposta provisória (substituída pelo item 0: 1,00 nos três cenários)
 
 | Mínimo | Provável | Máximo |
 |---|---|---|
@@ -80,4 +99,4 @@ Sobre o custo direto do cenário (quantidade × preço), os multiplicadores fica
 - Decreto Municipal nº 269/2025 de Ilhéus: citado como norma municipal aplicável, sem artigo, porque o texto não foi
   conferido. Se houver conflito, prevalece a lei federal.
 
-Decisão pendente: aprovar ou alterar os itens 2, 3 e 4.
+Decisão tomada em 13/10/2026: ver item 0.

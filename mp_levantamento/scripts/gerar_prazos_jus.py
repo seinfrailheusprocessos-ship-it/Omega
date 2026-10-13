@@ -3,7 +3,7 @@ import json, os, sys, datetime
 MP, OUT = sys.argv[1], sys.argv[2]
 O = {o['grupo_objeto']: o for o in json.load(open(os.path.join(MP, 'justica_objetos.json')))}
 HOJE = datetime.date(2026, 10, 13)
-PROV = 'PROVISORIO - aguarda aprovacao'
+PROV = 'APROVADA em 13/10/2026'
 def br(d): return datetime.date.fromisoformat(d).strftime('%d/%m/%Y') if d else '—'
 FECHO_CI = ['Ilhéus, *data da assinatura*.', '', '**{{NOME_DO_SIGNATARIO}}**', '**{{CARGO_DO_SIGNATARIO}}**']
 
@@ -16,34 +16,21 @@ def ci(processo, referencia, pars):
     return L + FECHO_CI
 
 ITENS = [
- dict(k='JUSTICA_8008587-02.2024.8.05.0103', urg='URGENTE: multa diária, dilação de 10 dias vencida no início de setembro de 2026 e risco à vida (incêndio em unidade de acolhimento)',
-      prazo='dilação pedida em 25/08/2026 (10 dias), vencida', falta='Concluir o Projeto de Segurança Contra Incêndio e Pânico (PA 14800/2026) com ART/RRT e protocolar no Corpo de Bombeiros; se não estiver pronto, informar a data de entrega.',
-      minuta=ci('8008587-02.2024.8.05.0103', 'CI PROGER n. 725/2026 e CI SEINFRA n. 001.25.08.2026',
-          ['Em atenção à CI PROGER n. 725/2026 e em complemento à CI SEINFRA n. 001.25.08.2026, informa-se que o Projeto de Segurança Contra Incêndio e Pânico da Casa Lar Masculina foi {{CONCLUIDO_EM_DATA_OU_ESTA_EM_FASE_X}}, sob responsabilidade técnica de profissional habilitado (ART/RRT n. {{NUMERO}}).',
-           'O projeto {{FOI_PROTOCOLADO_NO_CORPO_DE_BOMBEIROS_EM_DATA_SOB_N_X_OU_SERA_PROTOCOLADO_ATE_DATA}}, para análise e emissão do Auto de Vistoria do Corpo de Bombeiros.',
-           'Seguem anexos o projeto, a ART/RRT e o comprovante de protocolo, para juntada aos autos.'])),
- dict(k='JUSTICA_8008589-69.2024.8.05.0103', urg='URGENTE: acordo homologado em 11/03/2025, fiação exposta e falta de saída de emergência; prazo de 60 dias para o projeto de incêndio vencido',
-      prazo=None, falta='Confirmar se a reforma do Renascer já está em licitação (o mapa de pastas da SEINFRA cita "REFORMA ABRIGO RENASCER" em 2026); informar o andamento do projeto de incêndio e o cronograma da reforma e do calendário de manutenção.',
-      minuta=ci('8008589-69.2024.8.05.0103', 'C.I. n. 11/2025 da Secretaria de Promoção Social e Combate à Pobreza (acordo homologado em 11/03/2025)',
-          ['Em atenção ao acordo homologado na Ação Civil Pública n. 8008589-69.2024.8.05.0103, informa-se o andamento dos itens técnicos a cargo desta Secretaria na Unidade de Acolhimento Renascer.',
-           'Projeto de Segurança contra Incêndio e Pânico: {{SITUACAO_DO_PROJETO_E_DATA_DE_PROTOCOLO_NO_CORPO_DE_BOMBEIROS}}.',
-           'Reforma da unidade e saída de emergência: {{NUMERO_DO_PROCESSO_LICITATORIO_SITUACAO_E_PREVISAO_DE_INICIO}}.',
-           'Calendário anual de manutenção e armários: {{CALENDARIO_ANEXO_E_PREVISAO}}.',
-           'Esta Secretaria encaminhará a cada etapa os documentos comprobatórios, para juntada aos autos.'])),
+ dict(k='JUSTICA_0000917-10.2015.5.05.0493', urg='URGENTE (prioridade do usuário): execução de sentença com multas; a sentença manda cercar toda a poligonal do antigo aterro e o Município faltou à audiência de 03/08/2026',
+      prazo=None, falta='Medir o perímetro da poligonal (topografia ou imagem de satélite) e fazer a vistoria do cercamento existente. A estimativa do cercamento e a minuta completa estão em itariri_cercamento.md: cerca de R$ 288,00 por metro de perímetro; R$ 737.185,86 para 2.500 m (cenário provável).',
+      minuta=ci('0000917-10.2015.5.05.0493', 'CI n. 746/2026 - PGM (Ação Civil Pública n. 0000917-10.2015.5.05.0493 - antigo lixão de Itariri)',
+          ['Em atenção à CI n. 746/2026 - PGM, quanto à obrigação de cercar toda a poligonal do antigo aterro de Itariri, esta Secretaria apresenta a estimativa preliminar de custo do cercamento: alambrado de 2,0 m com mourões e mureta de concreto, concertina no topo, portões de controle de acesso e placas de advertência.',
+           'Com base no SINAPI, referência 08/2026, Bahia, não desonerado, o custo estimado é de R$ 288,00 por metro de perímetro, com BDI e contingência. Para o perímetro de {{PERIMETRO_MEDIDO}} m, o valor estimado é de R$ {{VALOR}}. Sem a medição, a faixa vai de R$ 422.293,79 a R$ 1.078.876,37, com valor provável de R$ 737.185,86.',
+           'A vistoria de {{DATA_DA_VISTORIA}} constatou {{SITUACAO_DO_CERCAMENTO_E_DOS_PORTOES_EXISTENTES}}, conforme relatório fotográfico anexo. Cronograma proposto: {{TOPOGRAFIA_PROJETO_CONTRATACAO_E_EXECUCAO}}.',
+           'A vigilância contínua, as ações sociais e a destinação dos resíduos cabem às Secretarias de Ordem Pública, de Promoção Social e de Serviços Urbanos.'])),
  dict(k='JUSTICA_8008052-39.2025.8.05.0103', urg='ALTA: risco de queda de árvores sobre casa de pessoa idosa; prazo judicial de 15 dias vencido em 29/07/2025',
       prazo=None, falta='Juntar o relatório de vistoria da Defesa Civil (já citado nos autos) e saber com a SEMA se a poda ou o corte foi feito; a resposta deve sair junto com a SEMA.',
       minuta=ci('8008052-39.2025.8.05.0103', 'Mandado de entrega de ofício de 14/07/2025 (decisão liminar de 10/07/2025)',
           ['Em atenção à decisão liminar de 10/07/2025, que determinou vistoria no local e, se necessário, poda ou corte das árvores com risco de queda, informa-se que a Coordenação de Defesa Civil realizou vistoria em {{DATA}}, conforme relatório anexo.',
            'Constatou-se {{SITUACAO_DAS_ARVORES_E_DO_TALUDE}}. A poda ou o corte {{FOI_EXECUTADO_PELA_SECRETARIA_DE_MEIO_AMBIENTE_EM_DATA_OU_ESTA_PROGRAMADO}}.',
            'Solicita-se a juntada do relatório aos autos.'])),
- dict(k='JUSTICA_0000917-10.2015.5.05.0493', urg='ALTA: execução de sentença com multas; o Município faltou à audiência de 03/08/2026 e a vista de 10 dias venceu',
-      prazo=None, falta='Saber com a PGM o resultado da audiência de 31/08/2026 e se algum item (cercamento do antigo aterro) cabe à SEINFRA. No MP, ver também prazos.md.',
-      minuta=ci('0000917-10.2015.5.05.0493', 'CI n. 746/2026 - PGM e audiência de 31/08/2026',
-          ['Em atenção à execução da sentença na Ação Civil Pública n. 0000917-10.2015.5.05.0493, informa-se que, no que cabe a esta Secretaria, {{SITUACAO_DO_CERCAMENTO_DA_POLIGONAL_DO_ANTIGO_ATERRO_DE_ITARIRI}}.',
-           'Os demais itens (vigilância, inclusão e matrícula dos menores e destinação de resíduos) cabem às Secretarias de Ordem Pública, de Promoção Social, de Educação e de Serviços Urbanos.',
-           'Esta Secretaria permanece à disposição para o apoio técnico que a Procuradoria Geral entender necessário.'])),
  dict(k='JUSTICA_0006323-71.2012.8.05.0103', urg='ALTA: relatório técnico do TAC com prazo judicial vencido (estimado em 28/06/2026) e CI PROGER n. 742/2026 vencida em 02/09/2026',
-      prazo=None, falta='Fazer a vistoria do estádio e o relatório item a item do TAC (extintores, guarda-corpos, sinalização, casas de força, brigada, alarme e SPDA). Conferir se o prazo suplementar pedido em 15/09/2026 foi deferido. A obra está na estimativa do MP.',
+      prazo=None, falta='Fazer a vistoria do estádio e o relatório item a item do TAC (extintores, guarda-corpos, sinalização, casas de força, brigada, alarme e SPDA). Conferir se o prazo suplementar pedido em 15/09/2026 foi deferido. A estimativa (só adequação de segurança, sem reforma) está no levantamento do MP: R$ 289.593 no cenário provável, numa faixa de R$ 188.931 a R$ 451.992.',
       minuta=ci('0006323-71.2012.8.05.0103', 'CI PROGER n. 742/2026 e decisão de 29/04/2026',
           ['Em atenção à CI PROGER n. 742/2026 e à decisão de 29/04/2026, que concedeu prazo para apresentação de relatório técnico do cumprimento do Termo de Ajustamento de Conduta de 2012, encaminha-se o relatório técnico do Estádio Municipal Mário Pessoa, elaborado após vistoria em {{DATA}}.',
            'Quanto aos itens do Termo, verificou-se: {{SITUACAO_DE_CADA_ITEM}}.',
@@ -102,7 +89,10 @@ ITENS = [
            'Os documentos permitirão identificar o local e a obra exigida em cada ação, verificar se estão abrangidos pela contratação dos projetos de macro e microdrenagem (Concorrência Pública n. 002/2026) e estimar o custo das obras.'])),
 ]
 assert all(i['k'] in O for i in ITENS)
-RESP = [k for k, o in O.items() if o['sugestao_triagem']['opcao'] == 'responder já']
+TJ = json.load(open(os.path.join(MP, 'triagem_provisoria_justica.json')))       # triagem aprovada
+TRI = {k: v['triagem'] for k, v in TJ['por_objeto'].items()}
+MOT = {k: v['motivo'] for k, v in TJ['por_objeto'].items()}
+RESP = [k for k, t in TRI.items() if t == 'responder já']
 assert set(RESP) <= {i['k'] for i in ITENS}, set(RESP) - {i['k'] for i in ITENS}
 
 def prazo_txt(o):
@@ -111,13 +101,13 @@ def prazo_txt(o):
     return br(p['data_limite']) + (' (estimado)' if p['data_limite_estimada'] else ''), p['situacao']
 
 L = ['# Prazos e minutas de resposta — Levantamento JUSTIÇA · SEINFRA Ilhéus', '',
-     f'Gerado em 13/10/2026. Triagem usada: provisória da Justiça ({PROV}).', '',
-     f'Os {len(RESP)} objetos com sugestão "responder já" e os 3 objetos de "orçamento paramétrico" que também têm resposta pendente ao juízo, em ordem de urgência: risco à vida e multa; execução de sentença; ação contra o Município; demais prazos vencidos; sem prazo. Não há prazo a vencer: todos os prazos encontrados já venceram.', '',
+     f'Gerado em 13/10/2026. Triagem da Justiça {PROV}.', '',
+     f'Os {len(RESP)} objetos "responder já" e os 3 objetos com estimativa de custo que também têm resposta pendente ao juízo (lixão de Itariri, Estádio Mário Pessoa e Loteamento Santa Cruz), em ordem de urgência: risco à vida e multa; execução de sentença; ação contra o Município; demais prazos vencidos; sem prazo. Não há prazo a vencer: todos os prazos encontrados já venceram. Por decisão do usuário, a Casa Lar Masculina, a Unidade Renascer e o Canal do Malhado são tratados à parte e não constam desta lista.', '',
      'Em processo judicial a resposta da SEINFRA é CI à Procuradoria Geral do Município (padrão da skill lufa-lufa), nunca ofício direto ao juízo. Prazos "estimados" foram contados da data do documento; o prazo real conta da intimação ou do recebimento. Campos `{{...}}` são dados que não estão nos documentos: preencher antes de assinar. Sem nomes de pessoa: assinatura com `{{NOME_DO_SIGNATARIO}}` e `{{CARGO_DO_SIGNATARIO}}`.', '',
      '## Quadro-resumo', '', '| Ordem | Objeto | Processo | Prazo | Situação | Triagem | Urgência |', '|---|---|---|---|---|---|---|']
 for n, it in enumerate(ITENS, 1):
     o = O[it['k']]; pz, sit = prazo_txt(o)
-    L.append(f"| {n} | {o['titulo']} | {'; '.join(o['procedimentos']) or '—'} | {pz} | {sit} | {o['sugestao_triagem']['opcao']} | {it['urg'].split(':')[0]} |")
+    L.append(f"| {n} | {o['titulo']} | {'; '.join(o['procedimentos']) or '—'} | {pz} | {sit} | {TRI[it['k']]} | {it['urg'].split(':')[0]} |")
 L.append('')
 for n, it in enumerate(ITENS, 1):
     o = O[it['k']]; pz, sit = prazo_txt(o)
@@ -127,20 +117,20 @@ for n, it in enumerate(ITENS, 1):
           f"- **Urgência:** {it['urg']}",
           f"- **Prazo:** {pz}" + (f' — {sit}' if sit != '—' else ''),
           f"- **Pedido:** {o['pedido_consolidado']}",
-          f"- **Triagem provisória:** {o['sugestao_triagem']['opcao']} — {o['sugestao_triagem']['motivo']}",
+          f"- **Triagem:** {TRI[it['k']]} — {MOT[it['k']]}",
           f"- **O que falta para responder:** {it['falta']}", '']
     if it['minuta']:
         L += ['**Minuta**', ''] + ['> ' + x + '  ' if x else '>' for x in it['minuta']]
     L.append('')
 L += ['## Outros prazos vencidos (já respondidos ou sem pendência para a SEINFRA)', '',
-      '| Prazo | Objeto | Triagem provisória | Observação |', '|---|---|---|---|']
+      '| Prazo | Objeto | Triagem | Observação |', '|---|---|---|---|']
 feitos = {i['k'] for i in ITENS}
 for k, o in sorted(O.items(), key=lambda t: (t[1]['prazo_mais_proximo'] or {}).get('data_limite') or '', reverse=True):
     p = o['prazo_mais_proximo']
-    if k in feitos or not p: continue
+    if k in feitos or not p or k in ('JUSTICA_8008587-02.2024.8.05.0103', 'JUSTICA_8008589-69.2024.8.05.0103'): continue
     est = ' (estimado)' if p['data_limite_estimada'] else ''
     obs = {'JUSTICA_8005263-04.2024.8.05.0103': 'Respondido em 22/07/2026 (CI 005.22.0007.26), depois do prazo. Avisar o juízo quando a Caixa autorizar o início do Contrato 095/2026.'}.get(k, 'Processo antigo do TCM, sem pedido pendente para a SEINFRA.')
-    L.append(f"| {br(p['data_limite'])}{est} | {o['titulo']} | {o['sugestao_triagem']['opcao']} | {obs} |")
+    L.append(f"| {br(p['data_limite'])}{est} | {o['titulo']} | {TRI[k]} | {obs} |")
 L.append('')
 open(OUT, 'w').write('\n'.join(L))
 print('ok', OUT, len(L), 'linhas', len(ITENS), 'itens')

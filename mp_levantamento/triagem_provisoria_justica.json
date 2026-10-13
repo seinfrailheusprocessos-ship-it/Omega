@@ -1,13 +1,13 @@
 {
-  "status": "PROVISORIO - aguarda aprovacao",
-  "criterio": "Triagem provisória da Justiça = campo sugestao_triagem do justica_objetos.json (Etapa A-J). A triagem do MP (triagem_provisoria.json) não foi alterada. Objeto \"orçamento paramétrico\" já calculado no MP (ja_no_mp) não é calculado de novo.",
+  "status": "APROVADA em 13/10/2026 (triagem provisória aprovada pelo usuário, com os ajustes registrados em decisoes_usuario)",
+  "criterio": "Triagem da Justiça = sugestao_triagem do justica_objetos.json (Etapa A-J), aprovada pelo usuário em 13/10/2026 com os ajustes de decisoes_usuario. Objeto \"orçamento paramétrico\" já calculado no MP (ja_no_mp) não é calculado de novo.",
   "gerado_em": "2026-10-13",
   "totais": {
     "levantamento": 6,
-    "responder_ja": 12,
-    "licitacao_em_curso": 7,
+    "responder_ja": 10,
+    "licitacao_em_curso": 8,
     "contrato_assinado": 7,
-    "resolvido": 3,
+    "resolvido": 4,
     "calcular_na_justica": 3,
     "ja_calculado_no_mp": 3
   },
@@ -16,12 +16,11 @@
     "JUSTICA_0006323-71.2012.8.05.0103",
     "JUSTICA_8005837-61.2023.8.05.0103",
     "JUSTICA_8007670-17.2023.8.05.0103",
-    "JUSTICA_8008589-69.2024.8.05.0103",
-    "TCM_03973e23"
+    "TCM_03973e23",
+    "JUSTICA_0000917-10.2015.5.05.0493"
   ],
   "responder_ja": [
     "JUSTICA_0000130-63.2024.5.05.0493",
-    "JUSTICA_0000917-10.2015.5.05.0493",
     "JUSTICA_0011194-18.2010.8.05.0103",
     "JUSTICA_0500963-88.2018.8.05.0103",
     "JUSTICA_0502344-39.2015.8.05.0103",
@@ -29,7 +28,6 @@
     "JUSTICA_8004720-64.2025.8.05.0103",
     "JUSTICA_8006145-39.2019.8.05.0103",
     "JUSTICA_8008052-39.2025.8.05.0103",
-    "JUSTICA_8008587-02.2024.8.05.0103",
     "JUSTICA_8014030-94.2025.8.05.0103",
     "MPBA_001.9.230302.2024"
   ],
@@ -40,7 +38,8 @@
     "JUSTICA_8003152-18.2022.8.05.0103",
     "JUSTICA_8010615-06.2025.8.05.0103",
     "JUSTICA_8010643-71.2025.8.05.0103",
-    "JUSTICA_8013157-31.2024.8.05.0103"
+    "JUSTICA_8013157-31.2024.8.05.0103",
+    "JUSTICA_8008589-69.2024.8.05.0103"
   ],
   "contrato_assinado": [
     "JUSTICA_0306021-32.2013.8.05.0103",
@@ -54,12 +53,13 @@
   "resolvido": [
     "JUSTICA_8002186-55.2022.8.05.0103",
     "TCM_00568e20-15396e21-RESIDUOS_SOLIDOS",
-    "TCM_03036e23"
+    "TCM_03036e23",
+    "JUSTICA_8008587-02.2024.8.05.0103"
   ],
   "calcular_na_justica": [
     "JUSTICA_0001568-38.2011.8.05.0103",
     "JUSTICA_8007670-17.2023.8.05.0103",
-    "JUSTICA_8008589-69.2024.8.05.0103"
+    "JUSTICA_0000917-10.2015.5.05.0493"
   ],
   "ja_calculado_no_mp": [
     "JUSTICA_0006323-71.2012.8.05.0103",
@@ -103,13 +103,13 @@
       "motivo": "A C.I. PROGER 251/2025 (19/03/2025) pede informação e documentos do alvará de 1988, e o dossiê não registra resposta da SEINFRA. O processo trabalhista está parado à espera da resposta do Município. A demanda é só de informação, sem obra."
     },
     "JUSTICA_0000917-10.2015.5.05.0493": {
-      "triagem": "responder já",
+      "triagem": "orçamento paramétrico",
       "titulo": "Trabalho infantil no antigo lixão de Itariri (ACP do MPT)",
       "origem": "Justiça",
       "categoria": "saneamento",
       "ja_no_mp": "JUSTICA_TRABALHO_0000917-10.2015.5.05.0493",
       "triagem_no_mp": "responder já",
-      "motivo": "A vista de 10 dias e a audiência de 31/08/2026 já passaram, e não há manifestação do Município nem resposta da SEINFRA registrada. Fato novo em relação ao MP: o Município faltou à audiência de 03/08/2026 e o MPT aponta descumprimento persistente. Confirmar com a PGM o resultado de 31/08/2026 e se algum item (ex.: cercamento) cabe à SEINFRA."
+      "motivo": "Decisão do usuário (13/10/2026): estimar só o cercamento de toda a poligonal do antigo lixão de Itariri, obrigação da sentença. A resposta à PGM continua pendente."
     },
     "JUSTICA_0001568-38.2011.8.05.0103": {
       "triagem": "orçamento paramétrico",
@@ -301,22 +301,22 @@
       "motivo": "O prazo de 15 dias venceu por volta de 29/07/2025. A SEINFRA abriu o processo 14536/2025 para responder ao TJBA, mas só há a capa 'em trâmite', sem a resposta, e a lista de controle não marca 'OFÍCIO OK' neste item. A demanda é vistoria e poda, sem obra a orçar."
     },
     "JUSTICA_8008587-02.2024.8.05.0103": {
-      "triagem": "responder já",
+      "triagem": "resolvido",
       "titulo": "Projeto de segurança contra incêndio da Casa Lar Masculina (AVCB)",
       "origem": "Justiça",
       "categoria": "outro",
       "ja_no_mp": null,
       "triagem_no_mp": null,
-      "motivo": "Na CI 001.25.08.2026 (25/08/2026) a SEINFRA pediu mais 10 dias para concluir o projeto; o prazo venceu no início de setembro de 2026 e não há registro de entrega do projeto. A CI PROGER 725/2026 aponta multa diária, e a planilha registra prazo judicial em curso."
+      "motivo": "Decisão do usuário (13/10/2026): o projeto de incêndio da Casa Lar Masculina foi retirado do levantamento e é tratado à parte."
     },
     "JUSTICA_8008589-69.2024.8.05.0103": {
-      "triagem": "orçamento paramétrico",
+      "triagem": "licitação em curso",
       "titulo": "Unidade de Acolhimento Renascer: projeto de incêndio e reforma (Conquista)",
       "origem": "Justiça",
       "categoria": "outro",
       "ja_no_mp": null,
       "triagem_no_mp": null,
-      "motivo": "O acordo homologado exige projeto de incêndio, reforma e armários no Renascer, e o dossiê não registra licitação, contrato nem resposta da SEINFRA. O prazo de 10 dias da C.I. nº 11/2025 venceu por volta de 24/03/2025, então também há resposta pendente."
+      "motivo": "Decisão do usuário (13/10/2026): a reforma da Unidade Renascer já tem licitação própria; retirada da estimativa. A resposta é tratada à parte."
     },
     "JUSTICA_8010615-06.2025.8.05.0103": {
       "triagem": "licitação em curso",
@@ -408,5 +408,25 @@
       "triagem_no_mp": "orçamento paramétrico",
       "motivo": "Em abril de 2023 a própria empresa contratada afirmou ao TCM que a ordem de serviço do Contrato nº 192/2022 não tinha sido emitida, e a denúncia fala em obra paralisada. O dossiê não registra ordem de serviço, retomada, nova licitação nem contrato vigente: a creche é candidata à estimativa de custo. Convém confirmar a situação atual do contrato."
     }
-  }
+  },
+  "decisoes_usuario": [
+    {
+      "grupo_objeto": "JUSTICA_0000917-10.2015.5.05.0493",
+      "de": "responder já",
+      "para": "orçamento paramétrico",
+      "motivo": "Decisão do usuário (13/10/2026): estimar só o cercamento de toda a poligonal do antigo lixão de Itariri, obrigação da sentença. A resposta à PGM continua pendente."
+    },
+    {
+      "grupo_objeto": "JUSTICA_8008589-69.2024.8.05.0103",
+      "de": "orçamento paramétrico",
+      "para": "licitação em curso",
+      "motivo": "Decisão do usuário (13/10/2026): a reforma da Unidade Renascer já tem licitação própria; retirada da estimativa. A resposta é tratada à parte."
+    },
+    {
+      "grupo_objeto": "JUSTICA_8008587-02.2024.8.05.0103",
+      "de": "responder já",
+      "para": "resolvido",
+      "motivo": "Decisão do usuário (13/10/2026): o projeto de incêndio da Casa Lar Masculina foi retirado do levantamento e é tratado à parte."
+    }
+  ]
 }

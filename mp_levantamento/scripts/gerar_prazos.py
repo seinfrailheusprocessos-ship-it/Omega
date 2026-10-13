@@ -3,7 +3,7 @@ import json, os, sys, datetime
 MP, OUT = sys.argv[1], sys.argv[2]
 O = {o['grupo_objeto']: o for o in json.load(open(os.path.join(MP, 'mp_objetos.json')))}
 HOJE = datetime.date(2026, 10, 13)
-PROV = 'PROVISORIO - aguarda aprovacao'
+PROV = 'APROVADA em 13/10/2026'
 def br(d): return datetime.date.fromisoformat(d).strftime('%d/%m/%Y') if d else '—'
 FECHO_OF = ['Renovam-se a Vossa Excelência os protestos de elevada estima e consideração.', '', 'Respeitosamente,', '',
             'Ilhéus, *data da assinatura*.', '', '**{{NOME_DO_SIGNATARIO}}**', '**{{CARGO_DO_SIGNATARIO}}**']
@@ -42,10 +42,10 @@ ITENS = [
            'Quanto à situação estrutural, o relatório conclui {{CONCLUSAO}}, {{COM_OU_SEM}} risco de desabamento.',
            '{{PROVIDENCIAS_RECOMENDADAS}}.'])),
  dict(k='JUSTICA_TRABALHO_0000917-10.2015.5.05.0493', urg='ALTA: processo judicial com multas e prazo vencido em 31/08/2026',
-      falta='Confirmar com a PGM se algo coube à SEINFRA (a CI 746/2026 foi dirigida a outras secretarias). Em processo judicial, a resposta é CI à PGM, não ofício.',
+      falta='Cabe à SEINFRA o cercamento de toda a poligonal do antigo aterro: a estimativa e a minuta completa estão em itariri_cercamento.md (cerca de R$ 288,00 por metro; R$ 737.185,86 para 2.500 m). Em processo judicial, a resposta é CI à PGM, não ofício.',
       minuta=ci('Presta informações técnicas em relação ao Processo Judicial n. 0000917-10.2015.5.05.0493', 'CI n. 746/2026 - PGM',
           ['Em atenção à CI n. 746/2026, informa-se que os subsídios solicitados para a audiência de conciliação (relatórios de matrícula escolar, destinação de resíduos, laudo do cercamento e ocorrências da Guarda Civil Municipal) foram dirigidos às Secretarias de Promoção Social, de Serviços Urbanos e de Ordem Pública.',
-           'No que cabe a esta Secretaria, informa-se {{SITUACAO_DO_CERCAMENTO_DA_POLIGONAL_DO_ANTIGO_ATERRO_OU_INEXISTENCIA_DE_DEMANDA_TECNICA}}.',
+           'No que cabe a esta Secretaria, o cercamento de toda a poligonal do antigo aterro, segue a estimativa preliminar de custo: R$ 288,00 por metro de perímetro, com BDI e contingência, e R$ {{VALOR}} para o perímetro medido de {{PERIMETRO}} m (ver itariri_cercamento.md).',
            'Esta Secretaria permanece à disposição para o apoio técnico que a Procuradoria Geral entender necessário.'])),
  dict(k='MPBA_001.9.375062.2025', urg='ALTA: prazo "impreterível" vencido; sem resposta os autos seguem para medidas cabíveis',
       falta='Confirmar se há projeto ou intervenção do Município na área verde e quem eram os topógrafos citados na petição.',
@@ -106,7 +106,7 @@ ITENS = [
 assert len(ITENS) == 11 and all(O[i['k']]['sugestao_triagem']['opcao'] == 'responder já' for i in ITENS)
 
 L = ['# Prazos e minutas de resposta — Levantamento MP · SEINFRA Ilhéus', '',
-     f'Gerado em 13/10/2026. Triagem usada: provisória ({PROV}).', '',
+     f'Gerado em 13/10/2026. Triagem do MP {PROV}. O Canal do Malhado, com licitação própria, é tratado à parte e não consta desta lista.', '',
      'Os 11 objetos com sugestão "responder já" incluem os 6 com prazo vencido sem resposta registrada e a NF 001.9.256878/2026 (prazo a vencer). Ordem de urgência: risco à vida e prazo a vencer; processo judicial; prazo impreterível; demais prazos vencidos (mais antigos e com reiteração primeiro); sem prazo.', '',
      'Prazos "estimados" foram contados da data do documento; o prazo real conta do recebimento. Campos `{{...}}` são dados que não estão nos documentos: preencher antes de assinar. Minutas no padrão da skill lufa-lufa (ofício para autoridade; em processo judicial e no TCM, CI à Procuradoria Geral do Município). Sem nomes de pessoa: assinatura com `{{NOME_DO_SIGNATARIO}}` e `{{CARGO_DO_SIGNATARIO}}`.', '',
      '## Quadro-resumo', '',
@@ -130,14 +130,14 @@ for n, it in enumerate(ITENS, 1):
     if it.get('alt'): L += ['', it['alt']]
     L.append('')
 # outros prazos
-L += ['## Outros prazos vencidos (objetos em outras categorias da triagem provisória)', '',
+L += ['## Outros prazos vencidos (objetos em outras categorias da triagem)', '',
       'Prazo do documento mais recente com prazo de cada objeto. Vários já têm resposta registrada nas planilhas (ofícios RSMP de 08/04/2026): conferir antes de agir.', '',
-      '| Prazo | Objeto | Triagem provisória | Observação |', '|---|---|---|---|',
-      '| 14/10/2026 (estimado) | Obra do Canal do Malhado | licitação em curso | Ofício n. 1872/2026 da 11ª PJ (NF 003.9.428295/2026, 15 dias), no mesmo arquivo da NF 001.9.256878/2026: informar contrato, convênio com a CONDER e se a obra está parada. |']
+      '| Prazo | Objeto | Triagem | Observação |', '|---|---|---|---|']
+
 rows = []
 for k, o in O.items():
     p = o['prazo_mais_proximo']
-    if o['sugestao_triagem']['opcao'] == 'responder já' or not p or p['situacao'] != 'vencido': continue
+    if o['sugestao_triagem']['opcao'] == 'responder já' or not p or p['situacao'] != 'vencido' or k == 'MPBA_001.9.592238.2025': continue
     rows.append((p['data_limite'], o))
 for d, o in sorted(rows, key=lambda t: (t[1]['origem'] != 'Justiça', t[0]), reverse=False):
     est = ' (estimado)' if o['prazo_mais_proximo']['data_limite_estimada'] else ''

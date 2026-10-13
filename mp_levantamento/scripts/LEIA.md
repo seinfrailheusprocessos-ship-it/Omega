@@ -4,6 +4,7 @@ Requisitos: pacote MP_FILTRADO descompactado em `mp_levantamento/` (o SINAPI fic
 
 1. Descompactar o SINAPI: `unzip mp_levantamento/_PRECOS/SINAPI_BA_NAO_DESONERADO_2026_08.zip -d <TRAB>/sinapi`
 2. Ajustar a triagem e os parâmetros em `modelo.py` (objetos do MP em `OBJ`; BDI, contingência e fator em `BDI`, `CONT` e `FREG`). Os objetos da Justiça ficam em `OBJ_J`, no `modelo_jus.py`, que usa os mesmos preços, demandas-tipo e parâmetros do `modelo.py`.
+2a. Decisões sobre a triagem: `python3 -I aplicar_decisoes.py mp_levantamento` (grava as triagens aprovadas com a lista `decisoes_usuario`)
 3. `python3 -I modelo.py <TRAB> mp_levantamento` (grava `<TRAB>/etapa_b/resultado.json`)
 4. `python3 -I modelo_jus.py <TRAB> mp_levantamento` (grava `<TRAB>/etapa_b/resultado_justica.json`; calcula só os paramétricos da Justiça que não estão calculados no MP)
 5. `python3 -I gerar_xlsx.py <TRAB> mp_levantamento/levantamento_parametrico.xlsx` e recalcular as fórmulas no LibreOffice

@@ -20,5 +20,6 @@ mp_levantamento/*
 !mp_levantamento/dossies_justica_plano.json
 !mp_levantamento/prazos_justica.md
 !mp_levantamento/RESUMO_JUSTICA.md
+!mp_levantamento/itariri_cercamento.md
 # pacote do levantamento Justiça (documentos originais) nunca vai para o repositório
 justica_levantamento/

@@ -10,7 +10,7 @@ RJ = json.load(open(os.path.join(S, 'etapa_b', 'resultado_justica.json')))
 assert RJ['BDI'] == R['BDI'] and RJ['CONT'] == R['CONT'] and RJ['FREG'] == R['FREG']
 for o in R['objetos']: o['levantamento'] = 'MP'
 OBJS = R['objetos'] + RJ['objetos']
-PROV = 'PROVISORIO - aguarda aprovacao'
+PROV = 'APROVADO em 13/10/2026'
 F = 'Arial'
 fn = lambda **k: Font(name=F, size=k.pop('size', 10), **k)
 BLUE, GREEN, RED = '0000FF', '008000', 'C00000'
@@ -34,7 +34,7 @@ def short(n, k):
 
 def titulo(ws, txt, sub=None):
     ws['A1'] = txt; ws['A1'].font = fn(bold=True, size=12)
-    ws['A2'] = PROV; ws['A2'].font = fn(bold=True, color=RED)
+    ws['A2'] = 'Parâmetros e triagem ' + PROV; ws['A2'].font = fn(bold=True, color=GREEN)
     if sub: ws['A3'] = sub; ws['A3'].font = fn(italic=True)
 
 wb = Workbook()
@@ -43,14 +43,14 @@ wsP = wb.create_sheet('PARAMETROS')
 
 # ------------------------------------------------------------------ PARAMETROS
 titulo(wsP, 'Parâmetros da estimativa (BDI, contingência e fator regional)',
-       'Custo = Σ(Quantidade × Preço unitário) × (1 + BDI) × (1 + Contingência) × Fator regional. Células amarelas: valores a aprovar.')
+       'Custo = Σ(Quantidade × Preço unitário) × (1 + BDI) × (1 + Contingência) × Fator regional. Células amarelas: valores aprovados em 13/10/2026 (podem ser alterados; a planilha recalcula).')
 hdr = ['Parâmetro', 'Mínimo', 'Provável', 'Máximo', 'Fonte / justificativa']
 for j, h in enumerate(hdr, 1):
     c = wsP.cell(5, j, h); c.font = fn(bold=True); c.fill = HEAD; c.border = BOX
-par = [('BDI - edificações, encostas, quadras e outros', R['BDI']['edif'], 'Acórdão n. 2.622/2013-TCU-Plenário, "construção de edifícios": 1º quartil / médio / 3º quartil (sem CPRB; regime não desonerado).'),
-       ('BDI - pavimentação e drenagem de vias', R['BDI']['via'], 'Acórdão n. 2.622/2013-TCU-Plenário, "construção de rodovias e ferrovias": 1º quartil / médio / 3º quartil (sem CPRB).'),
+par = [('BDI - edificações, encostas, quadras, cercamento e outros', R['BDI']['edif'], 'Acórdão n. 2.622/2013-TCU-Plenário, "construção de edifícios": valor médio, único nos três cenários (sem CPRB; regime não desonerado).'),
+       ('BDI - pavimentação, drenagem e infraestrutura de vias', R['BDI']['via'], 'Acórdão n. 2.622/2013-TCU-Plenário, "construção de rodovias e ferrovias": valor médio, único nos três cenários (sem CPRB).'),
        ('Contingência (projeto, sondagem, topografia, licenciamento, fiscalização)', R['CONT'], 'Parâmetro técnico declarado; teto de referência: precisão de ±30% para estudos preliminares (OT-IBR 004/2012, IBRAOP).'),
-       ('Fator regional', R['FREG'], 'SINAPI coleta preços na capital (Salvador). Máximo cobre frete até Ilhéus, acesso difícil e mobilização (parâmetro declarado).')]
+       ('Fator regional', R['FREG'], '1,00 nos três cenários: SINAPI-BA, localidade Salvador, regime não desonerado, adotado como referência de preço para Ilhéus (decisão de 13/10/2026).')]
 for i, (nome, v, fonte) in enumerate(par, 6):
     wsP.cell(i, 1, nome).font = fn()
     for j, c in enumerate(('min', 'prov', 'max'), 2):
@@ -112,7 +112,7 @@ for o in OBJS:
         x = ws.cell(rc, j, f"={PREF[('cont', c)]}"); x.number_format = PCT; x.font = fn(color=GREEN)
         x = ws.cell(rf, j, f"={PREF[('freg', c)]}"); x.number_format = '0.00'; x.font = fn(color=GREEN)
         x = ws.cell(rt, j, f'={L}{rd}*(1+{L}{rb})*(1+{L}{rc})*{L}{rf}'); x.number_format = MON; x.font = fn(bold=True); x.fill = TOT
-    ws.cell(rt + 2, 1, 'Estimativa preliminar paramétrica, não vinculante, para planejamento orçamentário. Não substitui o orçamento detalhado do projeto. ' + PROV).font = fn(italic=True, color=RED)
+    ws.cell(rt + 2, 1, 'Estimativa preliminar paramétrica, não vinculante, para planejamento orçamentário. Não substitui o orçamento detalhado do projeto. Parâmetros ' + PROV + '.').font = fn(italic=True, color=RED)
     for col, w in zip('ABCDEFGHIJKLM', (34, 11, 17, 70, 7, 13, 12, 12, 12, 16, 16, 16, 60)): ws.column_dimensions[col].width = w
     ws.freeze_panes = ws.cell(r0, 5)
     links.append((o, nome, rt))
@@ -160,7 +160,7 @@ wsR.cell(r, 1, 'Objetos "orçamento paramétrico" da Justiça já calculados no 
 abas = {o['grupo_objeto']: (nome, rt) for o, nome, rt in links}
 for x in RJ['ja_calculados_no_mp']:
     nome_mp, rt_mp = abas[x['ja_no_mp']]
-    wsR.cell(r, 2, x['grupo_objeto']).font = fn(); wsR.cell(r, 3, x['titulo']).font = fn(); wsR.cell(r, 7, 'no MP: ' + x['ja_no_mp']).font = fn(italic=True)
+    wsR.cell(r, 2, x['grupo_objeto']).font = fn(); wsR.cell(r, 3, next(o['titulo'] for o, _, _ in links if o['grupo_objeto'] == x['ja_no_mp'])).font = fn(); wsR.cell(r, 7, 'no MP: ' + x['ja_no_mp']).font = fn(italic=True)
     for j, L in zip((8, 9, 10), 'JKL'):
         c = wsR.cell(r, j, f"='{nome_mp}'!{L}{rt_mp}"); c.number_format = MON; c.font = fn(color=GREEN, italic=True)
     wsR.cell(r, 11, nome_mp).font = fn(italic=True); r += 1
@@ -174,7 +174,7 @@ notas = ['Leitura: o valor "provável" é a referência para reserva orçamentá
          'Quantidades: metragem do documento quando existe; nos demais casos, demanda-tipo com premissas na aba de cada objeto (a confirmar em campo/projeto).',
          'BDI, contingência e fator regional: aba PARAMETROS (' + PROV + ').',
          'Origem "outro" = processo interno "Resposta Ministério Público" sem indicação do ramo do MP (somado em MP).',
-         'Justiça: só os objetos "orçamento paramétrico" do pacote da Justiça que não estavam calculados no MP (triagem_provisoria_justica.json). A triagem do MP não foi alterada.',
+         'Justiça: só os objetos "orçamento paramétrico" do pacote da Justiça que não estavam calculados no MP (triagem_provisoria_justica.json, aprovada). Retirados por decisão do usuário: reforma do Renascer e Canal do Malhado (licitação própria) e projeto de incêndio da Casa Lar Masculina (tratados à parte).',
          'Não usar como orçamento de licitação. Estimativa não vinculante, com SINAPI como base oficial de referência, nos termos da Lei n. 14.133/2021 e do Decreto Municipal n. 269/2025.']
 for t in notas:
     wsR.cell(r, 1, t).font = fn(italic=True); r += 1
@@ -183,7 +183,7 @@ wsR.freeze_panes = 'C6'
 
 # ------------------------------------------------------------------ DEMANDAS-TIPO e FONTES
 wsD = wb.create_sheet('DEMANDAS-TIPO')
-titulo(wsD, 'Demandas-tipo (premissas a aprovar uma vez por engenheiro revisor)')
+titulo(wsD, 'Demandas-tipo (premissas aprovadas em 13/10/2026; confirmar quantidades em campo ou projeto)')
 DT = [('Via urbana com drenagem e pavimentação', 'metro de via', 'Pista 5/6/7 m; passeios 1,2/1,5/2,0 m; base+sub-base 15/20/30 cm; CBUQ 4/5/5 cm; rede DN 600/600/800; PV a cada 40 m; 2 BL a cada 40 m; meio-fio, sarjeta, passeio, rampas e faixas.'),
       ('Microdrenagem em via existente', 'metro de rede', 'Vala DN+0,6 x DN+1,0 m; tubo de concreto; PV a cada 40 m; 2 BL a cada 40 m com ligação DN 400; recomposição de base 20 cm e CBUQ 5 cm na faixa da vala; bota-fora a 10 km.'),
       ('Contenção de encosta (solo grampeado + concreto projetado)', 'm² de face', 'Grampos em malha 2,0/1,5/1,25 m, comprimento 6/8/12 m; concreto projetado 10/10/15 cm; drenos 0,6 m/m²; canaletas de crista e pé; descidas d\'água; grama em 30% da área. Calibrada com a média do Novo PAC Encostas citada nos documentos (R$ 1.692/m²).'),
@@ -195,10 +195,10 @@ DT = [('Via urbana com drenagem e pavimentação', 'metro de via', 'Pista 5/6/7 
       ('Adequação de cozinha escolar', 'unidade', 'Abrigo de GLP, janela de ventilação, 15 m² de revestimento de parede e de piso, caixa de gordura, bancada, pontos elétricos, luminárias e extintor (sem exaustor: sem preço no SINAPI-BA).'),
       ('Banheiro com chuveiro + grade', 'unidade', 'Banheiro de cerca de 4 m² com louças, chuveiro, instalações e porta; grade de aço de 2,1 m² na porta de entrada.'),
       ('Proteção emergencial de fachada', 'verba por quantidades', 'Tapume, estroncas de eucalipto com mão de obra, montagem de andaime fachadeiro, tela de proteção e lona na cobertura.'),
-      ('Adequação de segurança de estádio', 'verba por quantidades', 'Extintores, luminárias de emergência, sinalização de saída, guarda-corpos, SPDA, pintura de arquibancadas, rampas e reforma de casas de força/vestiários.'),
+      ('Adequação de segurança de estádio (TAC)', 'verba por quantidades', 'Só itens de segurança do TAC: extintores PQS, água e CO2, luminárias e placas de emergência, barras antipânico nas saídas, guarda-corpos, SPDA (captores, cordoalha, hastes e caixas) e quadros com DR nas casas de força. Sem reforma, pintura ou acessibilidade; sem alarme (sem preço no SINAPI-BA).'),
       ('Casa térrea + parque linear', 'unidade / m²', 'Casa de 40/42/45 m² com a edificação-tipo (perfil residencial); parque com gramado em 70% e passeios em 20% da área.'),
       ('Infraestrutura básica de loteamento (Justiça)', 'metro de via', 'Via urbana-tipo + rede de água PVC DN 50 (vala 0,6 x 1,0 m) + rede de esgoto PVC DN 150 (vala 0,8 x 1,5 m, PV pré-moldado a cada 60 m) + luminária LED 68-97 W com braço a cada 35 m, em poste existente.'),
-      ('Reforma de unidade de acolhimento (Justiça)', 'm² reformado', 'Reforma predial-tipo + porta corta-fogo na rota de saída (1/1/2 unidades); projeto de segurança contra incêndio na contingência.')]
+      ('Cercamento de área (Justiça)', 'metro de perímetro', 'Alambrado de 2 m com tela de arame galvanizado, mourões e mureta de concreto, concertina no topo, limpeza de faixa de 3 m, placas a cada 100 m e portões em gradil de aço de 4,0 x 2,2 m.')]
 for j, h in enumerate(['Demanda-tipo', 'Unidade-chave', 'Premissas e coeficientes (mín/prov/máx)'], 1):
     c = wsD.cell(4, j, h); c.font = fn(bold=True); c.fill = HEAD
 for i, row in enumerate(DT, 5):
@@ -211,10 +211,11 @@ titulo(wsF, 'Fontes e limitações')
 FT = ['SINAPI/CAIXA - Relatórios mensais, ref. 08/2026 (publicado em 11/09/2026), recorte BA, regime sem desoneração: composições (aba CSD) e insumos (aba ISD). Arquivo: _PRECOS/SINAPI_BA_NAO_DESONERADO_2026_08.zip.',
       'Acórdão n. 2.622/2013-TCU-Plenário - faixas referenciais de BDI (construção de edifícios; construção de rodovias e ferrovias). Conferido em reproduções públicas do texto.',
       'IBRAOP - OT-IBR 004/2012 (precisão do orçamento de obras públicas): ±30% para estudos preliminares em edificações. Conferido em documentos que reproduzem a OT.',
+      'Parâmetros (BDI, contingência e fator regional) e triagens aprovados pelo usuário em 13/10/2026.',
       'CAIXA - SINAPI: metodologias e conceitos (coleta de preços nas capitais, sem frete). Conferido em reprodução pública.',
       'Base legal: nos termos da Lei n. 14.133/2021 e do Decreto Municipal n. 269/2025 (citados sem artigo).',
       'Quantidades: documentos dos pacotes MP_FILTRADO de 12/10/2026 (mp_objetos.json) e JUSTICA_FILTRADO de 13/10/2026 (justica_objetos.json) e demandas-tipo desta planilha.',
-      'Limitação: composições sem preço na BA (ex.: imprimação, pintura de ligação, exaustores, central de alarme, locação de andaime) não estão incluídas; quantidades da maioria dos objetos são premissas a confirmar.',
+      'Limitação: composições sem preço na BA (ex.: imprimação, pintura de ligação, exaustores, central de alarme, acionadores e sirenes, locação de andaime) não estão incluídas; quantidades da maioria dos objetos são premissas a confirmar.',
       'Limitação: OpenStreetMap e sites oficiais não puderam ser acessados neste ambiente; comprimentos de ruas não foram medidos.',
       'Contratos da SEINFRA e editais de outras prefeituras não foram usados como base de preço.']
 for i, t in enumerate(FT, 4):

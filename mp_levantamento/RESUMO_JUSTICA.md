@@ -49,7 +49,7 @@ Por pasta: SEM_NUMERO 503, TCM 191, JUSTICA 39, MPBA 1, MPF 1. São processos li
 
 ## ETAPA B-J CONCLUÍDA
 
-Tudo **PROVISORIO - aguarda aprovacao**. BDI, contingência e fator regional iguais aos do MP; triagem do MP sem mudança.
+Situação antes da aprovação: tudo provisório, com BDI, contingência e fator regional iguais aos do MP e triagem do MP sem mudança. Os valores em vigor estão na seção AJUSTES DE 13/10/2026, mais abaixo.
 
 - `triagem_provisoria_justica.json`: 12 responder já, 6 orçamento paramétrico, 7 licitação em curso, 7 contrato assinado e 3 resolvidos. Dos 6 paramétricos, 3 já estavam calculados no MP e não foram somados de novo: Estádio Mário Pessoa, abrigos da BR-415 (IFBA) e creche da Rua Genésio Santos. Foram calculados os outros 3: Loteamento Santa Cruz, Ladeira Júlio Bagana e Unidade de Acolhimento Renascer.
 - `levantamento_parametrico.xlsx`: abas 23 a 25 (Justiça). A aba RESUMO traz os totais MP, Justiça e Geral e, só como referência, os 3 objetos já calculados no MP. Recalculada no LibreOffice, sem erro de fórmula. Duas demandas-tipo novas: infraestrutura básica de loteamento e reforma de unidade de acolhimento.
@@ -75,3 +75,19 @@ Tudo **PROVISORIO - aguarda aprovacao**. BDI, contingência e fator regional igu
 8. Em seguida: lixão de Itariri (MPT; audiência de 31/08/2026), relatório do TAC do Estádio Mário Pessoa (vencido em 06/2026 e de novo em 02/09/2026) e Loteamento Santa Cruz (multa de R$ 20 mil por mês).
 9. Prontos no branch `mp-levantamento`: índice e objetos da Justiça, triagem, planilha com 25 objetos, nota única MP + Justiça, 15 minutas de CI à PGM e plano dos 35 dossiês.
 10. Se a triagem final mudar algum objeto, basta recalcular com os scripts de `mp_levantamento/scripts/` (ver `LEIA.md`).
+
+## AJUSTES DE 13/10/2026 (decisões do Lucas) — tudo APROVADO
+
+- **Parâmetros aprovados.** BDI único por tipo de obra, igual ao valor médio do Acórdão n. 2.622/2013-TCU-Plenário: 22,12% para edificações, encostas, cercamento e outros; 20,97% para vias e drenagem. Contingência de 5/10/15%. Fator regional 1,00 (SINAPI-BA, Salvador, não desonerado). Ver `proposta_bdi_contingencia_fator.md`.
+- **Lixão de Itariri:** estimado só o cercamento de toda a poligonal: cerca de R$ 288,00 por metro de perímetro, com BDI e contingência; R$ 737.185,86 para 2.500 m (faixa de R$ 422.293,79 a R$ 1.078.876,37). A estimativa e a minuta de CI à PGM estão em `itariri_cercamento.md`. Falta medir o perímetro.
+- **Estádio Mário Pessoa:** refeito só com a adequação às normas de segurança do TAC (extintores, emergência, saídas, guarda-corpos, SPDA e casas de força), sem reforma: R$ 289.593,23 no cenário provável (antes R$ 579.542,15).
+- **Retirados (tratados à parte):** reforma da Unidade Renascer (licitação própria), Canal do Malhado (licitação própria) e projeto de incêndio da Casa Lar Masculina. Saíram da estimativa e das listas de prazos.
+- Os arquivos `triagem_provisoria*.json` mantêm o nome, mas agora têm status APROVADA e a lista `decisoes_usuario`.
+
+| Total (R$, aprovado) | Objetos | Mínimo | Provável | Máximo |
+|---|---|---|---|---|
+| MP | 22 | 16.038.804,92 | 22.784.930,36 | 35.454.853,04 |
+| Justiça | 3 | 2.379.738,05 | 5.259.842,39 | 12.067.579,88 |
+| **Geral** | **25** | **18.418.542,97** | **28.044.772,75** | **47.522.432,92** |
+
+Os 3 da Justiça são o Loteamento Santa Cruz, a Ladeira Júlio Bagana e o cercamento de Itariri. O Estádio, os abrigos da BR-415 e a creche da Rua Genésio Santos estão no total do MP.
