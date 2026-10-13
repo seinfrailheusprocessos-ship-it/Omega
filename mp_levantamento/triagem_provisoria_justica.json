@@ -1,0 +1,412 @@
+{
+  "status": "PROVISORIO - aguarda aprovacao",
+  "criterio": "Triagem provisória da Justiça = campo sugestao_triagem do justica_objetos.json (Etapa A-J). A triagem do MP (triagem_provisoria.json) não foi alterada. Objeto \"orçamento paramétrico\" já calculado no MP (ja_no_mp) não é calculado de novo.",
+  "gerado_em": "2026-10-13",
+  "totais": {
+    "levantamento": 6,
+    "responder_ja": 12,
+    "licitacao_em_curso": 7,
+    "contrato_assinado": 7,
+    "resolvido": 3,
+    "calcular_na_justica": 3,
+    "ja_calculado_no_mp": 3
+  },
+  "levantamento": [
+    "JUSTICA_0001568-38.2011.8.05.0103",
+    "JUSTICA_0006323-71.2012.8.05.0103",
+    "JUSTICA_8005837-61.2023.8.05.0103",
+    "JUSTICA_8007670-17.2023.8.05.0103",
+    "JUSTICA_8008589-69.2024.8.05.0103",
+    "TCM_03973e23"
+  ],
+  "responder_ja": [
+    "JUSTICA_0000130-63.2024.5.05.0493",
+    "JUSTICA_0000917-10.2015.5.05.0493",
+    "JUSTICA_0011194-18.2010.8.05.0103",
+    "JUSTICA_0500963-88.2018.8.05.0103",
+    "JUSTICA_0502344-39.2015.8.05.0103",
+    "JUSTICA_8003278-97.2024.8.05.0103",
+    "JUSTICA_8004720-64.2025.8.05.0103",
+    "JUSTICA_8006145-39.2019.8.05.0103",
+    "JUSTICA_8008052-39.2025.8.05.0103",
+    "JUSTICA_8008587-02.2024.8.05.0103",
+    "JUSTICA_8014030-94.2025.8.05.0103",
+    "MPBA_001.9.230302.2024"
+  ],
+  "licitacao_em_curso": [
+    "JUSTICA_0011730-29.2010.8.05.0103",
+    "JUSTICA_0503101-28.2018.8.05.0103",
+    "JUSTICA_0503189-66.2018.8.05.0103",
+    "JUSTICA_8003152-18.2022.8.05.0103",
+    "JUSTICA_8010615-06.2025.8.05.0103",
+    "JUSTICA_8010643-71.2025.8.05.0103",
+    "JUSTICA_8013157-31.2024.8.05.0103"
+  ],
+  "contrato_assinado": [
+    "JUSTICA_0306021-32.2013.8.05.0103",
+    "JUSTICA_1005415-30.2024.4.01.3301",
+    "JUSTICA_8005263-04.2024.8.05.0103",
+    "JUSTICA_8006100-93.2023.8.05.0103",
+    "JUSTICA_8007018-92.2026.8.05.0103",
+    "TCM_03276e23",
+    "TCM_03969e23"
+  ],
+  "resolvido": [
+    "JUSTICA_8002186-55.2022.8.05.0103",
+    "TCM_00568e20-15396e21-RESIDUOS_SOLIDOS",
+    "TCM_03036e23"
+  ],
+  "calcular_na_justica": [
+    "JUSTICA_0001568-38.2011.8.05.0103",
+    "JUSTICA_8007670-17.2023.8.05.0103",
+    "JUSTICA_8008589-69.2024.8.05.0103"
+  ],
+  "ja_calculado_no_mp": [
+    "JUSTICA_0006323-71.2012.8.05.0103",
+    "JUSTICA_8005837-61.2023.8.05.0103",
+    "TCM_03973e23"
+  ],
+  "divergencias_com_mp": [
+    {
+      "grupo_objeto": "JUSTICA_8003152-18.2022.8.05.0103",
+      "ja_no_mp": "JUSTICA_8003152-18.2022.8.05.0103",
+      "triagem_mp": "orçamento paramétrico",
+      "triagem_justica": "licitação em curso"
+    },
+    {
+      "grupo_objeto": "JUSTICA_8005263-04.2024.8.05.0103",
+      "ja_no_mp": "JUSTICA_8005263-04.2024.8.05.0103",
+      "triagem_mp": "orçamento paramétrico",
+      "triagem_justica": "contrato assinado"
+    },
+    {
+      "grupo_objeto": "JUSTICA_8007670-17.2023.8.05.0103",
+      "ja_no_mp": "JUSTICA_8007670-17.2023.8.05.0103",
+      "triagem_mp": "contrato assinado",
+      "triagem_justica": "orçamento paramétrico"
+    },
+    {
+      "grupo_objeto": "JUSTICA_8013157-31.2024.8.05.0103",
+      "ja_no_mp": "MPBA_001.9.24192.2024",
+      "triagem_mp": "orçamento paramétrico",
+      "triagem_justica": "licitação em curso"
+    }
+  ],
+  "por_objeto": {
+    "JUSTICA_0000130-63.2024.5.05.0493": {
+      "triagem": "responder já",
+      "titulo": "Alvará de construção do Tropical Residence Service (Rodovia Ilhéus–Olivença, km 11)",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A C.I. PROGER 251/2025 (19/03/2025) pede informação e documentos do alvará de 1988, e o dossiê não registra resposta da SEINFRA. O processo trabalhista está parado à espera da resposta do Município. A demanda é só de informação, sem obra."
+    },
+    "JUSTICA_0000917-10.2015.5.05.0493": {
+      "triagem": "responder já",
+      "titulo": "Trabalho infantil no antigo lixão de Itariri (ACP do MPT)",
+      "origem": "Justiça",
+      "categoria": "saneamento",
+      "ja_no_mp": "JUSTICA_TRABALHO_0000917-10.2015.5.05.0493",
+      "triagem_no_mp": "responder já",
+      "motivo": "A vista de 10 dias e a audiência de 31/08/2026 já passaram, e não há manifestação do Município nem resposta da SEINFRA registrada. Fato novo em relação ao MP: o Município faltou à audiência de 03/08/2026 e o MPT aponta descumprimento persistente. Confirmar com a PGM o resultado de 31/08/2026 e se algum item (ex.: cercamento) cabe à SEINFRA."
+    },
+    "JUSTICA_0001568-38.2011.8.05.0103": {
+      "triagem": "orçamento paramétrico",
+      "titulo": "Infraestrutura básica do Loteamento Santa Cruz (cumprimento de sentença)",
+      "origem": "Justiça",
+      "categoria": "drenagem+pavimentação",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A sentença exige obras de infraestrutura identificáveis no Loteamento Santa Cruz, e não há licitação nem contrato registrados. A CI 2025.09.23.002/SEINFRA/GAB pediu 60 dias para o levantamento técnico; não há registro posterior do levantamento, do cronograma nem de decisão sobre o prazo, o que também deixa resposta pendente à PGM."
+    },
+    "JUSTICA_0006323-71.2012.8.05.0103": {
+      "triagem": "orçamento paramétrico",
+      "titulo": "Requalificação do Estádio Municipal Mário Pessoa (Cidade Nova) – TAC de 2012",
+      "origem": "Justiça",
+      "categoria": "quadra/esporte",
+      "ja_no_mp": "JUSTICA_0006323-71.2012.8.05.0103",
+      "triagem_no_mp": "orçamento paramétrico",
+      "motivo": "O TAC exige obras de adequação estrutural e de segurança contra incêndio, sem licitação nem contrato registrado. Também há resposta pendente: o prazo do despacho de 29/04/2026 (estimado em 28/06/2026) e o da CI PROGER nº 742/2026 (02/09/2026) venceram. Pelo levantamento do MP, a SEINFRA pediu prazo suplementar em 15/09/2026, sem decisão registrada."
+    },
+    "JUSTICA_0011194-18.2010.8.05.0103": {
+      "triagem": "responder já",
+      "titulo": "Convênio nº 538/94 com o Ministério da Integração Regional (requisições do TJBA)",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "Há requisição do TJBA sem resposta registrada: o último documento é o pedido da SEINFRA à SNFI (11/02/2025), sem retorno do Ministério nem resposta ao Juízo. A obra ligada ao convênio não é identificada; convém pedir à PGM a cópia das requisições."
+    },
+    "JUSTICA_0011730-29.2010.8.05.0103": {
+      "triagem": "licitação em curso",
+      "titulo": "Drenagem/urbanização de 1.451,79 m no Teotônio Vilela (processo de 2010)",
+      "origem": "Justiça",
+      "categoria": "drenagem",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A CI SEINFRA nº 009.08.0006/26 (08/06/2026) respondeu à PGM e citou a Concorrência Pública nº 002/2026, de projetos de macro e microdrenagem (Termo de Compromisso MCIDADES 969321/2024), que abrange a área afetada e estava em fase recursal. Como a CI não diz qual é a obra nem o local, convém pedir à PGM cópia da inicial ou da sentença."
+    },
+    "JUSTICA_0306021-32.2013.8.05.0103": {
+      "triagem": "contrato assinado",
+      "titulo": "Recuperação da Rua D, Quadra C, e da Praça Santo Antônio de Pádua (Santo Antônio de Pádua)",
+      "origem": "Justiça",
+      "categoria": "pavimentação",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A CI 2025.09.17.001/SEINFRA/GAB informa que os Pregões Eletrônicos 006/2025 (vias de paralelo) e 011/2025 (praças) foram concluídos e que a mobilização das empresas foi ordenada, com prioridade a ordens judiciais. Não há registro de execução, e os 60 dias pedidos ao juízo já teriam passado: convém confirmar o serviço e informar a PGM."
+    },
+    "JUSTICA_0500963-88.2018.8.05.0103": {
+      "triagem": "responder já",
+      "titulo": "Embargo de construção particular na Rua A Mares do Sul (São Francisco)",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "O prazo da PGM (11/08/2026) venceu e não há resposta registrada; as planilhas de controle só registram o envio da C.I. nº 606/2026. É pedido de informação sobre obra particular, sem obra pública a orçar."
+    },
+    "JUSTICA_0502344-39.2015.8.05.0103": {
+      "triagem": "responder já",
+      "titulo": "Encosta/urbanização na 2ª Travessa da Rua Visconde de Santo Amaro (Basílio)",
+      "origem": "Justiça",
+      "categoria": "encosta/contenção",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "O único documento é a CI 2025.09.24.001/SEINFRA/GAB, que promete o levantamento técnico; há mais de um ano sem registro do levantamento nem de nova resposta. A obra e o local só aparecem nas planilhas de controle (indício), então convém pedir à PGM a cópia da sentença antes de orçar."
+    },
+    "JUSTICA_0503101-28.2018.8.05.0103": {
+      "triagem": "licitação em curso",
+      "titulo": "Drenagem pluvial objeto de sentença no proc. 0503101-28.2018 (local não informado)",
+      "origem": "Justiça",
+      "categoria": "drenagem",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A SEINFRA informou à PGM (CI nº 004.08.0006/26, de 08/06/2026) que a Concorrência Pública nº 002/2026 (projetos de macro e microdrenagem, Novo PAC Drenagem) abrange a área afetada e estava em fase recursal. Como o local e a obra exigida não aparecem, não cabe orçamento paramétrico: pedir à PGM a cópia da sentença (CI PROGER nº 433/2026)."
+    },
+    "JUSTICA_0503189-66.2018.8.05.0103": {
+      "triagem": "licitação em curso",
+      "titulo": "Drenagem pluvial – processo judicial 0503189-66.2018 (local não informado)",
+      "origem": "Justiça",
+      "categoria": "drenagem",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A resposta da SEINFRA (CI 002.08.0006/26) cita a Concorrência Pública 002/2026, para projetos de macro e microdrenagem do Novo PAC Drenagem (MCIDADES 969321/2024), em fase recursal em 06/2026. É licitação de projetos, não de obra, e o local da ação não é conhecido; convém pedir à PGM a cópia da inicial para confirmar se o objeto está coberto."
+    },
+    "JUSTICA_1005415-30.2024.4.01.3301": {
+      "triagem": "contrato assinado",
+      "titulo": "Contenção e fundações da Capela de Nossa Senhora de Santana (Rio do Engenho, Coutos)",
+      "origem": "Justiça",
+      "categoria": "encosta/contenção",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A CI SEINFRA 001.25.05.26 (25/05/2026) informa ordem de serviço à Status Engenharia e Projetos, contratada para projetos de engenharia e arquitetura, com prazo máximo de 90 dias para a documentação exigida pelo IPHAN. Não há registro de entrega; contado da CI, o prazo teria terminado em agosto de 2026."
+    },
+    "JUSTICA_8002186-55.2022.8.05.0103": {
+      "triagem": "resolvido",
+      "titulo": "Acidente na quadra da Praça da Sapetinga – subsídios à defesa do Município",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A SEINFRA (Superintendência de Projetos e Fiscalização) respondeu item a item à CI PROGER nº 103/2026: a gestão anterior não repassou documentação. Não há prazo nem novo pedido registrado, e a demanda não exige obra."
+    },
+    "JUSTICA_8003152-18.2022.8.05.0103": {
+      "triagem": "licitação em curso",
+      "titulo": "Drenagem pluvial e alagamentos nas Ruas Castro Alves e Barão do Rio Branco (Pontal)",
+      "origem": "Justiça",
+      "categoria": "drenagem",
+      "ja_no_mp": "JUSTICA_8003152-18.2022.8.05.0103",
+      "triagem_no_mp": "orçamento paramétrico",
+      "motivo": "A CI SEINFRA nº 003.08.0006/26 (08/06/2026) informa a Concorrência Pública nº 002/2026, de projetos de macro e microdrenagem (Termo de Compromisso MCIDADES 969321/2024), que abrange a área afetada e estava em fase recursal. Fato novo em relação ao MP: a resposta à PGM foi enviada no último dia do prazo."
+    },
+    "JUSTICA_8003278-97.2024.8.05.0103": {
+      "triagem": "responder já",
+      "titulo": "Postes de energia elétrica na Rua Muniz Sodré (Alto São Sebastião)",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "O prazo da PGM (estimado em 20/07/2025) venceu e não há CI de resposta da SEINFRA no dossiê, só a abertura do processo administrativo 14534/2025 ('RESPOSTA_TJBA', 10/08/2025). As planilhas de controle marcam 'OFÍCIO OK', o que indica resposta pronta: confirmar o envio à PGM antes de dar como resolvido."
+    },
+    "JUSTICA_8004720-64.2025.8.05.0103": {
+      "triagem": "responder já",
+      "titulo": "Praça pública em terreno reivindicado por particular (ação possessória)",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "Há requisição da PGM (CI PROGER nº 180/2026, registrada nas planilhas) sem resposta da SEINFRA registrada, e o prazo judicial de 72 horas venceu em 31/01/2026 (estimado). A praça já está concluída; a demanda é de subsídios à defesa do Município, não de obra a orçar."
+    },
+    "JUSTICA_8005263-04.2024.8.05.0103": {
+      "triagem": "contrato assinado",
+      "titulo": "Drenagem, pavimentação e meios-fios da Rua Aracuã (Nossa Senhora das Vitórias)",
+      "origem": "Justiça",
+      "categoria": "drenagem+pavimentação",
+      "ja_no_mp": "JUSTICA_8005263-04.2024.8.05.0103",
+      "triagem_no_mp": "orçamento paramétrico",
+      "motivo": "Fato novo em relação ao MP: a CI 005.22.0007.26 (22/07/2026) informa licitação concluída e o Contrato nº 095/2026, vinculado ao Termo de Compromisso 969321/2024, à espera da Autorização de Início do Objeto pela Caixa. Atenção: segundo CI da SEINFRA de 2025 juntada aos autos, esse Termo trata da elaboração de projetos de macro e microdrenagem; não há contrato de execução da obra da Rua Aracuã registrado."
+    },
+    "JUSTICA_8005837-61.2023.8.05.0103": {
+      "triagem": "orçamento paramétrico",
+      "titulo": "Abrigos de ônibus na Rodovia Jorge Amado (BR-415), perto do IFBA",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": "JUSTICA_8005837-61.2023.8.05.0103",
+      "triagem_no_mp": "orçamento paramétrico",
+      "motivo": "A sentença exige a instalação dos abrigos e não há licitação nem contrato registrado para este local; o Contrato 156/2024 (abrigos no centro urbano) vigorou só até 04/07/2026 e não cita o IFBA. Fato novo em relação ao MP: a SEINFRA respondeu à PGM em 22/07/2026, mas sem cronograma. Também falta enviar à PGM o relatório da Defesa Civil."
+    },
+    "JUSTICA_8006100-93.2023.8.05.0103": {
+      "triagem": "contrato assinado",
+      "titulo": "Requalificação da escadaria e do muro de contenção da Rua Saturnino Cardoso (Malhado)",
+      "origem": "Justiça",
+      "categoria": "encosta/contenção",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A CI 001.06.0008.26 informa que o objeto está na Concorrência Pública 003/2026 (escadarias em diversos logradouros, PA 13123/2025), homologada em 12/05/2026. A empresa contratada está em mobilização, com início previsto em 01/09/2026 e conclusão em 31/12/2026. Confirmar o número do contrato, a ordem de serviço e o início efetivo da obra."
+    },
+    "JUSTICA_8006145-39.2019.8.05.0103": {
+      "triagem": "responder já",
+      "titulo": "Obra particular embargada – fiscalização (ação de direito de vizinhança)",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "O prazo de 30 dias do Ofício nº 222/2025 venceu (estimado em 06/11/2025) e não há resposta registrada. A demanda é só de informação, sem obra pública a orçar."
+    },
+    "JUSTICA_8007018-92.2026.8.05.0103": {
+      "triagem": "contrato assinado",
+      "titulo": "Passeios, meios-fios e sarjetas em diversos logradouros (Ação Popular sobre a CP 009/2025)",
+      "origem": "Justiça",
+      "categoria": "pavimentação",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "As planilhas de controle ligam o processo ao Contrato nº 038/2026 (construção de passeios, meios-fios e sarjetas) e registram a Resposta SEINFRA nº 001.06.0008.26 à CI PROGER nº 653/2026. São registros de planilha (indício): confirmar o contrato e o envio da resposta, pois o prazo de 72 horas já passou."
+    },
+    "JUSTICA_8007670-17.2023.8.05.0103": {
+      "triagem": "orçamento paramétrico",
+      "titulo": "Estabilização de encosta da Ladeira Júlio Bagana / Rua Rio Almada (Tapera)",
+      "origem": "Justiça",
+      "categoria": "encosta/contenção",
+      "ja_no_mp": "JUSTICA_8007670-17.2023.8.05.0103",
+      "triagem_no_mp": "contrato assinado",
+      "motivo": "Fato novo em relação ao MP (que indicava contrato assinado): a CI 2025.09.23.001/SEINFRA/GAB informa que o Contrato 129/2023 (estabilização de encosta, R$ 1.684.122,83) se extinguiu em 25/08/2025, com obras paralisadas desde 2024 e contratada sem regularidade fiscal. Só há estudos preliminares para relicitar, sem licitação registrada."
+    },
+    "JUSTICA_8008052-39.2025.8.05.0103": {
+      "triagem": "responder já",
+      "titulo": "Árvores com risco de queda na Ladeira do Jacaré (Conquista)",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "O prazo de 15 dias venceu por volta de 29/07/2025. A SEINFRA abriu o processo 14536/2025 para responder ao TJBA, mas só há a capa 'em trâmite', sem a resposta, e a lista de controle não marca 'OFÍCIO OK' neste item. A demanda é vistoria e poda, sem obra a orçar."
+    },
+    "JUSTICA_8008587-02.2024.8.05.0103": {
+      "triagem": "responder já",
+      "titulo": "Projeto de segurança contra incêndio da Casa Lar Masculina (AVCB)",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "Na CI 001.25.08.2026 (25/08/2026) a SEINFRA pediu mais 10 dias para concluir o projeto; o prazo venceu no início de setembro de 2026 e não há registro de entrega do projeto. A CI PROGER 725/2026 aponta multa diária, e a planilha registra prazo judicial em curso."
+    },
+    "JUSTICA_8008589-69.2024.8.05.0103": {
+      "triagem": "orçamento paramétrico",
+      "titulo": "Unidade de Acolhimento Renascer: projeto de incêndio e reforma (Conquista)",
+      "origem": "Justiça",
+      "categoria": "outro",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "O acordo homologado exige projeto de incêndio, reforma e armários no Renascer, e o dossiê não registra licitação, contrato nem resposta da SEINFRA. O prazo de 10 dias da C.I. nº 11/2025 venceu por volta de 24/03/2025, então também há resposta pendente."
+    },
+    "JUSTICA_8010615-06.2025.8.05.0103": {
+      "triagem": "licitação em curso",
+      "titulo": "Drenagem pluvial e obra com licitação suspensa – processo judicial 8010615-06.2025 (local não informado)",
+      "origem": "Justiça",
+      "categoria": "drenagem",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A CI 008.08.0006/26 informa novo processo licitatório em curso (número não citado), com ordem de serviço prevista para o bimestre seguinte a 06/2026, previsão já vencida. A CI 007.08.0006/26 cita a Concorrência Pública 002/2026 (projetos de macro e microdrenagem, Novo PAC Drenagem). Como a obra e o local não são conhecidos, pedir à PGM a cópia da inicial e confirmar a situação da nova licitação."
+    },
+    "JUSTICA_8010643-71.2025.8.05.0103": {
+      "triagem": "licitação em curso",
+      "titulo": "Drenagem pluvial – ação judicial 8010643-71.2025 (local não informado)",
+      "origem": "Justiça",
+      "categoria": "drenagem",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A CI 005.08.0006/26 (08/06/2026) já respondeu à PGM e cita a Concorrência Pública nº 002/2026 (projetos de drenagem), em fase recursal, com homologação prevista até o fim de junho de 2026. A ação não informa a obra nem o local, por isso não cabe orçamento paramétrico; convém pedir à PGM a cópia da inicial."
+    },
+    "JUSTICA_8013157-31.2024.8.05.0103": {
+      "triagem": "licitação em curso",
+      "titulo": "Rede de drenagem da Av. Soares Lopes (Centro) – alagamentos",
+      "origem": "Justiça",
+      "categoria": "drenagem",
+      "ja_no_mp": "MPBA_001.9.24192.2024",
+      "triagem_no_mp": "orçamento paramétrico",
+      "motivo": "A CI da SEINFRA à PGM informa o Termo de Compromisso OGU MCIDADES 969321/2024, aprovado pela Caixa e com a avenida contemplada, e o edital em tramitação interna, sem número. A licitação desse Termo é a Concorrência Pública nº 002/2026 (projetos de drenagem), citada em outros processos. Fato novo em relação ao MP, que registrava só projeto em estudo."
+    },
+    "JUSTICA_8014030-94.2025.8.05.0103": {
+      "triagem": "responder já",
+      "titulo": "Ação judicial sobre drenagem pluvial (local não informado)",
+      "origem": "Justiça",
+      "categoria": "drenagem",
+      "ja_no_mp": null,
+      "triagem_no_mp": null,
+      "motivo": "A SEINFRA já respondeu à PGM em 08/06/2026, mas o objeto e o local da ação não constam, então não dá para orçar. Pedir à PGM cópia da inicial e da decisão para saber se há obra exigida. O certame de projetos de drenagem citado é geral e não tem número."
+    },
+    "MPBA_001.9.230302.2024": {
+      "triagem": "responder já",
+      "titulo": "Reforma da UBS de Olivença e garantia das obras de PSF (Olivença)",
+      "origem": "MPBA",
+      "categoria": "outro",
+      "ja_no_mp": "MPBA_001.9.230302.2024",
+      "triagem_no_mp": "responder já",
+      "motivo": "Há requisição do MPBA, já reiterada, sem comprovante de protocolo da resposta: pelo levantamento do MP, a resposta foi enviada à PGM para protocolo (CI Processo nº 14525/2025) e houve pedido de prorrogação em 04/09/2025. As planilhas divergem ('OFÍCIO OK' e 'Respondido' em umas; 'PENDENTE' em outras): confirmar o protocolo no MPBA. A demanda é de informação e garantia, sem obra nova a orçar."
+    },
+    "TCM_00568e20-15396e21-RESIDUOS_SOLIDOS": {
+      "triagem": "resolvido",
+      "titulo": "Coleta de resíduos sólidos: contratação emergencial e Pregão 29/2019 (Ilhéus)",
+      "origem": "TCM",
+      "categoria": "saneamento",
+      "ja_no_mp": "TCM_00568e20-09243e19-RESIDUOS_SOLIDOS",
+      "triagem_no_mp": "resolvido",
+      "motivo": "Processos do TCM julgados, com sanções pessoais ao gestor da época, e mandado de segurança denegado em 28/06/2021, sem pedido ou prazo pendente para a SEINFRA. O último documento é de 2021, e o serviço de coleta não é obra da SEINFRA."
+    },
+    "TCM_03036e23": {
+      "triagem": "resolvido",
+      "titulo": "Pavimentação e microdrenagem da Rua Boa Vista (Nelson Costa)",
+      "origem": "TCM",
+      "categoria": "drenagem+pavimentação",
+      "ja_no_mp": "MPBA_003.9.51186.2023",
+      "triagem_no_mp": "resolvido",
+      "motivo": "O Contrato 196/2022 foi assinado, a OS 104/2022 foi emitida e há medição de abril/2023 paga. O levantamento do MP registra 'obra já finalizada' e resposta ao MP em 20/07/2023. Não há pedido pendente ao Município no dossiê."
+    },
+    "TCM_03276e23": {
+      "triagem": "contrato assinado",
+      "titulo": "Construção de escola de 2 salas na comunidade da Tibina (Zona Norte)",
+      "origem": "TCM",
+      "categoria": "escola/creche",
+      "ja_no_mp": "TCM_03276e23-ESCOLA_TIBINA",
+      "triagem_no_mp": "contrato assinado",
+      "motivo": "Contrato 187/2022 (RDC Eletrônico 008/2022, R$ 450.900,00), assinado em 08/09/2022, com Ordem de Serviço 099/2022 e pagamentos de medições até a competência de maio/2023 (processo de pagamento de 25/08/2023). A vigência de 12 meses terminou em 09/2023; confirmar a conclusão e o recebimento da obra (se confirmados, 'resolvido')."
+    },
+    "TCM_03969e23": {
+      "triagem": "contrato assinado",
+      "titulo": "Drenagem e pavimentação da Rua Rodolfo Vieira (Centro) – denúncia ao TCM sobre o Contrato nº 208/2022",
+      "origem": "TCM",
+      "categoria": "drenagem+pavimentação",
+      "ja_no_mp": "TCM_03969e23-RUA_RODOLFO_VIEIRA",
+      "triagem_no_mp": "contrato assinado",
+      "motivo": "Há o Contrato nº 208/2022 para este objeto (RDC Eletrônico nº 009/2022). Porém, em abril/2023 a ordem de serviço não tinha sido emitida, e não há registro posterior de execução. Confirmar vigência e OS; se o contrato venceu sem obra, cabe orçamento paramétrico."
+    },
+    "TCM_03973e23": {
+      "triagem": "orçamento paramétrico",
+      "titulo": "Creche Municipal Padrão de 6 salas da Rua Genésio Santos (Teotônio Vilela)",
+      "origem": "TCM",
+      "categoria": "escola/creche",
+      "ja_no_mp": "TCM_03973e23-CRECHE_TEOTONIO_VILELA",
+      "triagem_no_mp": "orçamento paramétrico",
+      "motivo": "Em abril de 2023 a própria empresa contratada afirmou ao TCM que a ordem de serviço do Contrato nº 192/2022 não tinha sido emitida, e a denúncia fala em obra paralisada. O dossiê não registra ordem de serviço, retomada, nova licitação nem contrato vigente: a creche é candidata à estimativa de custo. Convém confirmar a situação atual do contrato."
+    }
+  }
+}

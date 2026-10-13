@@ -1,8 +1,11 @@
-"""Gera nota_tecnica.md (padrão das skills SEINFRA) a partir de etapa_b/resultado.json."""
+"""Gera nota_tecnica.md (padrão das skills SEINFRA) a partir de etapa_b/resultado.json (MP) e resultado_justica.json (Justiça)."""
 import json, os, sys, collections
 S, OUT = sys.argv[1], sys.argv[2]
 R = json.load(open(os.path.join(S, 'etapa_b', 'resultado.json')))
-O = R['objetos']
+RJ = json.load(open(os.path.join(S, 'etapa_b', 'resultado_justica.json')))
+for o in R['objetos']: o['levantamento'] = 'MP'
+OM, OJ = R['objetos'], RJ['objetos']
+O = OM + OJ
 PROV = 'PROVISORIO - aguarda aprovacao'
 
 def brl(v):
@@ -10,7 +13,6 @@ def brl(v):
     return 'R$ ' + s
 def pct(v): return f'{v*100:.2f}'.replace('.', ',') + '%'
 tot = lambda xs, c: sum(o['totais'][c]['total'] for o in xs)
-GRP = lambda org: 'Justiça' if org == 'Justiça' else ('TCM' if org == 'TCM' else 'MP')
 
 L = []
 a = L.append
@@ -28,13 +30,15 @@ a('1.2. A estimativa é paramétrica, preliminar e não vinculante. Destina-se a
 a('')
 a('**2. Universo analisado**')
 a('')
-a('2.1. Foram lidos 493 documentos do acervo de procedimentos do Ministério Público, de processos judiciais e de documentos sem número, organizados em 76 objetos (mesmo procedimento ou mesmo objeto físico), conforme os arquivos mp_indice.json e mp_objetos.json.')
+a('2.1. Levantamento do Ministério Público: foram lidos 493 documentos do acervo de procedimentos do Ministério Público, de processos judiciais e de documentos sem número, organizados em 76 objetos (mesmo procedimento ou mesmo objeto físico), conforme os arquivos mp_indice.json e mp_objetos.json.')
+a('')
+a('2.2. Levantamento da Justiça: foram lidos 795 documentos do acervo jurídico da Secretaria (processos judiciais, comunicações da Procuradoria Geral do Município, processos no Tribunal de Contas dos Municípios e documentos sem número). Apenas as demandas formaram objeto: 35 objetos, dos quais 13 já constavam do levantamento do Ministério Público por se tratar do mesmo processo ou do mesmo objeto físico (arquivos justica_indice.json e justica_objetos.json). Processos licitatórios, medições, aditivos, certidões e documentos de empresas foram usados apenas como sinais de andamento.')
 a('')
 tri = collections.Counter()
 for k in ('levantamento', 'responder_ja', 'licitacao_em_curso', 'contrato_assinado', 'resolvido'): pass
-a(f'2.2. A triagem provisória (triagem_provisoria.json, {PROV}) classificou 22 objetos como dependentes de obra ou serviço de engenharia sem licitação nem contrato vigente registrados. Somente esses 22 objetos foram estimados. Os demais estão resolvidos, com licitação em curso, com contrato assinado ou dependem apenas de resposta ao órgão.')
+a(f'2.3. A triagem provisória do Ministério Público (triagem_provisoria.json, {PROV}) classificou 22 objetos como dependentes de obra ou serviço de engenharia sem licitação nem contrato vigente registrados. A triagem provisória da Justiça (triagem_provisoria_justica.json, {PROV}) classificou 6 objetos nessa situação; 3 deles já estavam estimados no levantamento do Ministério Público e não foram somados de novo. Foram estimados, portanto, {len(O)} objetos: {len(OM)} do Ministério Público e {len(OJ)} da Justiça. Os demais estão resolvidos, com licitação em curso, com contrato assinado ou dependem apenas de resposta ao órgão ou à Procuradoria Geral do Município.')
 a('')
-a('2.3. A triagem definitiva será feita pela equipe da Secretaria. Objeto que mudar de classificação será incluído ou excluído e a estimativa será recalculada.')
+a('2.4. A triagem definitiva será feita pela equipe da Secretaria. Objeto que mudar de classificação será incluído ou excluído e a estimativa será recalculada.')
 a('')
 a('**3. Metodologia**')
 a('')
@@ -42,7 +46,7 @@ a('3.1. Para cada objeto, o custo foi estimado em três cenários (mínimo, prov
 a('')
 a('3.2. As quantidades seguiram esta ordem de preferência: (a) metragem ou quantidade citada no próprio documento; (b) demanda-tipo padronizada, com premissas escritas; (c) apoio de base cartográfica aberta. O item (c) não pôde ser usado nesta versão, porque o acesso à base cartográfica não estava disponível no ambiente de trabalho.')
 a('')
-a('3.3. Foram definidas 13 demandas-tipo: via urbana com drenagem e pavimentação; microdrenagem em via existente; contenção de encosta; edificação térrea nova; reforma predial; quadra poliesportiva coberta; campo de futebol; abrigo de passageiros; adequação de cozinha escolar; banheiro com chuveiro e grade; proteção emergencial de fachada; adequação de segurança de estádio; e casa térrea com parque linear. Os coeficientes de cada uma estão na aba DEMANDAS-TIPO da planilha e devem ser aprovados uma única vez por engenheiro revisor.')
+a('3.3. Foram definidas 15 demandas-tipo: via urbana com drenagem e pavimentação; microdrenagem em via existente; contenção de encosta; edificação térrea nova; reforma predial; quadra poliesportiva coberta; campo de futebol; abrigo de passageiros; adequação de cozinha escolar; banheiro com chuveiro e grade; proteção emergencial de fachada; adequação de segurança de estádio; casa térrea com parque linear; infraestrutura básica de loteamento; e reforma de unidade de acolhimento. Os coeficientes de cada uma estão na aba DEMANDAS-TIPO da planilha e devem ser aprovados uma única vez por engenheiro revisor.')
 a('')
 a('3.4. A demanda-tipo de contenção de encosta foi calibrada com a média do programa de contenção de encostas citada nos documentos do acervo (cerca de R$ 1.692,00 por m² de face). O resultado provável da demanda-tipo ficou em cerca de R$ 1.675,00 por m².')
 a('')
@@ -62,29 +66,31 @@ a(f"| Fator regional | {f['min']:.2f} | {f['prov']:.2f} | {f['max']:.2f} | Parâ
 a('')
 a('4.3. O BDI não inclui a contribuição previdenciária sobre a receita bruta, por se tratar de regime não desonerado. A contingência tem como teto de referência a precisão esperada para estimativas na fase de estudos preliminares, de cerca de 30% para edificações, segundo orientação técnica do Instituto Brasileiro de Auditoria de Obras Públicas (OT-IBR 004/2012).')
 a('')
-a('4.4. Não foram usados como base de preço contratos da Secretaria nem editais de outros municípios.')
+a('4.4. Não foram usados como base de preço contratos da Secretaria nem editais de outros municípios. Os mesmos preços, demandas-tipo e parâmetros foram aplicados aos dois levantamentos.')
 a('')
 a('**5. Resultados**')
 a('')
 a(f'5.1. Estimativa por objeto ({PROV}):')
 a('')
-a('| Nº | Objeto | Origem | Categoria | Quantidade | Mínimo | Provável | Máximo |')
-a('|---|---|---|---|---|---|---|---|')
+a('| Nº | Objeto | Levantamento | Origem | Categoria | Quantidade | Mínimo | Provável | Máximo |')
+a('|---|---|---|---|---|---|---|---|---|')
 for o in O:
     t = o['totais']
-    a(f"| {o['n']:02d} | {o['titulo']} | {o['origem']} | {o['categoria']} | {o['fonte_quant']} | {brl(t['min']['total'])} | {brl(t['prov']['total'])} | {brl(t['max']['total'])} |")
-a(f"| | **Total geral** | | | | **{brl(tot(O, 'min'))}** | **{brl(tot(O, 'prov'))}** | **{brl(tot(O, 'max'))}** |")
+    a(f"| {o['n']:02d} | {o['titulo']} | {o['levantamento']} | {o['origem']} | {o['categoria']} | {o['fonte_quant']} | {brl(t['min']['total'])} | {brl(t['prov']['total'])} | {brl(t['max']['total'])} |")
+a(f"| | **Total geral** | | | | | **{brl(tot(O, 'min'))}** | **{brl(tot(O, 'prov'))}** | **{brl(tot(O, 'max'))}** |")
 a('')
-a('5.2. Total por grupo de origem:')
+a('5.2. Totais do Ministério Público, da Justiça e geral, sem dupla contagem:')
 a('')
-a('| Grupo de origem | Objetos | Mínimo | Provável | Máximo |')
+a('| Levantamento | Objetos | Mínimo | Provável | Máximo |')
 a('|---|---|---|---|---|')
-for g in ('MP', 'Justiça', 'TCM'):
-    xs = [o for o in O if GRP(o['origem']) == g]
-    a(f"| {g} | {len(xs)} | {brl(tot(xs, 'min'))} | {brl(tot(xs, 'prov'))} | {brl(tot(xs, 'max'))} |")
-a(f"| **Total** | **{len(O)}** | **{brl(tot(O, 'min'))}** | **{brl(tot(O, 'prov'))}** | **{brl(tot(O, 'max'))}** |")
+a(f"| Ministério Público (inclui os processos judiciais e do TCM do acervo do MP) | {len(OM)} | {brl(tot(OM, 'min'))} | {brl(tot(OM, 'prov'))} | {brl(tot(OM, 'max'))} |")
+a(f"| Justiça (objetos novos do acervo jurídico) | {len(OJ)} | {brl(tot(OJ, 'min'))} | {brl(tot(OJ, 'prov'))} | {brl(tot(OJ, 'max'))} |")
+a(f"| **Geral** | **{len(O)}** | **{brl(tot(O, 'min'))}** | **{brl(tot(O, 'prov'))}** | **{brl(tot(O, 'max'))}** |")
 a('')
-a('5.3. O grupo MP reúne MPBA, MPF, MPT e um objeto cuja capa indica "Resposta Ministério Público" sem identificar o ramo. Por órgão:')
+nomes_ja = '; '.join(x['titulo'] for x in RJ['ja_calculados_no_mp'])
+a(f'5.3. Constam também do acervo da Justiça, já estimados no levantamento do Ministério Público e por isso não somados de novo: {nomes_ja}.')
+a('')
+a('5.4. Por órgão de origem da demanda:')
 a('')
 a('| Origem | Objetos | Mínimo | Provável | Máximo |')
 a('|---|---|---|---|---|')
@@ -93,7 +99,7 @@ for g in ('MPBA', 'MPF', 'MPT', 'Justiça', 'TCM', 'outro'):
     nome = 'MP sem ramo identificado' if g == 'outro' else g
     a(f"| {nome} | {len(xs)} | {brl(tot(xs, 'min'))} | {brl(tot(xs, 'prov'))} | {brl(tot(xs, 'max'))} |")
 a('')
-a('5.4. Total por categoria:')
+a('5.5. Total por categoria:')
 a('')
 a('| Categoria | Objetos | Mínimo | Provável | Máximo |')
 a('|---|---|---|---|---|')
@@ -104,7 +110,7 @@ for g in sorted(cats, key=lambda k: -tot([o for o in O if o['categoria'] == k], 
     xs = [o for o in O if o['categoria'] == g]
     a(f"| {g} | {len(xs)} | {brl(tot(xs, 'min'))} | {brl(tot(xs, 'prov'))} | {brl(tot(xs, 'max'))} |")
 a('')
-a(f"5.5. O valor provável total é de {brl(tot(O, 'prov'))}, com faixa de {brl(tot(O, 'min'))} a {brl(tot(O, 'max'))}. Recomenda-se usar o valor provável como referência de reserva e o máximo como teto de planejamento.")
+a(f"5.6. O valor provável total é de {brl(tot(O, 'prov'))}, com faixa de {brl(tot(O, 'min'))} a {brl(tot(O, 'max'))}. Recomenda-se usar o valor provável como referência de reserva e o máximo como teto de planejamento.")
 a('')
 a('**6. Premissas principais**')
 a('')
@@ -113,6 +119,8 @@ a('')
 a('6.2. Nos demais objetos, as quantidades são premissas de demanda-tipo, registradas na aba de cada objeto (por exemplo, comprimento de rua de 150/250/400 m, área de prédio a reformar, número de cozinhas ou de abrigos). Devem ser confirmadas por medição em campo ou por projeto.')
 a('')
 a('6.3. Obras paralisadas (escolas, creches e quadra do FNDE) foram estimadas como fração remanescente de 30/50/70% da edificação-tipo, porque a situação física não está nos documentos.')
+a('')
+a('6.4. Justiça: o Loteamento Santa Cruz foi estimado com 600/1.000/1.600 m de vias com drenagem, pavimentação, redes de água e esgoto e iluminação pública, porque a poligonal da sentença não consta do acervo; a encosta da Ladeira Júlio Bagana, com 600/1.000/1.400 m² de face, sem descontar o que o contrato anterior executou; a Unidade de Acolhimento Renascer, com reforma de 200/300/450 m² e portas corta-fogo.')
 a('')
 a('**7. Limitações**')
 a('')
@@ -128,6 +136,10 @@ a('7.5. Nos objetos com recursos federais já previstos (casas do programa de re
 a('')
 a('7.6. As fontes normativas foram conferidas em reproduções públicas dos textos, porque o acesso direto aos sítios oficiais não estava disponível no ambiente de trabalho. Recomenda-se conferência nos sítios oficiais antes da versão final.')
 a('')
+a('7.7. Na Justiça, seis processos de drenagem só têm a resposta da Secretaria à Procuradoria Geral do Município, sem petição inicial nem sentença, e dezenove processos aparecem apenas nas planilhas de controle da Secretaria. Esses casos não foram estimados, porque a obra e o local não são conhecidos.')
+a('')
+a('7.8. Em três objetos estimados no levantamento do Ministério Público (drenagem da Av. Soares Lopes, drenagem das Ruas Castro Alves e Barão do Rio Branco e Rua Aracuã), o acervo da Justiça informa licitação ou contrato vinculado ao programa federal de drenagem, que, segundo os próprios documentos, trata de projetos. Se ficar confirmado contrato de execução da obra, esses objetos sairão da estimativa. Em sentido inverso, a encosta da Ladeira Júlio Bagana passou a ser estimada, porque o contrato anterior foi extinto com a obra paralisada.')
+a('')
 a('**8. Encaminhamentos**')
 a('')
 a('8.1. Aprovar ou ajustar o BDI, a contingência e o fator regional (planilha, aba PARAMETROS). A planilha recalcula sozinha.')
@@ -136,7 +148,9 @@ a('8.2. Substituir a triagem provisória pela triagem definitiva e recalcular os
 a('')
 a('8.3. Submeter as demandas-tipo à aprovação de engenheiro revisor e confirmar, com prioridade, as quantidades dos objetos de maior valor.')
 a('')
-a('8.4. Anexar esta nota técnica e a planilha levantamento_parametrico.xlsx à comunicação interna dirigida à Secretaria Municipal da Fazenda e Orçamento.')
+a('8.4. Solicitar à Procuradoria Geral do Município cópia da petição inicial ou da sentença dos processos sem obra ou local identificados e incluir na estimativa os que exigirem obra.')
+a('')
+a('8.5. Anexar esta nota técnica e a planilha levantamento_parametrico.xlsx à comunicação interna dirigida à Secretaria Municipal da Fazenda e Orçamento.')
 a('')
 a('Ilhéus, *data da assinatura*.')
 a('')

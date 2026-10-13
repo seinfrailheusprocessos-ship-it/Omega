@@ -1,0 +1,587 @@
+[
+  {
+    "n": 1,
+    "grupo_objeto": "JUSTICA_8008587-02.2024.8.05.0103",
+    "titulo": "Projeto de segurança contra incêndio da Casa Lar Masculina (AVCB)",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": "Casa Lar Masculina (unidade municipal de acolhimento de adolescentes)",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "responder já",
+    "motivo": "Na CI 001.25.08.2026 (25/08/2026) a SEINFRA pediu mais 10 dias para concluir o projeto; o prazo venceu no início de setembro de 2026 e não há registro de entrega do projeto. A CI PROGER 725/2026 aponta multa diária, e a planilha registra prazo judicial em curso.",
+    "pedido_consolidado": "Decisão na ACP (autor: Ministério Público Estadual, segundo planilha da SEINFRA) obriga o Município a elaborar o Projeto de Segurança Contra Incêndio e Pânico da Casa Lar Masculina, com Responsabilidade Técnica, para envio ao Corpo de Bombeiros e emissão do AVCB. A PGM (CI PROGER 725/2026) pede providências imediatas e informações com documentos e prazo de conclusão, e aponta multa diária pelo descumprimento. Em 25/08/2026 a SEINFRA informou que o projeto está em elaboração (PA 14800/2026) e pediu mais 10 dias.",
+    "docs": [
+      "JUSTICA/8008587-02.2024.8.05.0103/LICITAÇÃO (1).txt",
+      "JUSTICA/8008587-02.2024.8.05.0103/Captura de Tela (47) (1).txt"
+    ]
+  },
+  {
+    "n": 2,
+    "grupo_objeto": "JUSTICA_8008052-39.2025.8.05.0103",
+    "titulo": "Árvores com risco de queda na Ladeira do Jacaré (Conquista)",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": "Ladeira do Jacaré, bairro Conquista (imóveis particulares)",
+    "prazo_mais_proximo": "2025-07-29",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "responder já",
+    "motivo": "O prazo de 15 dias venceu por volta de 29/07/2025. A SEINFRA abriu o processo 14536/2025 para responder ao TJBA, mas só há a capa 'em trâmite', sem a resposta, e a lista de controle não marca 'OFÍCIO OK' neste item. A demanda é vistoria e poda, sem obra a orçar.",
+    "pedido_consolidado": "Ação de obrigação de fazer entre vizinhos na 2ª Vara dos Feitos de Relação de Consumo, Cíveis, Comerciais e Acidente de Trabalho de Ilhéus. A liminar de 10/07/2025 mandou o réu permitir o acesso de servidores municipais e oficiou a Secretaria de Meio Ambiente e a Defesa Civil para, em 15 dias, vistoriar o local, fazer a poda ou o corte das árvores de risco, se necessário, e juntar relatório circunstanciado aos autos. O mandado de entrega do ofício à SEINFRA é de 14/07/2025. Já havia nos autos parecer de vistoria da Defesa Civil; a audiência de conciliação foi marcada para 14/08/2025.",
+    "docs": [
+      "SEM_NUMERO/Image_015 (1).txt",
+      "JUSTICA/8008052-39.2025.8.05.0103/6D3D6D12-993D-433B-9E37-63B7B65F002F.txt"
+    ]
+  },
+  {
+    "n": 3,
+    "grupo_objeto": "JUSTICA_0000917-10.2015.5.05.0493",
+    "titulo": "Trabalho infantil no antigo lixão de Itariri (ACP do MPT)",
+    "categoria": "saneamento",
+    "origem": "Justiça",
+    "local": "Antigo lixão (aterro) de Itariri, Ilhéus",
+    "prazo_mais_proximo": "2026-08-13",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "responder já",
+    "motivo": "A vista de 10 dias e a audiência de 31/08/2026 já passaram, e não há manifestação do Município nem resposta da SEINFRA registrada. Fato novo em relação ao MP: o Município faltou à audiência de 03/08/2026 e o MPT aponta descumprimento persistente. Confirmar com a PGM o resultado de 31/08/2026 e se algum item (ex.: cercamento) cabe à SEINFRA.",
+    "pedido_consolidado": "ACP do MPT (Procuradoria do Trabalho no Município de Itabuna), de 2015, na 1ª Vara do Trabalho de Ilhéus, sobre trabalho infantil no lixão. A sentença de obrigações de fazer, confirmada pelo TRT5 em 2018, está em execução; pelo levantamento do MP, ela exige cercar o antigo aterro, manter vigilância 24 horas e incluir e matricular os menores. Em 17/12/2025 o Juízo acolheu os embargos do Município e fixou a execução em R$ 42.147,00 (até 18/07/2025). O MPT pediu precatório complementar e, com base em relatório da Defensoria de 16/07/2025, apontou descumprimento persistente das obrigações de fazer; o Município teve vista de 10 dias (despacho de 27/02/2026).",
+    "docs": [
+      "JUSTICA/0000917-10.2015.5.05.0493/Autos ACPCiv_0000917-10.2015.5.05.0493 - 28 08 26 (1).txt"
+    ]
+  },
+  {
+    "n": 4,
+    "grupo_objeto": "JUSTICA_8004720-64.2025.8.05.0103",
+    "titulo": "Praça pública em terreno reivindicado por particular (ação possessória)",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": null,
+    "prazo_mais_proximo": "2026-01-31",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "responder já",
+    "motivo": "Há requisição da PGM (CI PROGER nº 180/2026, registrada nas planilhas) sem resposta da SEINFRA registrada, e o prazo judicial de 72 horas venceu em 31/01/2026 (estimado). A praça já está concluída; a demanda é de subsídios à defesa do Município, não de obra a orçar.",
+    "pedido_consolidado": "Ação de manutenção de posse com pedido de indenização e tutela de urgência, movida por particular contra o Município, que teria construído praça pública em terreno da autora sem desapropriação nem indenização. Em decisão de 28/01/2026, a 1ª Vara da Fazenda Pública de Ilhéus intimou o Município, pela Procuradoria, a se manifestar sobre a liminar em 72 horas (prazo estimado vencido em 31/01/2026). Segundo as planilhas, a PGM requisitou subsídios à SEINFRA pela CI PROGER nº 180/2026.",
+    "docs": [
+      "SEM_NUMERO/proc imi posse (1).txt"
+    ]
+  },
+  {
+    "n": 5,
+    "grupo_objeto": "JUSTICA_0500963-88.2018.8.05.0103",
+    "titulo": "Embargo de construção particular na Rua A Mares do Sul (São Francisco)",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": "Rua A Mares do Sul, bairro São Francisco (imóvel particular)",
+    "prazo_mais_proximo": "2026-08-11",
+    "situacao_prazo": "vencido",
+    "sugestao_triagem": "responder já",
+    "motivo": "O prazo da PGM (11/08/2026) venceu e não há resposta registrada; as planilhas de controle só registram o envio da C.I. nº 606/2026. É pedido de informação sobre obra particular, sem obra pública a orçar.",
+    "pedido_consolidado": "Numa ação de despejo entre particulares, a 2ª Vara dos Feitos de Relação de Consumo, Cíveis, Comerciais e Acidente de Trabalho de Ilhéus reiterou ofício enviado ao Município desde 2023 (Ofício nº 138). O Juízo determinou que o Município informe, em 30 dias, a situação atual do embargo de uma construção particular (Notificação nº 00069, de 02/05/2018). A PGM (C.I. nº 606/2026, de 20/07/2026) pediu à SEINFRA, à LOP e à SEMOP que informem se o embargo segue vigente, se houve regularização ou desconstituição, e que enviem a documentação até 11/08/2026.",
+    "docs": [
+      "JUSTICA/0500963-88.2018.8.05.0103/CI PROGER 606.2026 - Proc 0500963-88.2018.8.05.0103 (1).txt"
+    ]
+  },
+  {
+    "n": 6,
+    "grupo_objeto": "JUSTICA_8003278-97.2024.8.05.0103",
+    "titulo": "Postes de energia elétrica na Rua Muniz Sodré (Alto São Sebastião)",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": "Rua Muniz Sodré, Alto São Sebastião",
+    "prazo_mais_proximo": "2025-07-20",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "responder já",
+    "motivo": "O prazo da PGM (estimado em 20/07/2025) venceu e não há CI de resposta da SEINFRA no dossiê, só a abertura do processo administrativo 14534/2025 ('RESPOSTA_TJBA', 10/08/2025). As planilhas de controle marcam 'OFÍCIO OK', o que indica resposta pronta: confirmar o envio à PGM antes de dar como resolvido.",
+    "pedido_consolidado": "Em petição cível de morador contra a COELBA, a 2ª Vara dos Feitos de Relação de Consumo, Cíveis, Comerciais e Acidente de Trabalho de Ilhéus pediu ao Município (Ofício nº 107/2025, de 18/06/2025) que informe, com brevidade, se os postes de energia da Rua Muniz Sodré (Alto São Sebastião) seguem as diretrizes municipais e se há fiação sobre residências. A PGM repassou o pedido como urgente (CI nº 502/2025, de 15/07/2025), com prazo de 2 dias. O LOP declarou-se incompetente e remeteu o pedido à SEINFRA (CI nº 55/2025, de 18/07/2025). O prazo estimado venceu em 20/07/2025.",
+    "docs": [
+      "SEM_NUMERO/OFÍCIOS TJBA (1).txt",
+      "JUSTICA/8003278-97.2024.8.05.0103/DESENVOLVIMENTO LOP 055.txt",
+      "JUSTICA/8003278-97.2024.8.05.0103/6D391DF0-2EA3-427A-8A90-0191CD4BC132.txt"
+    ]
+  },
+  {
+    "n": 7,
+    "grupo_objeto": "JUSTICA_8006145-39.2019.8.05.0103",
+    "titulo": "Obra particular embargada – fiscalização (ação de direito de vizinhança)",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": null,
+    "prazo_mais_proximo": "2025-11-06",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "responder já",
+    "motivo": "O prazo de 30 dias do Ofício nº 222/2025 venceu (estimado em 06/11/2025) e não há resposta registrada. A demanda é só de informação, sem obra pública a orçar.",
+    "pedido_consolidado": "Ação entre particulares sobre direito de vizinhança na 1ª Vara dos Feitos de Relação de Consumo, Cíveis e Comerciais de Ilhéus, com a Secretaria de Serviços Urbanos como interessada. Pelo Ofício nº 222/2025, de 07/10/2025, dirigido ao Setor de Fiscalização de Obras, o Juízo pede que o Município informe, em 30 dias, se foi retomada a fiscalização da obra embargada. Prazo estimado: 06/11/2025.",
+    "docs": [
+      "JUSTICA/8006145-39.2019.8.05.0103/8006145-39.2019.8.05.0103-1762862420707-40310-oficio.txt"
+    ]
+  },
+  {
+    "n": 8,
+    "grupo_objeto": "JUSTICA_0502344-39.2015.8.05.0103",
+    "titulo": "Encosta/urbanização na 2ª Travessa da Rua Visconde de Santo Amaro (Basílio)",
+    "categoria": "encosta/contenção",
+    "origem": "Justiça",
+    "local": "Rua Visconde de Santo Amaro, 2ª Travessa, nº 90 A, Basílio",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "responder já",
+    "motivo": "O único documento é a CI 2025.09.24.001/SEINFRA/GAB, que promete o levantamento técnico; há mais de um ano sem registro do levantamento nem de nova resposta. A obra e o local só aparecem nas planilhas de controle (indício), então convém pedir à PGM a cópia da sentença antes de orçar.",
+    "pedido_consolidado": "Cumprir as obrigações impostas pela sentença (id 495643463) nos autos TJBA 0502344-39.2015.8.05.0103. O teor da sentença, o prazo e eventual multa não constam dos documentos. As planilhas de controle da SEINFRA classificam a demanda como encosta/urbanização na 2ª Travessa da Rua Visconde de Santo Amaro, nº 90 A, Basílio. Em 24/09/2025 a SEINFRA informou à PGM que iniciaria o levantamento técnico prévio.",
+    "docs": [
+      "JUSTICA/0502344-39.2015.8.05.0103/CI_GAB_SEINFRA_RESPOSTA_PROGER_0502344-39.2015.8.05.0103 (1).txt"
+    ]
+  },
+  {
+    "n": 9,
+    "grupo_objeto": "MPBA_001.9.230302.2024",
+    "titulo": "Reforma da UBS de Olivença e garantia das obras de PSF (Olivença)",
+    "categoria": "outro",
+    "origem": "MPBA",
+    "local": "UBS de Olivença, Olivença",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "responder já",
+    "motivo": "Há requisição do MPBA, já reiterada, sem comprovante de protocolo da resposta: pelo levantamento do MP, a resposta foi enviada à PGM para protocolo (CI Processo nº 14525/2025) e houve pedido de prorrogação em 04/09/2025. As planilhas divergem ('OFÍCIO OK' e 'Respondido' em umas; 'PENDENTE' em outras): confirmar o protocolo no MPBA. A demanda é de informação e garantia, sem obra nova a orçar.",
+    "pedido_consolidado": "A 8ª Promotoria de Justiça de Ilhéus (Moralidade Administrativa e Patrimônio Público), na Notícia de Fato IDEA 001.9.230302/2024, requisitou à SEINFRA, em 20 dias corridos (Ofício nº 087/2025, de 25/03/2025): o objeto da reforma da UBS de Olivença feita pela empresa do Contrato nº 125/2023 (manutenção de prédios da Saúde), com plano de execução e pagamentos da ordem de serviço; se houve falhas que acionem a garantia construtiva e providências contra a VC Consultoria Técnica (Concorrência Pública nº 003/2018, construção de 3 PSFs); e cópia da contratação, dos pagamentos e das medições dessa empresa. O levantamento do MP registra reiteração pelo Ofício nº 244/2025, de 16/07/2025.",
+    "docs": [
+      "MPBA/001.9.230302.2024/ok MPBA 2024 - 001.9.230302.2024 - ok_compressed (1).txt"
+    ]
+  },
+  {
+    "n": 10,
+    "grupo_objeto": "JUSTICA_0000130-63.2024.5.05.0493",
+    "titulo": "Alvará de construção do Tropical Residence Service (Rodovia Ilhéus–Olivença, km 11)",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": "Rodovia Ilhéus–Olivença, km 11, Zona Rural",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "responder já",
+    "motivo": "A C.I. PROGER 251/2025 (19/03/2025) pede informação e documentos do alvará de 1988, e o dossiê não registra resposta da SEINFRA. O processo trabalhista está parado à espera da resposta do Município. A demanda é só de informação, sem obra.",
+    "pedido_consolidado": "Por ordem do TRT da 5ª Região (Secretaria de Execução e Expropriação), na ação trabalhista entre particulares ATOrd 0000130-63.2024.5.05.0493 (ata de 13/02/2025), a PGM pediu à SEINFRA pela C.I. 251/2025, de 19/03/2025, com a maior brevidade e sem prazo fixado, informações sobre o alvará de construção do Tropical Residence Service, expedido em 29/07/1988. Pede também os documentos da autorização, em especial croqui ou planta, para identificar o primeiro bloco construído e sua correspondência com as designações 1, 2 e 3. A resposta substitui prova pericial, e o processo aguarda a resposta do Município.",
+    "docs": [
+      "JUSTICA/0000130-63.2024.5.05.0493/PROGER 251 (1).txt"
+    ]
+  },
+  {
+    "n": 11,
+    "grupo_objeto": "JUSTICA_0011194-18.2010.8.05.0103",
+    "titulo": "Convênio nº 538/94 com o Ministério da Integração Regional (requisições do TJBA)",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": null,
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "responder já",
+    "motivo": "Há requisição do TJBA sem resposta registrada: o último documento é o pedido da SEINFRA à SNFI (11/02/2025), sem retorno do Ministério nem resposta ao Juízo. A obra ligada ao convênio não é identificada; convém pedir à PGM a cópia das requisições.",
+    "pedido_consolidado": "O TJBA fez requisições ao Município no processo 0011194-18.2010.8.05.0103, ligadas ao Convênio nº 538/94, firmado com o Ministério da Integração Regional. O teor das requisições e o objeto do convênio não constam dos documentos. Para atendê-las, o Gabinete da SEINFRA pediu à Secretaria Nacional de Fundos e Instrumentos Financeiros (SNFI) consulta e envio de documentos do convênio (Ofício nº 2025.01.20.001/SEINFRA/GAB, de 20/01/2025, reemitido em 11/02/2025). Não há prazo registrado.",
+    "docs": [
+      "JUSTICA/0011194-18.2010.8.05.0103/OF_GAB_SEINFRA_2025_01_20_001_MDR_INFORMAÇÕES_CONVÊNIO.txt",
+      "SEM_NUMERO/Image_028 (1).txt",
+      "JUSTICA/0011194-18.2010.8.05.0103/OF_GAB_SEINFRA_2025_02_11_001_MDR_INFORMAÇÕES_CONVÊNIO.txt",
+      "JUSTICA/0011194-18.2010.8.05.0103/OF_GAB_SEINFRA_2025_02_11_001_MDR_INFORMAÇÕES_CONVÊNIO_ba6571.txt"
+    ]
+  },
+  {
+    "n": 12,
+    "grupo_objeto": "JUSTICA_8014030-94.2025.8.05.0103",
+    "titulo": "Ação judicial sobre drenagem pluvial (local não informado)",
+    "categoria": "drenagem",
+    "origem": "Justiça",
+    "local": null,
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "responder já",
+    "motivo": "A SEINFRA já respondeu à PGM em 08/06/2026, mas o objeto e o local da ação não constam, então não dá para orçar. Pedir à PGM cópia da inicial e da decisão para saber se há obra exigida. O certame de projetos de drenagem citado é geral e não tem número.",
+    "pedido_consolidado": "A PGM pediu à SEINFRA informações técnicas para instruir o processo judicial 8014030-94.2025.8.05.0103, que trata de drenagem pluvial. O dossiê não traz a inicial, a decisão nem a CI da PGM, então não se sabe o local, o autor nem o que se pede ao Município. A SEINFRA respondeu pela CI nº 006.08.0006/26 (08/06/2026): a gestão anterior não repassou informações, foi iniciado certame para contratar os projetos do sistema de drenagem pluvial do município, e o Supervisor de Projetos foi indicado como assistente técnico.",
+    "docs": [
+      "SEM_NUMERO/CI 006.08.0006-26 PROGER- (1).txt"
+    ]
+  },
+  {
+    "n": 13,
+    "grupo_objeto": "JUSTICA_8008589-69.2024.8.05.0103",
+    "titulo": "Unidade de Acolhimento Renascer: projeto de incêndio e reforma (Conquista)",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": "Unidade de Acolhimento Renascer, Av. Princesa Isabel, nº 1554, bairro Conquista",
+    "prazo_mais_proximo": "2025-03-24",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "orçamento paramétrico",
+    "motivo": "O acordo homologado exige projeto de incêndio, reforma e armários no Renascer, e o dossiê não registra licitação, contrato nem resposta da SEINFRA. O prazo de 10 dias da C.I. nº 11/2025 venceu por volta de 24/03/2025, então também há resposta pendente.",
+    "pedido_consolidado": "Na ACP do MPBA na Vara da Infância e Juventude de Ilhéus, a sentença de 11/03/2025 homologou o acordo do Círculo de Sentença (10/03/2025) sobre a Unidade de Acolhimento Renascer. Pelo acordo, a Promoção Social deve pedir à SEINFRA o Projeto de Segurança contra Incêndio (a submeter ao Corpo de Bombeiros em até 60 dias), um calendário anual de manutenção, armários de cimento e a reforma (requalificação) da unidade. A C.I. nº 11/2025 (14/03/2025) pediu o projeto com urgência, citando fiação exposta e falta de saída de emergência, e um planejamento com prazos em 10 dias, para informar à Vara e evitar bloqueio de valores.",
+    "docs": [
+      "SEM_NUMERO/CI - PROMOÇÃO SOCIAL (1).txt",
+      "SEM_NUMERO/DEMANDAS INTERNAS - PROMOÇÃO SOCIAL (1).txt",
+      "SEM_NUMERO/PROMOÇÃO SOCIAL (1).txt",
+      "SEM_NUMERO/Image_025 (1).txt"
+    ]
+  },
+  {
+    "n": 14,
+    "grupo_objeto": "JUSTICA_0006323-71.2012.8.05.0103",
+    "titulo": "Requalificação do Estádio Municipal Mário Pessoa (Cidade Nova) – TAC de 2012",
+    "categoria": "quadra/esporte",
+    "origem": "Justiça",
+    "local": "Estádio Municipal Mário Pessoa, Praça Guadalajara, Cidade Nova",
+    "prazo_mais_proximo": "2026-06-28",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "orçamento paramétrico",
+    "motivo": "O TAC exige obras de adequação estrutural e de segurança contra incêndio, sem licitação nem contrato registrado. Também há resposta pendente: o prazo do despacho de 29/04/2026 (estimado em 28/06/2026) e o da CI PROGER nº 742/2026 (02/09/2026) venceram. Pelo levantamento do MP, a SEINFRA pediu prazo suplementar em 15/09/2026, sem decisão registrada.",
+    "pedido_consolidado": "Execução de título extrajudicial movida pelo MPBA (11ª Promotoria de Justiça de Ilhéus) na 1ª Vara da Fazenda Pública de Ilhéus para cumprir o TAC de 2012. O TAC prevê requalificar o Estádio Municipal Mário Pessoa e adequá-lo às normas de segurança e prevenção de incêndio (extintores, guarda-corpos, sinalização de saídas, casas de força, brigada, alarme e SPDA). Em 29/04/2026 o Juízo deu ao Município 60 dias adicionais, contados da intimação, para apresentar relatório técnico e documentos do cumprimento; depois o MP terá 15 dias. A planilha da SEINFRA registra a CI PROGER nº 742/2026, com prazo de resposta em 02/09/2026.",
+    "docs": [
+      "JUSTICA/0006323-71.2012.8.05.0103/0006323-71.2012.8.05.0103-1788182436702-481826-processo (1).txt"
+    ]
+  },
+  {
+    "n": 15,
+    "grupo_objeto": "JUSTICA_0001568-38.2011.8.05.0103",
+    "titulo": "Infraestrutura básica do Loteamento Santa Cruz (cumprimento de sentença)",
+    "categoria": "drenagem+pavimentação",
+    "origem": "Justiça",
+    "local": "Loteamento Santa Cruz",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "orçamento paramétrico",
+    "motivo": "A sentença exige obras de infraestrutura identificáveis no Loteamento Santa Cruz, e não há licitação nem contrato registrados. A CI 2025.09.23.002/SEINFRA/GAB pediu 60 dias para o levantamento técnico; não há registro posterior do levantamento, do cronograma nem de decisão sobre o prazo, o que também deixa resposta pendente à PGM.",
+    "pedido_consolidado": "Sentença em ação civil pública (Lei 7.347/85) do Ministério Público condenou o Município a regularizar o Loteamento Santa Cruz (área poligonal demarcada nos autos) em até 12 meses do trânsito em julgado. Devem ser feitas as obras de infraestrutura básica da Lei 6.766/79: drenagem pluvial, rede de esgoto, rede de água potável, iluminação pública e domiciliar, pavimentação das vias e meios-fios de concreto. A multa é de R$ 20.000,00 por mês de descumprimento. Em 23/09/2025 a SEINFRA pediu à PGM que solicitasse ao juízo 60 dias para o levantamento técnico.",
+    "docs": [
+      "JUSTICA/0001568-38.2011.8.05.0103/CI_GAB_SEINFRA_2025_09_23_002_RESPOSTA_PROGER (1).txt",
+      "SEM_NUMERO/EMBASA FAELBA (1).txt"
+    ]
+  },
+  {
+    "n": 16,
+    "grupo_objeto": "JUSTICA_8005837-61.2023.8.05.0103",
+    "titulo": "Abrigos de ônibus na Rodovia Jorge Amado (BR-415), perto do IFBA",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": "Rodovia Jorge Amado (BR-415), nas imediações do IFBA",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "orçamento paramétrico",
+    "motivo": "A sentença exige a instalação dos abrigos e não há licitação nem contrato registrado para este local; o Contrato 156/2024 (abrigos no centro urbano) vigorou só até 04/07/2026 e não cita o IFBA. Fato novo em relação ao MP: a SEINFRA respondeu à PGM em 22/07/2026, mas sem cronograma. Também falta enviar à PGM o relatório da Defesa Civil.",
+    "pedido_consolidado": "Na ACP do MPBA (Vara da Fazenda Pública de Ilhéus), a sentença condenou o Município a instalar e entregar novos abrigos de passageiros nos pontos de ônibus da BR-415, perto do IFBA. Pelo levantamento do MP, o prazo é de 180 dias, com fotos e termo de conclusão assinado por engenheiro, sob pena de multa. A PGM (C.I. nº 564/2026) pediu providências e cronograma. A SEINFRA respondeu pela CI nº 003.22.0007.26 (22/07/2026): a equipe técnica foi encarregada do cumprimento, acompanhado no processo administrativo 13402/2026. A planilha de controle registra a pendência de enviar à PGM o relatório da Defesa Civil.",
+    "docs": [
+      "JUSTICA/8005837-61.2023.8.05.0103/CI 003.22.0007.26 (RESPOSTA À CI PROGER 564.2026) (1).txt",
+      "JUSTICA/8005837-61.2023.8.05.0103/CUMPRIMENTO DE DECISÃO JUDICIAL.txt"
+    ]
+  },
+  {
+    "n": 17,
+    "grupo_objeto": "JUSTICA_8007670-17.2023.8.05.0103",
+    "titulo": "Estabilização de encosta da Ladeira Júlio Bagana / Rua Rio Almada (Tapera)",
+    "categoria": "encosta/contenção",
+    "origem": "Justiça",
+    "local": "Ladeira Júlio Bagana (Rua Rio Almada), bairro Tapera",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "orçamento paramétrico",
+    "motivo": "Fato novo em relação ao MP (que indicava contrato assinado): a CI 2025.09.23.001/SEINFRA/GAB informa que o Contrato 129/2023 (estabilização de encosta, R$ 1.684.122,83) se extinguiu em 25/08/2025, com obras paralisadas desde 2024 e contratada sem regularidade fiscal. Só há estudos preliminares para relicitar, sem licitação registrada.",
+    "pedido_consolidado": "Na ACP do MPBA, ajuizada em 13/08/2023, pede-se a condenação do Município a requalificar a Ladeira Júlio Bagana (Rua Rio Almada), na Tapera, até o fim do ano seguinte ao trânsito em julgado. Não há sentença nem prazo processual no dossiê. Em 23/09/2025 a SEINFRA informou à PGM que o contrato da obra se extinguiu e que prepara a relicitação, com início da execução previsto para o primeiro quadrimestre de 2026. Prometeu também enviar o relatório final do levantamento técnico.",
+    "docs": [
+      "JUSTICA/8007670-17.2023.8.05.0103/CI_GAB_SEINFRA_2025_09_23_001_RESPOSTA_PROGER (1).txt",
+      "JUSTICA/8007670-17.2023.8.05.0103/CI_GAB_SEINFRA_RESPOSTA_PROGER_LADEIRA_JULIO_BAGANA (1).txt"
+    ]
+  },
+  {
+    "n": 18,
+    "grupo_objeto": "TCM_03973e23",
+    "titulo": "Creche Municipal Padrão de 6 salas da Rua Genésio Santos (Teotônio Vilela)",
+    "categoria": "escola/creche",
+    "origem": "TCM",
+    "local": "Rua Genésio Santos, Teotônio Vilela",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "orçamento paramétrico",
+    "motivo": "Em abril de 2023 a própria empresa contratada afirmou ao TCM que a ordem de serviço do Contrato nº 192/2022 não tinha sido emitida, e a denúncia fala em obra paralisada. O dossiê não registra ordem de serviço, retomada, nova licitação nem contrato vigente: a creche é candidata à estimativa de custo. Convém confirmar a situação atual do contrato.",
+    "pedido_consolidado": "Denúncia de vereador(a) ao TCM/BA (exercício 2022) aponta irregularidades no Contrato nº 192/2022 (RDC Eletrônico nº 008/2021, homologado em 12/09/2022): construção de creche padrão de 6 salas, que estaria paralisada. Segundo o levantamento do MP, a denúncia pede medidas para preservar e concluir a obra e recomendações à Prefeitura (ressarcimento pelo atraso, fiscalização, ordem de serviço, termo de recebimento, ART, livro de ocorrências e pagamento final só na entrega). A empresa contratada apresentou defesa em abril de 2023, após notificação publicada em 17/03/2023. Não há decisão do TCM nem prazo ao Município no dossiê.",
+    "docs": [
+      "TCM/03973e23/DEFESAS [nome 18] (1).txt",
+      "TCM/03973e23/Resposta DENÚNCIA TCM - [nome 18] LTDA - CRECHE - SEM OS - ILHEUS - 192.2022 (1).txt"
+    ]
+  },
+  {
+    "n": 19,
+    "grupo_objeto": "JUSTICA_0011730-29.2010.8.05.0103",
+    "titulo": "Drenagem/urbanização de 1.451,79 m no Teotônio Vilela (processo de 2010)",
+    "categoria": "drenagem",
+    "origem": "Justiça",
+    "local": "Teotônio Vilela (indicado só nas planilhas da SEINFRA)",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "licitação em curso",
+    "motivo": "A CI SEINFRA nº 009.08.0006/26 (08/06/2026) respondeu à PGM e citou a Concorrência Pública nº 002/2026, de projetos de macro e microdrenagem (Termo de Compromisso MCIDADES 969321/2024), que abrange a área afetada e estava em fase recursal. Como a CI não diz qual é a obra nem o local, convém pedir à PGM cópia da inicial ou da sentença.",
+    "pedido_consolidado": "A PGM pediu à SEINFRA informações técnicas para instruir o processo judicial 0011730-29.2010.8.05.0103. A classe, o autor e o objeto da ação não constam do dossiê. A SEINFRA respondeu pela CI nº 009.08.0006/26, de 08/06/2026. As planilhas de controle registram 'urbanização' de 1.451,79 metros lineares no Teotônio Vilela, em acompanhamento jurídico na SEINFRA. Não há prazo registrado.",
+    "docs": [
+      "SEM_NUMERO/CI 009.08.0006-26 PROGER- (1).txt"
+    ]
+  },
+  {
+    "n": 20,
+    "grupo_objeto": "JUSTICA_0503101-28.2018.8.05.0103",
+    "titulo": "Drenagem pluvial objeto de sentença no proc. 0503101-28.2018 (local não informado)",
+    "categoria": "drenagem",
+    "origem": "Justiça",
+    "local": null,
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "licitação em curso",
+    "motivo": "A SEINFRA informou à PGM (CI nº 004.08.0006/26, de 08/06/2026) que a Concorrência Pública nº 002/2026 (projetos de macro e microdrenagem, Novo PAC Drenagem) abrange a área afetada e estava em fase recursal. Como o local e a obra exigida não aparecem, não cabe orçamento paramétrico: pedir à PGM a cópia da sentença (CI PROGER nº 433/2026).",
+    "pedido_consolidado": "A PGM pediu à SEINFRA informações técnicas para instruir o processo judicial nº 0503101-28.2018.8.05.0103, ligado a problema de escoamento pluvial em área não identificada. As planilhas de controle registram sentença judicial encaminhada para providências de engenharia (CI PROGER nº 433/2026; fase 'Sentença a cumprir'). O teor da sentença, a obra exigida e o prazo não constam do dossiê.",
+    "docs": [
+      "SEM_NUMERO/CI 004.08.0006-26 PROGER- (1).txt"
+    ]
+  },
+  {
+    "n": 21,
+    "grupo_objeto": "JUSTICA_0503189-66.2018.8.05.0103",
+    "titulo": "Drenagem pluvial – processo judicial 0503189-66.2018 (local não informado)",
+    "categoria": "drenagem",
+    "origem": "Justiça",
+    "local": null,
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "licitação em curso",
+    "motivo": "A resposta da SEINFRA (CI 002.08.0006/26) cita a Concorrência Pública 002/2026, para projetos de macro e microdrenagem do Novo PAC Drenagem (MCIDADES 969321/2024), em fase recursal em 06/2026. É licitação de projetos, não de obra, e o local da ação não é conhecido; convém pedir à PGM a cópia da inicial para confirmar se o objeto está coberto.",
+    "pedido_consolidado": "A PGM (CI PROGER 432/2026) pediu à SEINFRA informações técnicas para instruir o processo. O objeto e o local da ação não constam dos documentos; a resposta trata do sistema de drenagem pluvial. Não há decisão, prazo ou multa registrados. A SEINFRA respondeu em 08/06/2026 (CI 002.08.0006/26) e indicou um servidor (Supervisor de Projetos) como assistente técnico.",
+    "docs": [
+      "SEM_NUMERO/CI 002.08.0006-26 PROGER- (10).txt"
+    ]
+  },
+  {
+    "n": 22,
+    "grupo_objeto": "JUSTICA_8003152-18.2022.8.05.0103",
+    "titulo": "Drenagem pluvial e alagamentos nas Ruas Castro Alves e Barão do Rio Branco (Pontal)",
+    "categoria": "drenagem",
+    "origem": "Justiça",
+    "local": "Ruas Castro Alves e Barão do Rio Branco, Pontal",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "licitação em curso",
+    "motivo": "A CI SEINFRA nº 003.08.0006/26 (08/06/2026) informa a Concorrência Pública nº 002/2026, de projetos de macro e microdrenagem (Termo de Compromisso MCIDADES 969321/2024), que abrange a área afetada e estava em fase recursal. Fato novo em relação ao MP: a resposta à PGM foi enviada no último dia do prazo.",
+    "pedido_consolidado": "Ação civil pública do MPBA contra o Município e a EMBASA por alagamentos nas Ruas Castro Alves e Barão do Rio Branco (Pontal). O MPBA alega que as obras de esgotamento da EMBASA, iniciadas em junho/2021, danificaram a drenagem pluvial e que o Município se omitiu na fiscalização. Pela CI PROGER nº 431/2026, a PGM pediu à SEINFRA informações técnicas para a defesa até 08/06/2026. A SEINFRA respondeu pela CI nº 003.08.0006/26, de 08/06/2026.",
+    "docs": [
+      "SEM_NUMERO/CI 003.08.0006-26 PROGER- (1).txt"
+    ]
+  },
+  {
+    "n": 23,
+    "grupo_objeto": "JUSTICA_8010615-06.2025.8.05.0103",
+    "titulo": "Drenagem pluvial e obra com licitação suspensa – processo judicial 8010615-06.2025 (local não informado)",
+    "categoria": "drenagem",
+    "origem": "Justiça",
+    "local": null,
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "licitação em curso",
+    "motivo": "A CI 008.08.0006/26 informa novo processo licitatório em curso (número não citado), com ordem de serviço prevista para o bimestre seguinte a 06/2026, previsão já vencida. A CI 007.08.0006/26 cita a Concorrência Pública 002/2026 (projetos de macro e microdrenagem, Novo PAC Drenagem). Como a obra e o local não são conhecidos, pedir à PGM a cópia da inicial e confirmar a situação da nova licitação.",
+    "pedido_consolidado": "A PGM pediu à SEINFRA informações técnicas para instruir o processo. O objeto e o local da ação não constam dos documentos. Em 08/06/2026 a SEINFRA enviou duas CIs com o mesmo número de autos: a CI 007.08.0006/26 trata de drenagem pluvial; a CI 008.08.0006/26 trata de obra cuja licitação foi homologada e depois suspensa. Não há decisão, prazo ou multa registrados.",
+    "docs": [
+      "SEM_NUMERO/CI 007.08.0006-26 PROGER (1).txt",
+      "SEM_NUMERO/CI 007.08.0006-26 PROGER- (1).txt",
+      "SEM_NUMERO/CI 008.08.0006-26 PROGER- (1).txt"
+    ]
+  },
+  {
+    "n": 24,
+    "grupo_objeto": "JUSTICA_8010643-71.2025.8.05.0103",
+    "titulo": "Drenagem pluvial – ação judicial 8010643-71.2025 (local não informado)",
+    "categoria": "drenagem",
+    "origem": "Justiça",
+    "local": null,
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "licitação em curso",
+    "motivo": "A CI 005.08.0006/26 (08/06/2026) já respondeu à PGM e cita a Concorrência Pública nº 002/2026 (projetos de drenagem), em fase recursal, com homologação prevista até o fim de junho de 2026. A ação não informa a obra nem o local, por isso não cabe orçamento paramétrico; convém pedir à PGM a cópia da inicial.",
+    "pedido_consolidado": "A PGM pediu à SEINFRA informações técnicas para instruir o processo judicial 8010643-71.2025.8.05.0103; o pedido, o autor e o local da ação não constam do dossiê. Em 08/06/2026 a SEINFRA respondeu que a gestão anterior não deixou informações sobre o sistema de drenagem. Informou a Concorrência Pública nº 002/2026, para projetos de macro e microdrenagem do Novo PAC Drenagem (Termo de Compromisso MCIDADES nº 969321/2024). Indicou um servidor (Supervisor de Projetos) como assistente técnico.",
+    "docs": [
+      "SEM_NUMERO/CI 005.08.0006-26 PROGER- (1).txt"
+    ]
+  },
+  {
+    "n": 25,
+    "grupo_objeto": "JUSTICA_8013157-31.2024.8.05.0103",
+    "titulo": "Rede de drenagem da Av. Soares Lopes (Centro) – alagamentos",
+    "categoria": "drenagem",
+    "origem": "Justiça",
+    "local": "Av. Soares Lopes, Centro",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "licitação em curso",
+    "motivo": "A CI da SEINFRA à PGM informa o Termo de Compromisso OGU MCIDADES 969321/2024, aprovado pela Caixa e com a avenida contemplada, e o edital em tramitação interna, sem número. A licitação desse Termo é a Concorrência Pública nº 002/2026 (projetos de drenagem), citada em outros processos. Fato novo em relação ao MP, que registrava só projeto em estudo.",
+    "pedido_consolidado": "Processo judicial sobre a Av. Soares Lopes (classe e autor não informados; as planilhas da SEINFRA o registram como 'urbanização'). A PGM pediu à SEINFRA a situação da rede de drenagem da avenida, que sofre alagamentos crônicos. A SEINFRA respondeu por CI (arquivo de 26/01/2026): o Termo de Compromisso OGU MCIDADES 969321/2024 (Operação 1098465-80), aprovado pela Caixa, contempla a área e será a base do plano de drenagem; o edital estava previsto para o fim daquele mês e a execução para o 1º semestre. Não há prazo registrado.",
+    "docs": [
+      "JUSTICA/8013157-31.2024.8.05.0103/CI_GAB_SEINFRA_2026_01_26_002_RESPOSTA_PROGER_CCZ_VILELA (1).txt"
+    ]
+  },
+  {
+    "n": 26,
+    "grupo_objeto": "JUSTICA_8005263-04.2024.8.05.0103",
+    "titulo": "Drenagem, pavimentação e meios-fios da Rua Aracuã (Nossa Senhora das Vitórias)",
+    "categoria": "drenagem+pavimentação",
+    "origem": "Justiça",
+    "local": "Rua Aracuã, bairro Nossa Senhora das Vitórias",
+    "prazo_mais_proximo": "2026-04-29",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "contrato assinado",
+    "motivo": "Fato novo em relação ao MP: a CI 005.22.0007.26 (22/07/2026) informa licitação concluída e o Contrato nº 095/2026, vinculado ao Termo de Compromisso 969321/2024, à espera da Autorização de Início do Objeto pela Caixa. Atenção: segundo CI da SEINFRA de 2025 juntada aos autos, esse Termo trata da elaboração de projetos de macro e microdrenagem; não há contrato de execução da obra da Rua Aracuã registrado.",
+    "pedido_consolidado": "Na ACP da 11ª Promotoria de Justiça de Ilhéus (MPBA), na 1ª Vara da Fazenda Pública de Ilhéus, pede-se implantar ou requalificar a drenagem pluvial, pavimentar, instalar meios-fios e nivelar a Rua Aracuã, sob multa diária de R$ 1.000,00. O despacho de 30/03/2026 deu 30 dias ao Município para apresentar relatório do Termo de Compromisso nº 969321/2024/MCIDADES/CAIXA (licitações de projetos e obras), justificar o atraso do cronograma previsto para setembro de 2025 e apresentar novo cronograma até a conclusão das obras. A PGM pediu as informações pela CI PROGER 567/2026, e a SEINFRA respondeu em 22/07/2026 (CI 005.22.0007.26).",
+    "docs": [
+      "JUSTICA/8005263-04.2024.8.05.0103/8005263-04.2024.8.05.0103-1784576959364-1767776-processo (1).txt",
+      "JUSTICA/8005263-04.2024.8.05.0103/CI 005.22.0007.26 (RESPOSTA À CI PROGER 567.2026) (1).txt"
+    ]
+  },
+  {
+    "n": 27,
+    "grupo_objeto": "JUSTICA_0306021-32.2013.8.05.0103",
+    "titulo": "Recuperação da Rua D, Quadra C, e da Praça Santo Antônio de Pádua (Santo Antônio de Pádua)",
+    "categoria": "pavimentação",
+    "origem": "Justiça",
+    "local": "Rua D, Quadra C, e Praça Santo Antônio de Pádua, bairro Santo Antônio de Pádua",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "contrato assinado",
+    "motivo": "A CI 2025.09.17.001/SEINFRA/GAB informa que os Pregões Eletrônicos 006/2025 (vias de paralelo) e 011/2025 (praças) foram concluídos e que a mobilização das empresas foi ordenada, com prioridade a ordens judiciais. Não há registro de execução, e os 60 dias pedidos ao juízo já teriam passado: convém confirmar o serviço e informar a PGM.",
+    "pedido_consolidado": "O juízo determinou, na decisão de ID 498222813, providências sobre a Rua D, Quadra C, e a Praça Santo Antônio de Pádua; o teor da decisão não consta do dossiê. Em 17/09/2025 a SEINFRA informou à PGM que ainda não havia cumprido a decisão, por priorizar áreas de risco e mobilidade. Pediu que a PGM requeresse ao juízo mais 60 dias. Não há registro de novo prazo nem de resposta posterior.",
+    "docs": [
+      "JUSTICA/0306021-32.2013.8.05.0103/5 CI_GAB_SEINFRA_2025_09_17_001_RESPOSTA_PROGER (1).txt"
+    ]
+  },
+  {
+    "n": 28,
+    "grupo_objeto": "JUSTICA_1005415-30.2024.4.01.3301",
+    "titulo": "Contenção e fundações da Capela de Nossa Senhora de Santana (Rio do Engenho, Coutos)",
+    "categoria": "encosta/contenção",
+    "origem": "Justiça",
+    "local": "Capela de Nossa Senhora de Santana, margem do Rio do Engenho, distrito de Coutos",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "contrato assinado",
+    "motivo": "A CI SEINFRA 001.25.05.26 (25/05/2026) informa ordem de serviço à Status Engenharia e Projetos, contratada para projetos de engenharia e arquitetura, com prazo máximo de 90 dias para a documentação exigida pelo IPHAN. Não há registro de entrega; contado da CI, o prazo teria terminado em agosto de 2026.",
+    "pedido_consolidado": "Na ACP 1005415-30.2024.4.01.3301 (Justiça Federal, Subseção Judiciária de Ilhéus), coube ao Município elaborar o projeto executivo das obras emergenciais de reforço das contenções e fundações da capela, bem tombado ameaçado pela erosão do rio. O IPHAN aprovou o estudo preliminar em julho de 2025, mas reprovou o projeto protocolado em 12/02/2026 (Decisão da Chefia nº 32/2026, de 27/03/2026). Exige, com urgência e sem prazo fixado, projeto executivo detalhado (ABNT), com levantamento planialtimétrico e da situação existente, estabilização e aterro do entorno e muro de gabião. Nenhuma intervenção pode ser feita sem anuência do IPHAN.",
+    "docs": [
+      "SEM_NUMERO/2 Formulario_Parecer_Tecn_Analise_Req_Port_289_2025_7161133 (1).txt",
+      "SEM_NUMERO/CI SEINFRA - PROJETOS CAPELA (1).txt"
+    ]
+  },
+  {
+    "n": 29,
+    "grupo_objeto": "JUSTICA_8006100-93.2023.8.05.0103",
+    "titulo": "Requalificação da escadaria e do muro de contenção da Rua Saturnino Cardoso (Malhado)",
+    "categoria": "encosta/contenção",
+    "origem": "Justiça",
+    "local": "Rua Saturnino Cardoso, Malhado",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "contrato assinado",
+    "motivo": "A CI 001.06.0008.26 informa que o objeto está na Concorrência Pública 003/2026 (escadarias em diversos logradouros, PA 13123/2025), homologada em 12/05/2026. A empresa contratada está em mobilização, com início previsto em 01/09/2026 e conclusão em 31/12/2026. Confirmar o número do contrato, a ordem de serviço e o início efetivo da obra.",
+    "pedido_consolidado": "A sentença fixou 6 meses para o plano de requalificação da escadaria e do muro de contenção da Rua Saturnino Cardoso (Malhado). A PGM (CI PROGER 611/2026) pediu o estado atual da infraestrutura, projeto básico ou orçamento, cronograma de licitação e execução e justificativa técnica, para pedir ao juízo dilação de prazo. A SEINFRA respondeu em 06/08/2026 (CI 001.06.0008.26), com relatório fotográfico e prazo de execução de 4 meses (01/09/2026 a 31/12/2026).",
+    "docs": [
+      "JUSTICA/8006100-93.2023.8.05.0103/CI 001.06.0008.26 (RESPOSTA À CI PROGER 611.2026) (1).txt"
+    ]
+  },
+  {
+    "n": 30,
+    "grupo_objeto": "JUSTICA_8007018-92.2026.8.05.0103",
+    "titulo": "Passeios, meios-fios e sarjetas em diversos logradouros (Ação Popular sobre a CP 009/2025)",
+    "categoria": "pavimentação",
+    "origem": "Justiça",
+    "local": "Diversos logradouros do Município de Ilhéus",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "contrato assinado",
+    "motivo": "As planilhas de controle ligam o processo ao Contrato nº 038/2026 (construção de passeios, meios-fios e sarjetas) e registram a Resposta SEINFRA nº 001.06.0008.26 à CI PROGER nº 653/2026. São registros de planilha (indício): confirmar o contrato e o envio da resposta, pois o prazo de 72 horas já passou.",
+    "pedido_consolidado": "O Município foi intimado na Ação Popular nº 8007018-92.2026.8.05.0103 a se manifestar em 72 horas (despacho ID 565043964). A ação trata da Concorrência Pública nº 009/2025 (PA 082/2025), da SEINFRA: registro de preços para construção e recuperação de passeios, meios-fios e sarjetas em diversos logradouros. Pela CI nº 653/2026, de 04/08/2026, a PGM pede com máxima urgência: situação da licitação (adjudicação e homologação), ata de registro de preços, contratos e ordens de serviço; início, estágio, logradouros, percentual e cronograma das obras; valores medidos, liquidados e pagos, com documentos.",
+    "docs": [
+      "JUSTICA/8007018-92.2026.8.05.0103/CI_653.2026_Solicitação_de_informações_8007018-92.2026.8.05.0103_Concorrência_Pública_009..txt"
+    ]
+  },
+  {
+    "n": 31,
+    "grupo_objeto": "TCM_03276e23",
+    "titulo": "Construção de escola de 2 salas na comunidade da Tibina (Zona Norte)",
+    "categoria": "escola/creche",
+    "origem": "TCM",
+    "local": "Comunidade da Tibina, Zona Norte",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "contrato assinado",
+    "motivo": "Contrato 187/2022 (RDC Eletrônico 008/2022, R$ 450.900,00), assinado em 08/09/2022, com Ordem de Serviço 099/2022 e pagamentos de medições até a competência de maio/2023 (processo de pagamento de 25/08/2023). A vigência de 12 meses terminou em 09/2023; confirmar a conclusão e o recebimento da obra (se confirmados, 'resolvido').",
+    "pedido_consolidado": "Denúncia de vereador(a) ao TCM-BA (processo 03276e23, exercício 2022) sobre a obra da Escola Municipal Padrão de 2 salas na Tibina (Contrato 187/2022). Aponta atraso e paralisação da obra, irregularidade no capital social da empresa, falta de capacidade técnica e financeira e indícios de superfaturamento, e pede auditoria. Segundo o levantamento do MP, pede também recomendações à Prefeitura: ressarcimento pelo atraso, melhor fiscalização, termo de recebimento e não antecipar pagamentos. A empresa contratada apresentou defesa em 07/04/2023 pedindo o arquivamento. Não há decisão do TCM nem prazo ao Município no dossiê.",
+    "docs": [
+      "TCM/03276e23/Resposta DENÚNCIA TCM - [nome 18] LTDA - ESCOLA - 02 SALAS - TIBINA - ILHEUS - 04.txt"
+    ]
+  },
+  {
+    "n": 32,
+    "grupo_objeto": "TCM_03969e23",
+    "titulo": "Drenagem e pavimentação da Rua Rodolfo Vieira (Centro) – denúncia ao TCM sobre o Contrato nº 208/2022",
+    "categoria": "drenagem+pavimentação",
+    "origem": "TCM",
+    "local": "Rua Rodolfo Vieira, Centro",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "contrato assinado",
+    "motivo": "Há o Contrato nº 208/2022 para este objeto (RDC Eletrônico nº 009/2022). Porém, em abril/2023 a ordem de serviço não tinha sido emitida, e não há registro posterior de execução. Confirmar vigência e OS; se o contrato venceu sem obra, cabe orçamento paramétrico.",
+    "pedido_consolidado": "Denúncia de vereador ao TCM/BA (exercício 2022) sobre o Contrato nº 208/2022 (RDC Eletrônico nº 009/2022, homologado em 11/10/2022), para drenagem pluvial e pavimentação asfáltica da Rua Rodolfo Vieira, Centro. A denúncia alega atraso ou paralisação da obra. Em 10/04/2023 a empresa contratada apresentou defesa: a ordem de serviço ainda não fora emitida; pediu improcedência e arquivamento. Não há determinação do TCM ao Município nem prazo no dossiê.",
+    "docs": [
+      "TCM/03969e23/Resposta DENÚNCIA TCM - [nome 18] LTDA - DRENAGEM PLUVIAL - SEM OS - ILHEUS - 208.txt"
+    ]
+  },
+  {
+    "n": 33,
+    "grupo_objeto": "TCM_00568e20-15396e21-RESIDUOS_SOLIDOS",
+    "titulo": "Coleta de resíduos sólidos: contratação emergencial e Pregão 29/2019 (Ilhéus)",
+    "categoria": "saneamento",
+    "origem": "TCM",
+    "local": "Município de Ilhéus",
+    "prazo_mais_proximo": "2020-12-25",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "resolvido",
+    "motivo": "Processos do TCM julgados, com sanções pessoais ao gestor da época, e mandado de segurança denegado em 28/06/2021, sem pedido ou prazo pendente para a SEINFRA. O último documento é de 2021, e o serviço de coleta não é obra da SEINFRA.",
+    "pedido_consolidado": "Não há pedido nem prazo dirigido à SEINFRA. Na denúncia TCM 00568e20, de vereador(a), o acórdão de 29/07/2021 apontou emergência fabricada na Dispensa 006/2019 (Contrato 042/2019, coleta de resíduos), prorrogação além de 180 dias e divergência no valor medido, com ressarcimento; o TCM 15396e21 é o recurso do Prefeito da época. No MS da empresa desclassificada no Pregão 29/2019 (1ª Vara da Fazenda Pública de Ilhéus), a liminar de 15/12/2020 suspendeu o pregão. O agravo do Município não teve efeito suspensivo, mas a sentença de 28/06/2021 denegou a segurança, e o pregão foi retomado em 10/09/2021.",
+    "docs": [
+      "TCM/00568e20/00568e20_2-07 - DEN - ILHÉUS (1).txt",
+      "TCM/05718e22/PROC. Nº 01281_2019 - PE 029_2019 - PARTE 47 (1).txt",
+      "TCM/15396e21/15396e21_4-Decisão (7) (1).txt",
+      "TCM/15396e21/15396e21_3-agravo de instrumento CTA (1).txt",
+      "TCM/15396e21/15396e21_5-Decisão (8) (1).txt",
+      "TCM/15396e21/15396e21_6-Sentença (2) (1).txt",
+      "TCM/15396e21/15396e21_2-0 RECURSO ORDINÁRIO - TCM Ilhéus - COLETA DE RESÍDUOS SÓLIDOS (1).txt",
+      "TCM/15396e21/15396e21_8-8003512-05.2021.8.05.0000. (1).txt"
+    ]
+  },
+  {
+    "n": 34,
+    "grupo_objeto": "TCM_03036e23",
+    "titulo": "Pavimentação e microdrenagem da Rua Boa Vista (Nelson Costa)",
+    "categoria": "drenagem+pavimentação",
+    "origem": "TCM",
+    "local": "Rua Boa Vista, bairro Nelson Costa",
+    "prazo_mais_proximo": "2023-04-27",
+    "situacao_prazo": "vencido (estimado)",
+    "sugestao_triagem": "resolvido",
+    "motivo": "O Contrato 196/2022 foi assinado, a OS 104/2022 foi emitida e há medição de abril/2023 paga. O levantamento do MP registra 'obra já finalizada' e resposta ao MP em 20/07/2023. Não há pedido pendente ao Município no dossiê.",
+    "pedido_consolidado": "Denúncia de vereador ao TCM (processo 03036e23, exercício 2022) sobre o Contrato nº 196/2022: pavimentação e microdrenagem da Rua Boa Vista, R$ 775.900,00, RDC Eletrônico nº 004/2022, execução prevista de 21/09/2022 a 20/01/2023. Aponta atraso na obra, irregularidade no capital social da empresa contratada e falta de prova da sua capacidade técnica e financeira. Pelo levantamento do MP, o denunciante pede recomendações à Prefeitura (ressarcimento, termo de recebimento, ART, pagamento final só na entrega), multa ao gestor e auditoria no contrato. O dossiê traz só a defesa da empresa contratada (07/04/2023), que pede o arquivamento; não há pedido direto do TCM ao Município nem decisão.",
+    "docs": [
+      "TCM/03036e23/Resposta DENÚNCIA TCM - [nome 18] LTDA - PAVIMENTAÇÃO- BAIRRO NELSON COSTA - ILHE.txt"
+    ]
+  },
+  {
+    "n": 35,
+    "grupo_objeto": "JUSTICA_8002186-55.2022.8.05.0103",
+    "titulo": "Acidente na quadra da Praça da Sapetinga – subsídios à defesa do Município",
+    "categoria": "outro",
+    "origem": "Justiça",
+    "local": "Praça da Sapetinga",
+    "prazo_mais_proximo": null,
+    "situacao_prazo": "sem prazo",
+    "sugestao_triagem": "resolvido",
+    "motivo": "A SEINFRA (Superintendência de Projetos e Fiscalização) respondeu item a item à CI PROGER nº 103/2026: a gestão anterior não repassou documentação. Não há prazo nem novo pedido registrado, e a demanda não exige obra.",
+    "pedido_consolidado": "Pela CI PROGER nº 103/2026, a PGM pediu à SEINFRA, para o processo 8002186-55.2022.8.05.0103: documentos de manutenção da Praça da Sapetinga, em especial da quadra e das traves, nos 12 meses anteriores ao acidente; cópia do TAC com a CICON Construtora e Incorporadora; relatórios de fiscalização ou vistoria após a revitalização; e notificações à CICON por falhas nos equipamentos. Não há prazo registrado.",
+    "docs": [
+      "JUSTICA/8002186-55.2022.8.05.0103/CI_GAB_SEINFRA_2025_09_17_001_RESPOSTA_PROGER.txt"
+    ]
+  }
+]

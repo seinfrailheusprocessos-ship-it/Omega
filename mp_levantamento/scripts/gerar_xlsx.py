@@ -1,4 +1,4 @@
-"""Gera levantamento_parametrico.xlsx (com formulas) a partir de etapa_b/resultado.json."""
+"""Gera levantamento_parametrico.xlsx (com formulas) a partir de etapa_b/resultado.json (MP) e etapa_b/resultado_justica.json (Justiça)."""
 import json, os, sys
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -6,6 +6,10 @@ from openpyxl.utils import get_column_letter
 
 S, OUT = sys.argv[1], sys.argv[2]
 R = json.load(open(os.path.join(S, 'etapa_b', 'resultado.json')))
+RJ = json.load(open(os.path.join(S, 'etapa_b', 'resultado_justica.json')))
+assert RJ['BDI'] == R['BDI'] and RJ['CONT'] == R['CONT'] and RJ['FREG'] == R['FREG']
+for o in R['objetos']: o['levantamento'] = 'MP'
+OBJS = R['objetos'] + RJ['objetos']
 PROV = 'PROVISORIO - aguarda aprovacao'
 F = 'Arial'
 fn = lambda **k: Font(name=F, size=k.pop('size', 10), **k)
@@ -19,7 +23,7 @@ WRAP = Alignment(wrap_text=True, vertical='top')
 
 def short(n, k):
     if k.startswith('JUSTICA_TRABALHO'): s = 'TRT_' + k.split('_')[-1][:16]
-    elif k.startswith('JUSTICA_'): s = 'TJBA_' + k[8:23]
+    elif k.startswith('JUSTICA_'): s = ('TRF1_' if '.4.01.' in k else 'TJBA_') + k[8:23]
     elif k.startswith('TCM_'): s = k.split('-')[0]
     elif k.startswith('SN_MPF'): s = 'SN_MPF_FNDE_2023'
     elif k.startswith('SN_'): s = 'SN_CAMPO_DO_RODAO'
@@ -65,11 +69,11 @@ PREF = {('edif', 'min'): 'PARAMETROS!$B$6', ('edif', 'prov'): 'PARAMETROS!$C$6',
 
 # ------------------------------------------------------------------ abas por objeto
 links = []
-for o in R['objetos']:
+for o in OBJS:
     nome = short(o['n'], o['grupo_objeto'])
     ws = wb.create_sheet(nome)
     titulo(ws, f"{o['n']:02d} - {o['titulo']}")
-    info = [('Grupo-objeto', o['grupo_objeto']), ('Origem', o['origem']), ('Categoria', o['categoria']), ('Local', o['local'] or 'não informado'),
+    info = [('Grupo-objeto', o['grupo_objeto']), ('Levantamento', o['levantamento']), ('Origem', o['origem']), ('Categoria', o['categoria']), ('Local', o['local'] or 'não informado'),
             ('Fonte das quantidades', o['fonte_quant']), ('Preços', 'SINAPI/CAIXA ref. 08/2026, BA, não desonerado (código de cada item na coluna B)'),
             ('BDI aplicado', 'edificações (Acórdão 2.622/2013, construção de edifícios)' if o['bdi_tipo'] == 'edif' else 'vias e drenagem (Acórdão 2.622/2013, rodovias e ferrovias)')]
     r = 4
@@ -115,14 +119,13 @@ for o in R['objetos']:
 
 # ------------------------------------------------------------------ RESUMO
 titulo(wsR, 'Levantamento paramétrico - demandas de MP, Justiça e TCM (SEINFRA Ilhéus)',
-       'Estimativa preliminar paramétrica, não vinculante, para planejamento orçamentário. Preços SINAPI-BA 08/2026, não desonerado. Data: 13/10/2026.')
-H = ['Nº', 'Grupo-objeto', 'Objeto', 'Origem', 'Grupo de origem', 'Categoria', 'Fonte das quantidades', 'Mínimo (R$)', 'Provável (R$)', 'Máximo (R$)', 'Aba']
+       'Estimativa preliminar paramétrica, não vinculante, para planejamento orçamentário. Preços SINAPI-BA 08/2026, não desonerado. Data: 13/10/2026. Levantamentos MP (pacote de 12/10) e Justiça (pacote de 13/10), sem dupla contagem.')
+H = ['Nº', 'Grupo-objeto', 'Objeto', 'Origem', 'Levantamento', 'Categoria', 'Fonte das quantidades', 'Mínimo (R$)', 'Provável (R$)', 'Máximo (R$)', 'Aba']
 for j, h in enumerate(H, 1):
     c = wsR.cell(5, j, h); c.font = fn(bold=True); c.fill = HEAD; c.border = BOX; c.alignment = Alignment(wrap_text=True, vertical='center')
-GRP = lambda org: 'Justiça' if org == 'Justiça' else ('TCM' if org == 'TCM' else 'MP')
 r = 6
 for o, nome, rt in links:
-    vals = [o['n'], o['grupo_objeto'], o['titulo'], o['origem'], GRP(o['origem']), o['categoria'], o['fonte_quant']]
+    vals = [o['n'], o['grupo_objeto'], o['titulo'], o['origem'], o['levantamento'], o['categoria'], o['fonte_quant']]
     for j, v in enumerate(vals, 1):
         c = wsR.cell(r, j, v); c.font = fn(); c.border = BOX
     for j, L in zip((8, 9, 10), 'JKL'):
@@ -134,7 +137,7 @@ wsR.cell(r, 7, 'TOTAL GERAL').font = fn(bold=True)
 for j, L in zip((8, 9, 10), 'HIJ'):
     c = wsR.cell(r, j, f'=SUM({L}{ra}:{L}{rz})'); c.number_format = MON; c.font = fn(bold=True); c.fill = TOT
 rg = r
-def bloco(r, titulo_b, col_crit, chaves):
+def bloco(r, titulo_b, col_crit, chaves, rotulo_soma='Soma (confere com o total geral)'):
     wsR.cell(r, 1, titulo_b).font = fn(bold=True); r += 1
     for j, h in enumerate(['Chave', '', '', '', '', '', 'Objetos', 'Mínimo (R$)', 'Provável (R$)', 'Máximo (R$)'], 1):
         if h: c = wsR.cell(r, j, h); c.font = fn(bold=True); c.fill = HEAD
@@ -145,11 +148,23 @@ def bloco(r, titulo_b, col_crit, chaves):
         for j, L in zip((8, 9, 10), 'HIJ'):
             c = wsR.cell(r, j, f'=SUMIF(${col_crit}${ra}:${col_crit}${rz},$A{r},{L}${ra}:{L}${rz})'); c.number_format = MON; c.font = fn()
         r += 1
-    wsR.cell(r, 1, 'Soma (confere com o total geral)').font = fn(italic=True)
+    wsR.cell(r, 1, rotulo_soma).font = fn(italic=True, bold=rotulo_soma.startswith('GERAL'))
     for j, L in zip((8, 9, 10), 'HIJ'):
-        c = wsR.cell(r, j, f'=SUM({L}{r_ini}:{L}{r-1})'); c.number_format = MON; c.font = fn(italic=True)
+        c = wsR.cell(r, j, f'=SUM({L}{r_ini}:{L}{r-1})'); c.number_format = MON; c.font = fn(italic=True, bold=rotulo_soma.startswith('GERAL'))
+        if rotulo_soma.startswith('GERAL'): c.fill = TOT
     return r + 2
-r = bloco(rg + 2, 'Total por grupo de origem (MP = MPBA + MPF + MPT + ramo não identificado)', 'E', ['MP', 'Justiça', 'TCM'])
+r = bloco(rg + 2, 'TOTAIS MP, JUSTIÇA E GERAL (MP = pacote do MP de 12/10, inclui processos judiciais e TCM nele; Justiça = objetos novos do pacote da Justiça de 13/10)',
+          'E', ['MP', 'Justiça'], 'GERAL (MP + Justiça, sem dupla contagem)')
+# paramétricos da Justiça já calculados no MP: só referência (já somados no MP)
+wsR.cell(r, 1, 'Objetos "orçamento paramétrico" da Justiça já calculados no MP (não somados de novo; valor da aba do MP)').font = fn(bold=True); r += 1
+abas = {o['grupo_objeto']: (nome, rt) for o, nome, rt in links}
+for x in RJ['ja_calculados_no_mp']:
+    nome_mp, rt_mp = abas[x['ja_no_mp']]
+    wsR.cell(r, 2, x['grupo_objeto']).font = fn(); wsR.cell(r, 3, x['titulo']).font = fn(); wsR.cell(r, 7, 'no MP: ' + x['ja_no_mp']).font = fn(italic=True)
+    for j, L in zip((8, 9, 10), 'JKL'):
+        c = wsR.cell(r, j, f"='{nome_mp}'!{L}{rt_mp}"); c.number_format = MON; c.font = fn(color=GREEN, italic=True)
+    wsR.cell(r, 11, nome_mp).font = fn(italic=True); r += 1
+r += 1
 r = bloco(r, 'Total por origem', 'D', ['MPBA', 'MPF', 'MPT', 'Justiça', 'TCM', 'outro'])
 cats = []
 for o, _, _ in links:
@@ -159,6 +174,7 @@ notas = ['Leitura: o valor "provável" é a referência para reserva orçamentá
          'Quantidades: metragem do documento quando existe; nos demais casos, demanda-tipo com premissas na aba de cada objeto (a confirmar em campo/projeto).',
          'BDI, contingência e fator regional: aba PARAMETROS (' + PROV + ').',
          'Origem "outro" = processo interno "Resposta Ministério Público" sem indicação do ramo do MP (somado em MP).',
+         'Justiça: só os objetos "orçamento paramétrico" do pacote da Justiça que não estavam calculados no MP (triagem_provisoria_justica.json). A triagem do MP não foi alterada.',
          'Não usar como orçamento de licitação. Estimativa não vinculante, com SINAPI como base oficial de referência, nos termos da Lei n. 14.133/2021 e do Decreto Municipal n. 269/2025.']
 for t in notas:
     wsR.cell(r, 1, t).font = fn(italic=True); r += 1
@@ -180,7 +196,9 @@ DT = [('Via urbana com drenagem e pavimentação', 'metro de via', 'Pista 5/6/7 
       ('Banheiro com chuveiro + grade', 'unidade', 'Banheiro de cerca de 4 m² com louças, chuveiro, instalações e porta; grade de aço de 2,1 m² na porta de entrada.'),
       ('Proteção emergencial de fachada', 'verba por quantidades', 'Tapume, estroncas de eucalipto com mão de obra, montagem de andaime fachadeiro, tela de proteção e lona na cobertura.'),
       ('Adequação de segurança de estádio', 'verba por quantidades', 'Extintores, luminárias de emergência, sinalização de saída, guarda-corpos, SPDA, pintura de arquibancadas, rampas e reforma de casas de força/vestiários.'),
-      ('Casa térrea + parque linear', 'unidade / m²', 'Casa de 40/42/45 m² com a edificação-tipo (perfil residencial); parque com gramado em 70% e passeios em 20% da área.')]
+      ('Casa térrea + parque linear', 'unidade / m²', 'Casa de 40/42/45 m² com a edificação-tipo (perfil residencial); parque com gramado em 70% e passeios em 20% da área.'),
+      ('Infraestrutura básica de loteamento (Justiça)', 'metro de via', 'Via urbana-tipo + rede de água PVC DN 50 (vala 0,6 x 1,0 m) + rede de esgoto PVC DN 150 (vala 0,8 x 1,5 m, PV pré-moldado a cada 60 m) + luminária LED 68-97 W com braço a cada 35 m, em poste existente.'),
+      ('Reforma de unidade de acolhimento (Justiça)', 'm² reformado', 'Reforma predial-tipo + porta corta-fogo na rota de saída (1/1/2 unidades); projeto de segurança contra incêndio na contingência.')]
 for j, h in enumerate(['Demanda-tipo', 'Unidade-chave', 'Premissas e coeficientes (mín/prov/máx)'], 1):
     c = wsD.cell(4, j, h); c.font = fn(bold=True); c.fill = HEAD
 for i, row in enumerate(DT, 5):
@@ -195,7 +213,7 @@ FT = ['SINAPI/CAIXA - Relatórios mensais, ref. 08/2026 (publicado em 11/09/2026
       'IBRAOP - OT-IBR 004/2012 (precisão do orçamento de obras públicas): ±30% para estudos preliminares em edificações. Conferido em documentos que reproduzem a OT.',
       'CAIXA - SINAPI: metodologias e conceitos (coleta de preços nas capitais, sem frete). Conferido em reprodução pública.',
       'Base legal: nos termos da Lei n. 14.133/2021 e do Decreto Municipal n. 269/2025 (citados sem artigo).',
-      'Quantidades: documentos do pacote MP_FILTRADO de 12/10/2026 (mp_objetos.json) e demandas-tipo desta planilha.',
+      'Quantidades: documentos dos pacotes MP_FILTRADO de 12/10/2026 (mp_objetos.json) e JUSTICA_FILTRADO de 13/10/2026 (justica_objetos.json) e demandas-tipo desta planilha.',
       'Limitação: composições sem preço na BA (ex.: imprimação, pintura de ligação, exaustores, central de alarme, locação de andaime) não estão incluídas; quantidades da maioria dos objetos são premissas a confirmar.',
       'Limitação: OpenStreetMap e sites oficiais não puderam ser acessados neste ambiente; comprimentos de ruas não foram medidos.',
       'Contratos da SEINFRA e editais de outras prefeituras não foram usados como base de preço.']
