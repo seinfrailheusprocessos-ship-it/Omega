@@ -4,3 +4,7 @@ dados/estado.json
 dados/*.local.json
 node_modules/
 dados/config.json
+# pacote do levantamento MP (documentos originais) nunca vai para o repositório; só os JSON gerados
+mp_levantamento/*
+!mp_levantamento/mp_indice.json
+!mp_levantamento/mp_objetos.json
