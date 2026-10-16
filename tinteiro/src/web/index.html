@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#262626">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tinteiro">
+<title>Tinteiro</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="app.css">
+<script>
+  // evita piscar: aplica o tema salvo antes de carregar o app
+  (function () {
+    try {
+      var c = JSON.parse(localStorage.getItem("tinteiro.config") || "{}");
+      var t = c.tema === "claro" || c.tema === "escuro" ? c.tema : (matchMedia("(prefers-color-scheme: dark)").matches ? "escuro" : "claro");
+      document.documentElement.className = t === "escuro" ? "pre-dark" : "pre-light";
+    } catch (e) {}
+  })();
+</script>
+<style>
+  html.pre-dark, html.pre-dark body { background: #1e1e1e; }
+  html.pre-light, html.pre-light body { background: #ffffff; }
+  body:not(.is-ready) #app { opacity: 0; }
+  #app { height: 100%; transition: opacity 0.18s ease-out; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

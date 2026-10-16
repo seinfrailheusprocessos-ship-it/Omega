@@ -1,0 +1,17 @@
+/* ---------- outras visualizações ---------- */
+.view-loading { color: var(--text-faint); padding: 40px; text-align: center; font-size: var(--font-ui-small); animation: fade-in 0.6s ease-in 0.2s both; }
+.view-error { padding: 40px; color: var(--text-muted); text-align: center; }
+.html-view-content { display: flex; flex-direction: column; overflow: hidden !important; }
+.html-frame { flex: 1 1 auto; width: 100%; border: none; background: white; }
+.image-view-content { display: flex; overflow: auto; }
+.image-container { margin: auto; padding: 16px; }
+.image-container.is-fit img { max-width: 100%; max-height: calc(100vh - 140px); }
+.image-container img { display: block; cursor: zoom-in; border-radius: 2px; background: repeating-conic-gradient(rgba(127,127,127,.12) 0% 25%, transparent 0% 50%) 50% / 16px 16px; }
+.image-container:not(.is-fit) img { cursor: zoom-out; }
+.other-file { gap: 4px; }
+.other-file-icon { --icon-size: 64px; --icon-stroke: 1px; color: var(--text-faint); }
+.other-file-ext { font-weight: 700; font-size: 12px; color: var(--text-faint); letter-spacing: .08em; margin: -38px 0 30px; }
+.version-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 16px; background-color: hsla(var(--interactive-accent-hsl), 0.12); border-bottom: 1px solid var(--background-modifier-border); font-size: var(--font-ui-small); position: sticky; top: 0; z-index: 5; }
+.version-body { position: relative; min-height: 100%; display: flex; flex-direction: column; }
+.boot-error { padding: 40px; max-width: 560px; margin: 0 auto; color: var(--text-normal, #ddd); font-family: system-ui, sans-serif; }
+.workspace-leaf-content[data-type="markdown"] .view-content, .workspace-leaf-content[data-type="text"] .view-content { overflow: hidden; }
