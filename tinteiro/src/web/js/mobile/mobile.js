@@ -242,7 +242,7 @@ export class MobileUI {
       const apk = (j.assets || []).find(x => /\.apk$/i.test(x.name));
       const url = apk?.browser_download_url || "https://github.com/seinfrailheusprocessos-ship-it/Omega/releases/latest/download/Tinteiro.apk";
       const faixa = h("div.update-banner", h("span", { text: `Nova versão do Tinteiro (${nova}).` }),
-        h("button.mod-cta", { text: "Atualizar", onclick: () => { window.open(url, "_system"); faixa.remove(); } }),
+        h("button.mod-cta", { text: "Atualizar", onclick: () => { faixa.remove(); location.href = url; } }),
         iconButton("x", "Agora não", () => faixa.remove()));
       document.body.appendChild(faixa);
     } catch (e) {}

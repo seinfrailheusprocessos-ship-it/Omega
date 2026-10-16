@@ -201,7 +201,7 @@ export class LocalBackend extends Emitter {
     const dados = new Uint8Array(await this.banco.get("dados", r.path));
     const libs = { JSZip: (await import("jszip")).default };
     if (/\.pdf$/i.test(r.path)) {
-      const pdfjs = await import("pdfjs-dist");
+      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
       pdfjs.GlobalWorkerOptions.workerSrc = "vendor/pdfjs/pdf.worker.min.mjs";
       libs.pdfjs = pdfjs;
     }
