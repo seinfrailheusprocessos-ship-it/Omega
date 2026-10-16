@@ -33,6 +33,11 @@ jobs:
         run: npx electron-builder --win nsis --x64 --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - name: Teste do app instalado (Windows)
+        shell: bash
+        run: |
+          pip install -q python-docx openpyxl reportlab pillow
+          node test/electron.test.mjs "out/win-unpacked/Tinteiro.exe"
       - name: Cópia com nome fixo (link de download que não muda)
         shell: bash
         run: cp out/Tinteiro-Setup-*.exe out/Tinteiro-Setup.exe

@@ -7,6 +7,8 @@ const { Config } = require("../server/config");
 const { criarServidor } = require("../server/server");
 
 let janela = null, servidor = null, config = null, podeFechar = false, pedidoInstalar = false;
+// testes automáticos: pasta de dados e pasta raiz separadas
+if (process.env.TINTEIRO_DADOS) app.setPath("userData", process.env.TINTEIRO_DADOS);
 
 if (!app.requestSingleInstanceLock()) { app.quit(); }
 else {
@@ -17,6 +19,7 @@ app.on("window-all-closed", () => app.quit());
 
 async function iniciar() {
   config = new Config(app.getPath("userData"));
+  if (process.env.TINTEIRO_RAIZ) config.set("root", process.env.TINTEIRO_RAIZ);
   try { fs.mkdirSync(config.get("root"), { recursive: true }); } catch (e) {}
   servidor = criarServidor({
     config,
