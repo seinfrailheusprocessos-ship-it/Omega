@@ -33,7 +33,7 @@ async function estaticos() {
   copiar(path.join(raiz, "src/web/index.html"), path.join(dist, "index.html"));
   copiar(path.join(raiz, "src/web/static"), dist);
   const pdfjs = path.join(raiz, "node_modules/pdfjs-dist");
-  copiar(path.join(pdfjs, "build/pdf.worker.min.mjs"), path.join(dist, "vendor/pdfjs/pdf.worker.min.mjs"));
+  copiar(path.join(pdfjs, "legacy/build/pdf.worker.min.mjs"), path.join(dist, "vendor/pdfjs/pdf.worker.min.mjs"));
   for (const d of ["cmaps", "standard_fonts", "wasm"]) if (fs.existsSync(path.join(pdfjs, d))) copiar(path.join(pdfjs, d), path.join(dist, "vendor/pdfjs", d));
   fs.writeFileSync(path.join(dist, "versao.json"), JSON.stringify({ version: pkg.version, build: Date.now() }));
   // lista de arquivos para o modo sem internet (service worker)
