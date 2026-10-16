@@ -10,9 +10,10 @@ async function iniciar() {
   const local = /^(127\.0\.0\.1|localhost|\[::1\])$/.test(location.hostname) && !nativo;
   const forcarLocal = new URLSearchParams(location.search).get("modo") === "local"; // testes
   const celular = nativo || forcarLocal || (matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) < 820);
-  let token = params.get("token") || params.get("pair");
-  if (token) { localStorage.setItem("tinteiro.token", token); history.replaceState(null, "", location.pathname + location.search); }
-  token = token || localStorage.getItem("tinteiro.token");
+  const consulta = new URLSearchParams(location.search);
+  const tokenUrl = params.get("token") || params.get("pair") || consulta.get("pair");
+  if (tokenUrl) { localStorage.setItem("tinteiro.token", tokenUrl); history.replaceState(null, "", location.pathname + (consulta.get("modo") ? "?modo=" + consulta.get("modo") : "")); }
+  const token = tokenUrl || localStorage.getItem("tinteiro.token");
 
   let backend, plataforma;
   if (!nativo && !forcarLocal && (local || !celular) && token) {
@@ -23,7 +24,7 @@ async function iniciar() {
     backend = new LocalBackend();
     plataforma = nativo ? "android" : "pwa";
     // aberto a partir do computador (rede de casa ou Tailscale): já fica pareado com ele
-    if (token && !nativo) backend.parearCom(location.origin, token);
+    if (tokenUrl && !nativo) backend.parearCom(location.origin, tokenUrl);
   }
   try {
     await backend.connect();
@@ -33,6 +34,9 @@ async function iniciar() {
       h("p", { text: "Se você abriu pelo navegador, use o atalho do Tinteiro ou o link de pareamento mostrado no computador." })));
     return;
   }
+  // iPhone: ao "Adicionar à Tela de Início", o app instalado já nasce pareado com o computador
+  const tk = backend.sync?.cfg?.token;
+  if (plataforma === "pwa" && tk && backend.sync.cfg.urls?.includes(location.origin)) { const l = document.querySelector('link[rel="manifest"]'); if (l) l.href = "manifest.webmanifest?pair=" + encodeURIComponent(tk); }
   const app = new App({ backend, plataforma });
   window.tinteiro = app;
   await app.start(raiz);

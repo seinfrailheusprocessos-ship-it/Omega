@@ -26,7 +26,9 @@ export class LocalBackend extends Emitter {
     this.info = { app: "Tinteiro", vaultName: (await this.banco.get("meta", "nomeCofre")) || "Tinteiro", root: null, device: "celular", local: false };
     this.sync = new Sincronizador(this);
     await this.sync.carregar();
-    if (this._pendentePareamento) {
+    const [urlP, tokenP] = this._pendentePareamento || [];
+    const jaPareado = this.sync.cfg && this.sync.cfg.token === tokenP && this.sync.cfg.urls?.includes(urlP);
+    if (this._pendentePareamento && !jaPareado) {
       try { await this.sync.parear(...this._pendentePareamento); await this.sync.sincronizar(); }
       catch (e) { console.warn("pareamento", e); }
       this._pendentePareamento = null;

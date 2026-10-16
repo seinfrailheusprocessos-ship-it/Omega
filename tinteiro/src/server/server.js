@@ -324,6 +324,16 @@ a.s{background:#363636}p{color:#b3b3b3;line-height:1.5}h1{font-size:22px}</style
     res.end(html);
   }
 
+  /** iPhone: o app instalado na Tela de Início abre já pareado com este computador */
+  async function manifestoPareado(res, pair) {
+    if (!/^[\w-]{10,80}$/.test(pair)) return json(res, 400, { error: "inválido" });
+    const m = JSON.parse(await fsp.readFile(path.join(webDir, "manifest.webmanifest"), "utf8"));
+    m.start_url = "./?pair=" + encodeURIComponent(pair);
+    const b = Buffer.from(JSON.stringify(m));
+    res.writeHead(200, { "Content-Type": "application/manifest+json", "Content-Length": b.length, "Cache-Control": "no-store" });
+    res.end(b);
+  }
+
   async function tratar(req, res) {
     const url = new URL(req.url, "http://x");
     try {
@@ -334,6 +344,7 @@ a.s{background:#363636}p{color:#b3b3b3;line-height:1.5}h1{font-size:22px}</style
       }
       if (url.pathname.startsWith("/raw/")) return await servirRaw(req, res, url);
       if (url.pathname === "/parear") return paginaPareamento(res, url);
+      if (url.pathname === "/manifest.webmanifest" && url.searchParams.get("pair")) return manifestoPareado(res, url.searchParams.get("pair"));
       return await servirEstatico(req, res, url);
     } catch (e) {
       const status = e.status || (e.code === "ENOENT" ? 404 : e.code === "EACCES" || e.code === "EPERM" ? 423 : 500);
