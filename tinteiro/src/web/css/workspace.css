@@ -63,6 +63,7 @@
   display: flex;
   flex: 0 1 auto;
   min-width: 0;
+  min-width: 0;
   overflow: hidden;
   margin: 6px -5px calc(var(--border-width) * -1);
   padding: 1px 15px 0;
@@ -71,7 +72,8 @@
   -webkit-app-region: no-drag;
   position: relative;
   display: flex;
-  flex: 1 1 var(--tab-width);
+  flex: 0 1 var(--tab-width);
+  width: var(--tab-width);
   max-width: var(--tab-max-width);
   min-width: 36px;
   color: var(--tab-text-color);
@@ -149,7 +151,7 @@ body.has-window-controls .workspace-tabs.mod-top-right-space .titlebar-controls-
 /* abas de ícones das barras laterais */
 .workspace-split.mod-sidedock .workspace-tab-header-container { padding: 0 var(--size-4-2); background-color: var(--background-secondary); }
 .workspace-split.mod-sidedock .workspace-tab-header-container-inner { margin: 0; padding: 0; gap: var(--size-2-1); align-items: center; flex: 1 1 auto; }
-.workspace-split.mod-sidedock .workspace-tab-header { flex: 0 0 auto; min-width: 0; border-radius: var(--radius-s); height: 26px; align-self: center; }
+.workspace-split.mod-sidedock .workspace-tab-header { flex: 0 0 auto; width: auto; min-width: 0; border-radius: var(--radius-s); height: 26px; align-self: center; }
 .workspace-split.mod-sidedock .workspace-tab-header::before, .workspace-split.mod-sidedock .workspace-tab-header::after { display: none; }
 .workspace-split.mod-sidedock .workspace-tab-header .workspace-tab-header-inner { padding: var(--size-2-2) var(--size-2-3); }
 .workspace-split.mod-sidedock .workspace-tab-header .workspace-tab-header-inner::after { display: none; }
