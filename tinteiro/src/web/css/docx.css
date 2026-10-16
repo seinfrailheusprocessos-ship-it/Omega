@@ -1,0 +1,42 @@
+/* ---------- editor de Word ---------- */
+.docx-view-content { display: flex; flex-direction: column; overflow: hidden !important; }
+.docx-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px var(--size-4-3);
+  border-bottom: 1px solid var(--background-modifier-border);
+  background-color: var(--background-primary);
+  flex: 0 0 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  user-select: none;
+}
+.docx-toolbar::-webkit-scrollbar { display: none; }
+.docx-tool { --icon-size: var(--icon-s); padding: 5px; }
+.docx-sep { width: 1px; height: 18px; background: var(--background-modifier-border); margin: 0 6px; flex: 0 0 1px; }
+.docx-spacer { flex: 1 1 auto; min-width: 8px; }
+.docx-select { height: 26px; font-size: var(--font-ui-smaller); padding: 0 4px; margin: 0 2px; background: var(--background-modifier-form-field); border-radius: var(--radius-s); }
+.docx-select.mod-fonte { width: 132px; }
+.docx-select.mod-tamanho { width: 58px; }
+.docx-cor-btn { position: relative; --icon-size: var(--icon-s); padding: 5px; cursor: var(--cursor); }
+.docx-cor { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; border: none; padding: 0; }
+.docx-zoom-valor { font-size: var(--font-ui-smaller); color: var(--text-muted); min-width: 40px; text-align: center; font-variant-numeric: tabular-nums; }
+.docx-area { flex: 1 1 auto; overflow: auto; background-color: var(--page-background); position: relative; }
+.docx-estilos { display: none; }
+.tinteiro-docx [class$="-wrapper"] { background: transparent !important; padding: 24px 24px 48px !important; display: flex; flex-flow: column; align-items: center; }
+.tinteiro-docx section[class^="docx-t"] { box-shadow: var(--page-shadow) !important; margin: 0 auto 24px !important; background: white; color: black; flex-shrink: 0; }
+.tinteiro-docx article { outline: none; caret-color: black; }
+.tinteiro-docx article:focus-visible { outline: none; }
+.tinteiro-docx td[contenteditable="true"] { outline: none; }
+.tinteiro-docx td[contenteditable="true"]:focus { box-shadow: inset 0 0 0 2px hsla(var(--interactive-accent-hsl), 0.35); }
+.tinteiro-docx header, .tinteiro-docx footer { cursor: default; opacity: 0.92; }
+.tinteiro-docx ::selection { background: rgba(138, 92, 245, 0.28); }
+.tinteiro-docx p { min-height: 1em; }
+.docx-busca { display: flex; align-items: center; gap: 4px; padding: 4px var(--size-4-3); border-bottom: 1px solid var(--background-modifier-border); background: var(--background-secondary); flex: 0 0 auto; }
+.docx-busca input { flex: 0 1 280px; height: 26px; }
+.docx-busca-info { font-size: var(--font-ui-smaller); color: var(--text-muted); min-width: 80px; }
+::highlight(tinteiro-busca) { background-color: rgba(255, 208, 0, 0.55); color: black; }
+body.is-mobile .docx-toolbar { padding: 4px 6px; }
+body.is-mobile .docx-select.mod-fonte { width: 110px; }
+body.is-mobile .tinteiro-docx [class$="-wrapper"] { padding: 8px 8px 30vh !important; }
