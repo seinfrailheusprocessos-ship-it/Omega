@@ -67,7 +67,17 @@ class Vault extends EventEmitter {
 
   rel(abs) { return path.relative(this.root, abs).split(path.sep).join("/"); }
 
+  /** lista com cache: refeita quando algo muda (observação de pastas) ou a cada 10 s sem observação */
   async list() {
+    const valido = this.cacheLista && (this.observando ? true : Date.now() - this.cacheLista.em < 10000);
+    if (valido) return this.cacheLista.itens;
+    if (this._listando) return this._listando;
+    this._listando = this.listarDisco().then(itens => { this.cacheLista = { itens, em: Date.now() }; return itens; }).finally(() => { this._listando = null; });
+    return this._listando;
+  }
+  invalidarLista() { this.cacheLista = null; }
+
+  async listarDisco() {
     const out = [];
     const anda = async (dir, prof) => {
       if (out.length > 300000 || prof > 40) return;
@@ -227,7 +237,7 @@ class Vault extends EventEmitter {
     return { path: rel, type: st.isDirectory() ? "folder" : "file", size: st.size, mtime: st.mtimeMs, ver: st.isFile() ? versao(st) : null };
   }
 
-  marcarProprio(rel) { this.proprios.set(rel, Date.now()); }
+  marcarProprio(rel) { this.proprios.set(rel, Date.now()); this.invalidarLista(); }
 
   async mkdir(rel) {
     const a = this.abs(rel);
@@ -314,15 +324,17 @@ class Vault extends EventEmitter {
         if (!nome) return;
         const rel = String(nome).split(path.sep).join("/");
         if (rel.split("/").some(ignorado)) return;
+        this.invalidarLista();
         pend.add(rel);
         clearTimeout(t); t = setTimeout(avisa, 400);
       });
-      w.on("error", () => {});
+      w.on("error", () => { this.observando = false; });
       this.watchers.push(w);
+      this.observando = true;
     } catch (e) { /* sem observação recursiva: o app atualiza ao focar a janela */ }
   }
 
-  unwatch() { for (const w of this.watchers) try { w.close(); } catch (e) {} this.watchers = []; }
+  unwatch() { for (const w of this.watchers) try { w.close(); } catch (e) {} this.watchers = []; this.observando = false; }
 }
 
 module.exports = { Vault, ErroCofre, DADOS, ignorado, carimbo, versao };
