@@ -425,7 +425,7 @@ export class Grade extends Emitter {
       }
     }
     // 5) sobreposições: realce de referências, cópia, seleção
-    this.pintarSobreposicoes(reg);
+    this.pintarSobreposicoes();
   }
 
   espessura() { return Math.max(1, Math.round(this.dpr * 0.75)) / this.dpr; }
@@ -480,6 +480,16 @@ export class Grade extends Emitter {
     if (!quebra && !m && linhas.length === 1 && !e.numero && largTexto > w && typeof pasta.valor(f, r, c) === "string") {
       if (alinhar === "left" || alinhar === "center") { let cc = c + 1; while (cx1 - x0 < largTexto * (alinhar === "center" ? 0.5 : 1) + (alinhar === "center" ? w / 2 : 0) && cc <= reg.c1 + 1 && cc < MAX_COLUNAS && this.vazia(r, cc)) { cx1 += this.col.tam(cc); cc++; } }
       if (alinhar === "right" || alinhar === "center") { let cc = c - 1; while (x0 - cx0 < largTexto * (alinhar === "center" ? 0.5 : 1) && cc >= 0 && this.vazia(r, cc)) { cx0 -= this.col.tam(cc); cc--; } }
+    }
+    // texto transbordando: esconde as linhas de grade das células vizinhas vazias (como o Excel)
+    if (cx1 > x0 + w || cx0 < x0) {
+      const lw = this.espessura(), est = pasta.estilos;
+      const fundoDe = cc => { const rs2 = est ? est.render(f.estilo(r, cc)) : null; return rs2 && rs2.fundo ? rs2.fundo : this.tema.fundo; };
+      let xx = x0 + w;
+      for (let cc = c + 1; xx < cx1 - 0.5; cc++) { const wc = this.col.tam(cc); ctx.fillStyle = fundoDe(cc); ctx.fillRect(xx - lw, y0, wc, hgt - lw); xx += wc; }
+      xx = x0;
+      for (let cc = c - 1; xx > cx0 + 0.5 && cc >= 0; cc--) { const wc = this.col.tam(cc); ctx.fillStyle = fundoDe(cc); ctx.fillRect(xx - wc, y0, wc, hgt - lw); xx -= wc; }
+      ctx.fillStyle = cor;
     }
     ctx.save();
     ctx.beginPath(); ctx.rect(cx0, y0, cx1 - cx0 - 1, hgt); ctx.clip();
@@ -560,7 +570,7 @@ export class Grade extends Emitter {
     return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
   }
 
-  pintarSobreposicoes(reg) {
+  pintarSobreposicoes() {
     const ctx = this.ctx, T = this.tema;
     // referências da fórmula em edição
     if (this.ed && this.ed.refs) {
@@ -611,7 +621,6 @@ export class Grade extends Emitter {
       ctx.fillStyle = T.fundo;
       ctx.fillRect(rt.x + rt.w - 5, rt.y + rt.h - 5, 1, 7); ctx.fillRect(rt.x + rt.w - 5, rt.y + rt.h - 5, 7, 1);
     }
-    void reg;
   }
 
   pintarCabecalhos(g) {
@@ -777,7 +786,7 @@ export class Grade extends Emitter {
     const tipo = this.areaDoPonto(p);
     if (tipo === "coluna" || tipo === "linha") {
       const b = !this.somenteLeitura && this.bordaProxima(p, tipo);
-      if (b) { this.iniciarRedimensionar(e, b, p); return; }
+      if (b) { this.iniciarRedimensionar(e, b); return; }
     }
     // modo de apontar: clique insere referência na fórmula
     if (this.ed && tipo === "celula" && this.podeApontarAgora()) {
@@ -931,7 +940,7 @@ export class Grade extends Emitter {
     this.emit("menu", { evento: e, tipo: this.areaDoPonto(p) });
   }
 
-  iniciarRedimensionar(e, b, p) {
+  iniciarRedimensionar(e, b) {
     this.scroller.setPointerCapture(e.pointerId);
     const ini = b.eixo === "col" ? this.x(b.i) : this.y(b.i);
     const guia = this.linhaGuia;
@@ -964,7 +973,6 @@ export class Grade extends Emitter {
     this.arrasto = { tipo: "redimensionar" };
     this.scroller.addEventListener("pointermove", mover);
     this.scroller.addEventListener("pointerup", fim);
-    void p;
   }
 
   // ============================================================ teclado
@@ -1336,4 +1344,3 @@ export class Grade extends Emitter {
 }
 
 function contarAspas(s) { const n = (s.match(/"/g) || []).length; return n % 2 ? '"' : ""; }
-export { linhaDaChave, colunaDaChave };

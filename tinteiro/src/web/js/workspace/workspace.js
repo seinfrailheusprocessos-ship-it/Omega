@@ -447,8 +447,15 @@ export class Workspace {
   /** folha para abrir arquivo: a ativa (substitui) ou uma nova aba */
   getLeaf(novaAba = false) {
     let leaf = this.activeLeaf;
-    if (!leaf || !leaf.group) { const g = this.grupos()[0]; leaf = g?.active; }
-    if (!leaf) return null;
+    if (!leaf || !leaf.group) { const g = this.grupos().find(x => x.active) || this.grupos()[0]; leaf = g?.active || g?.leaves[0]; }
+    if (!leaf) {
+      // nenhuma aba aberta: cria uma
+      let g = this.grupos()[0];
+      if (!g) { g = new TabGroup(this); this.root.inserir(g); }
+      leaf = new Leaf(this.app);
+      g.addLeaf(leaf);
+      return leaf;
+    }
     if (novaAba) {
       const g = leaf.group;
       const nl = new Leaf(this.app);

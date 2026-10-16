@@ -126,13 +126,14 @@ export class Estilos {
     }
     this.indexadas = PALETA_INDEXADA.slice();
     this.numFmts = new Map(Object.entries(FORMATOS_EMBUTIDOS).map(([k, v]) => [+k, v]));
+    this.fmtsDoArquivo = new Set();
     this.fontes = []; this.preenchimentos = []; this.bordas = []; this.xfs = [];
     this.elFontes = []; this.elPreench = []; this.elBordas = []; this.elXfs = [];
     const d = this.doc;
     if (d) {
       const raiz = d.documentElement;
       const sec = n => filho(raiz, n);
-      for (const e of filhos(sec("numFmts") || raiz, "numFmt")) this.numFmts.set(+e.getAttribute("numFmtId"), e.getAttribute("formatCode") || "General");
+      for (const e of filhos(sec("numFmts") || raiz, "numFmt")) { this.numFmts.set(+e.getAttribute("numFmtId"), e.getAttribute("formatCode") || "General"); this.fmtsDoArquivo.add(+e.getAttribute("numFmtId")); }
       for (const e of filhos(sec("fonts") || raiz, "font")) { this.fontes.push(lerFonte(e)); this.elFontes.push(e); }
       for (const e of filhos(sec("fills") || raiz, "fill")) { this.preenchimentos.push(lerPreenchimento(e)); this.elPreench.push(e); }
       for (const e of filhos(sec("borders") || raiz, "border")) { this.bordas.push(lerBorda(e)); this.elBordas.push(e); }
@@ -225,7 +226,10 @@ export class Estilos {
 
   idFormato(codigo) {
     if (!codigo || /^general$/i.test(codigo)) return 0;
-    for (const [id, c] of this.numFmts) if (c === codigo) return id;
+    // formatos embutidos que dependem do idioma do Excel (datas curtas, moeda) não são reaproveitados:
+    // grava o código explícito para aparecer igual em qualquer computador
+    const NEUTROS = new Set([1, 2, 3, 4, 9, 10, 11, 12, 13, 18, 19, 20, 21, 37, 38, 39, 40, 45, 46, 47, 48, 49]);
+    for (const [id, c] of this.numFmts) if (c === codigo && (NEUTROS.has(id) || this.fmtsDoArquivo.has(id) || id >= 164)) return id;
     let id = 164;
     for (const k of this.numFmts.keys()) if (k >= id) id = k + 1;
     this.numFmts.set(id, codigo);

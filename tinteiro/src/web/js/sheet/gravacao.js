@@ -4,7 +4,7 @@
 import JSZip from "jszip";
 import { DetailedCellError } from "hyperformula";
 import { lerXml, gravarXml, filho, filhos, criar, inserirNaOrdem, NS, TIPO_REL, ORDEM_FOLHA, ORDEM_PASTA, ORDEM_VISTA, relsDe, resolverAlvo, limparTextoXml } from "./xml.js";
-import { chave, linhaDaChave, colunaDaChave, lerCelula, lerIntervalo, letraColuna, nomeCelula, nomeIntervalo, MAX_LINHAS, MAX_COLUNAS } from "./enderecos.js";
+import { chave, linhaDaChave, colunaDaChave, lerCelula, lerIntervalo, nomeCelula, nomeIntervalo, MAX_LINHAS, MAX_COLUNAS } from "./enderecos.js";
 import { deslocarFormula, deslocarIndice, deslocarFaixa, transladarFormula, renomearFolhaNaFormula, excluirFolhaNaFormula, paraPortugues } from "./formula.js";
 import { textoRico, desescapar, lerRelacoes } from "./xlsx-leitor.js";
 import { codificar, montar } from "./csv.js";
@@ -617,11 +617,11 @@ async function reproduzirOps(ctx) {
     if (op.tipo === "excluirFolha") {
       const f = op.folhaObj;
       const caminho = todas.get(f);
-      if (caminho) await excluirFolhaDoArquivo(ctx, f, caminho, op.nome, folhasNoArquivo);
+      if (caminho) excluirFolhaDoArquivo(ctx, caminho);
       ctx.caminhosNovos.delete(f);
       todas.delete(f);
       // referências nas outras
-      for (const [g, c] of todas) { const d = await ctx.doc(c); if (d) transformarFormulasDoc(d, txt => excluirFolhaNaFormula(txt, op.nome)); }
+      for (const c of todas.values()) { const d = await ctx.doc(c); if (d) transformarFormulasDoc(d, txt => excluirFolhaNaFormula(txt, op.nome)); }
       transformarNomes(ctx, txt => excluirFolhaNaFormula(txt, op.nome));
       continue;
     }
@@ -693,7 +693,7 @@ function acrescentarFolhaNaPasta(ctx, caminho, nome) {
   ctx.tipos.doc.documentElement.appendChild(o); ctx.tipos.mudou = true;
 }
 
-async function excluirFolhaDoArquivo(ctx, folha, caminho, nome, folhasNoArquivo) {
+function excluirFolhaDoArquivo(ctx, caminho) {
   const wb = ctx.wb.doc, raiz = wb.documentElement;
   const el = elementoFolha(ctx, caminho);
   const sheets = filho(raiz, "sheets");
@@ -723,8 +723,6 @@ async function excluirFolhaDoArquivo(ctx, folha, caminho, nome, folhasNoArquivo)
       for (const a of ["activeTab", "firstSheet"]) if (v.hasAttribute(a)) { const x = +v.getAttribute(a); if (x >= pos && x > 0) v.setAttribute(a, String(x - 1)); }
     }
   }
-  // a aba selecionada não pode ficar sem nenhuma
-  void folha; void folhasNoArquivo; void nome;
 }
 
 function transformarNomes(ctx, fn) {
@@ -942,4 +940,3 @@ function deslocarVml(texto, op) {
   });
 }
 
-export { letraColuna };

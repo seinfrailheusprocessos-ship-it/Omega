@@ -11,10 +11,9 @@ import { dadosCsv } from "./csv.js";
 import { Pasta } from "./modelo.js";
 import { Grade } from "./grade.js";
 import { gravarXlsx, gravarCsv } from "./gravacao.js";
-import { chave, nomeCelula, nomeIntervalo, lerIntervalo, lerCelula, MAX_LINHAS, MAX_COLUNAS, citarFolha } from "./enderecos.js";
-import { FORMATOS_PADRAO, mudarCasas, casasDecimais, formatoGeral, hojeSerial } from "./formatos.js";
+import { chave, nomeCelula, nomeIntervalo, lerIntervalo, lerCelula, MAX_LINHAS, MAX_COLUNAS } from "./enderecos.js";
+import { FORMATOS_PADRAO, mudarCasas, formatoGeral } from "./formatos.js";
 import { paraIngles, paraPortugues, transladarFormula } from "./formula.js";
-import { listaFuncoesPt, DICAS } from "./funcoes.js";
 
 // área de transferência interna (para colar fórmulas e formatos entre células e entre planilhas abertas)
 let transferencia = null;
@@ -29,7 +28,6 @@ const PALETA = [
 ];
 const NOMES_FORMATO = { geral: "Geral", numero: "Número", moeda: "Moeda", contabil: "Contábil", percentual: "Percentual", data: "Data", hora: "Hora", texto: "Texto", personalizado: "Personalizado" };
 const TAMANHOS = [8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 36, 48];
-const fmtN = n => n.toLocaleString("pt-BR", { maximumFractionDigits: 10 });
 
 export class SheetView extends FileView {
   getViewType() { return "sheet"; }
@@ -38,12 +36,16 @@ export class SheetView extends FileView {
 
   async onLoadFile(dados) {
     let estrutura;
+    const t0 = performance.now();
     if (this.csv) estrutura = dadosCsv(dados, stem(this.file.path).slice(0, 31) || "Planilha1");
     else estrutura = await lerXlsx(dados);
+    const t1 = performance.now();
     if (this.destruido) return;
     this.pasta?.destruir();
     this.pasta = new Pasta(estrutura);
+    const t2 = performance.now();
     this.montar();
+    this.tempos = { ler: Math.round(t1 - t0), motor: Math.round(t2 - t1), montar: Math.round(performance.now() - t2) };
   }
 
   podeEditar() { return !this.somenteLeitura && !this.salvandoAgora; }
@@ -143,7 +145,7 @@ export class SheetView extends FileView {
         iconButton("arrow-up", "Anterior (Shift+Enter)", () => this.proximo(-1), "clickable-icon"),
         iconButton("arrow-down", "Próximo (Enter)", () => this.proximo(1), "clickable-icon"),
         this.buscaTodas,
-        this.somenteLeitura || false ? null : iconButton("replace", "Substituir", () => { linhaTroca.classList.toggle("is-hidden"); this.trocaInput.focus(); }, "clickable-icon"),
+        this.somenteLeitura ? null : iconButton("replace", "Substituir", () => { linhaTroca.classList.toggle("is-hidden"); this.trocaInput.focus(); }, "clickable-icon"),
         iconButton("x", "Fechar (Esc)", () => this.fecharBusca(), "clickable-icon")),
       linhaTroca);
     const buscar = debounce(() => this.buscar(), 200);
@@ -626,7 +628,7 @@ export class SheetView extends FileView {
       larg[c] = Math.max(larg[c] || 0, ctx.measureText(t).width);
     }
     f.colunas = [];
-    larg.forEach((w, c) => { if (w == null) return; const px = Math.max(48, Math.min(360, Math.ceil(w + 12))); f.colunas.push({ min: c, max: c, attrs: { width: String(g.charsDePx(px)), customWidth: "1" } }); });
+    larg.forEach((w, c) => { if (w == null) return; const px = Math.max(64, Math.min(360, Math.ceil(w + 14))); f.colunas.push({ min: c, max: c, attrs: { width: String(g.charsDePx(px)), customWidth: "1" } }); });
     g.reconstruirEixos();
   }
 
@@ -666,7 +668,6 @@ export class SheetView extends FileView {
     const { r, c } = this.grade.sel.ativa;
     const res = this.pasta.definir(this.grade.folha, [{ r, c, texto: t }], { nome: "Inserir data" });
     if (res.erro) notice(res.erro);
-    void hojeSerial;
   }
 
   irPara(txt) {
@@ -697,7 +698,6 @@ export class SheetView extends FileView {
         g.atualizarAjudas();
       } });
     }
-    void listaFuncoesPt; void DICAS;
     m.showBelow(e.currentTarget);
   }
 
@@ -822,11 +822,9 @@ export class SheetView extends FileView {
       if (!this.csv) {
         m.addSeparator();
         const { r, c } = g.sel.ativa;
-        if (f.congelar.linhas || f.congelar.colunas) m.addItem({ title: "Descongelar painéis", icon: "grid", onClick: () => this.pasta.congelarPainel(f, 0, 0) });
-        else {
-          m.addItem({ title: `Congelar até ${nomeCelula(r, c)}`, icon: "grid", onClick: () => this.pasta.congelarPainel(f, r, c) });
-          m.addItem({ title: "Congelar primeira linha", onClick: () => this.pasta.congelarPainel(f, 1, 0) });
-        }
+        if (r || c) m.addItem({ title: `Congelar até ${nomeCelula(r, c)}`, icon: "grid", onClick: () => this.pasta.congelarPainel(f, r, c) });
+        m.addItem({ title: "Congelar primeira linha", onClick: () => this.pasta.congelarPainel(f, 1, 0) });
+        if (f.congelar.linhas || f.congelar.colunas) m.addItem({ title: "Descongelar painéis", onClick: () => this.pasta.congelarPainel(f, 0, 0) });
       }
     }
     m.showAtMouseEvent(e);
@@ -888,8 +886,8 @@ export class SheetView extends FileView {
       m.addSeparator();
       m.addItem({ title: "Nova planilha (aba)", icon: "plus", onClick: () => this.novaFolha() });
       const f = this.grade.folha;
-      if (f.congelar.linhas || f.congelar.colunas) m.addItem({ title: "Descongelar painéis", icon: "grid", onClick: () => this.pasta.congelarPainel(f, 0, 0) });
-      else m.addItem({ title: "Congelar painéis até a célula selecionada", icon: "grid", onClick: () => this.pasta.congelarPainel(f, this.grade.sel.ativa.r, this.grade.sel.ativa.c) });
+      m.addItem({ title: "Congelar painéis até a célula selecionada", icon: "grid", onClick: () => this.pasta.congelarPainel(f, this.grade.sel.ativa.r, this.grade.sel.ativa.c) });
+      if (f.congelar.linhas || f.congelar.colunas) m.addItem({ title: "Descongelar painéis", onClick: () => this.pasta.congelarPainel(f, 0, 0) });
     }
   }
 
@@ -1021,7 +1019,6 @@ export class SheetView extends FileView {
     if (v && typeof v === "object" && v.tipo === "CYCLE") itens.push({ texto: "Referência circular", icon: "alert-circle" });
     itens.push({ texto: (g.folha.nome && !this.csv ? g.folha.nome + " · " : "") + (unica ? nomeCelula(g.sel.ativa.r, g.sel.ativa.c) : nomeIntervalo(a)), title: "Célula selecionada" });
     if (Math.abs(g.zoom - 1) > 0.01) itens.push({ texto: Math.round(g.zoom * 100) + "%", title: "Zoom (Ctrl + roda do mouse)", onClick: () => g.definirZoom(1) });
-    void fmtN;
     return itens;
   }
 
@@ -1186,4 +1183,3 @@ function lerTsv(txt) {
   return linhas;
 }
 
-export { citarFolha, MAX_COLUNAS };

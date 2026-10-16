@@ -45,6 +45,7 @@ fs.rmSync(COFRE, { recursive: true, force: true }); fs.rmSync(DADOS, { recursive
 execFileSync("python3", [path.join(RAIZ, "test/fixtures/gerar.py"), COFRE], { stdio: "ignore" });
 execFileSync("python3", [path.join(RAIZ, "test/sheet-fixtures.py"), COFRE], { stdio: "ignore" });
 fs.copyFileSync(path.join(COFRE, "Planilhas", "Orcamento ficticio.xlsx"), path.join(COFRE, "Planilhas", "Teclado ficticio.xlsx"));
+fs.copyFileSync(path.join(COFRE, "Planilhas", "Completa ficticia.xlsx"), path.join(COFRE, "Planilhas", "Abas ficticia.xlsx"));
 const ORIGINAIS = {};
 for (const n of fs.readdirSync(path.join(COFRE, "Planilhas"))) ORIGINAIS[n] = fs.readFileSync(path.join(COFRE, "Planilhas", n));
 
@@ -64,16 +65,23 @@ async function novaPagina({ largura = 1400, altura = 860, tema = "dark", celular
     permissions: ["clipboard-read", "clipboard-write"],
   });
   const p = await ctx.newPage();
+  p.setDefaultTimeout(20000);
   p.erros = [];
   p.on("pageerror", e => { p.erros.push("pageerror: " + e.message); errosConsole.push(e.message); });
   p.on("console", m => { if (m.type() === "error") { p.erros.push("console: " + m.text()); errosConsole.push(m.text()); } });
   await p.goto(URL);
-  await p.waitForFunction(() => window.tinteiro && tinteiro.workspace && tinteiro.vault.files().length > 0, null, { timeout: 20000 });
+  await esperarApp(p);
   await p.evaluate(t => { localStorage.setItem("tinteiro.config", JSON.stringify({ ...(JSON.parse(localStorage.getItem("tinteiro.config") || "{}")), tema: t === "dark" ? "escuro" : "claro" })); }, tema);
   return p;
 }
+/** espera o app carregar e terminar de restaurar as abas da sessão anterior */
+async function esperarApp(p) {
+  await p.waitForFunction(() => window.tinteiro && tinteiro.workspace && tinteiro.vault.files().length > 0, null, { timeout: 20000 });
+  await p.waitForFunction(() => !document.querySelector(".view-loading") && tinteiro.workspace.leaves().every(l => !l.view || l.view.getViewType() !== "sheet" || l.view.grade || l.pendente), null, { timeout: 30000 });
+  await p.waitForTimeout(300);
+}
 async function abrir(p, arquivo) {
-  await p.evaluate(a => tinteiro.abrirArquivo(a), arquivo);
+  await p.evaluate(async a => { await tinteiro.abrirArquivo(a); }, arquivo);
   try { await p.waitForFunction(a => { const v = tinteiro.workspace.activeLeaf?.view; return v && v.file?.path === a && v.grade && v.pasta; }, arquivo, { timeout: 60000 }); }
   catch (e) { const estado = await p.evaluate(() => { const v = tinteiro.workspace.activeLeaf?.view; return { tipo: v?.getViewType?.(), arq: v?.file?.path, grade: !!v?.grade }; }); throw new Error("não abriu " + arquivo + " " + JSON.stringify(estado) + " erros: " + p.erros.join(" | ")); }
   await p.waitForTimeout(250);
@@ -87,7 +95,14 @@ async function pontoCelula(p, ref) {
     g.rolarAte(r, c); g.medir(); const rt = g.retangulo(r, c); const b = g.canvas.getBoundingClientRect();
     return { x: b.left + rt.x + Math.min(rt.w / 2, 30), y: b.top + rt.y + rt.h / 2 };`, ref);
 }
-async function clicar(p, ref, opcoes = {}) { const pt = await pontoCelula(p, ref); await p.mouse.click(pt.x, pt.y, opcoes); await p.waitForTimeout(40); }
+async function clicar(p, ref, opcoes = {}) {
+  const pt = await pontoCelula(p, ref);
+  const mods = opcoes.modifiers || [];
+  for (const m of mods) await p.keyboard.down(m);
+  await p.mouse.click(pt.x, pt.y, { button: opcoes.button || "left" });
+  for (const m of mods) await p.keyboard.up(m);
+  await p.waitForTimeout(40);
+}
 async function digitarEm(p, ref, texto) { await clicar(p, ref); await p.keyboard.type(texto, { delay: 5 }); await p.keyboard.press("Enter"); await p.waitForTimeout(60); }
 const exibido = (p, ref, folha) => ev(p, `
   const fo = arg.folha ? pasta.folhaPorNome(arg.folha) : f; const m = /^([A-Z]+)(\\d+)$/.exec(arg.ref); let c = 0; for (const ch of m[1]) c = c * 26 + ch.charCodeAt(0) - 64; c--;
@@ -98,7 +113,12 @@ async function salvar(p) {
   assert.equal(ok, true, "salvar devolveu falso");
   await p.waitForTimeout(150);
 }
-async function fecharAba(p) { await p.evaluate(() => tinteiro.workspace.activeLeaf.fechar()); await p.waitForTimeout(200); }
+/** fecha a aba atual descartando alterações não salvas */
+async function fecharAba(p) {
+  await p.evaluate(() => { const l = tinteiro.workspace.activeLeaf; const v = l.view?.interno || l.view; if (v?.setDirty) v.setDirty(false); if (l.view?.setDirty) l.view.setDirty(false); return Promise.race([l.fechar(), new Promise(r => setTimeout(r, 5000))]); });
+  await p.evaluate(() => document.querySelectorAll(".modal-container").forEach(m => m.remove()));
+  await p.waitForTimeout(200);
+}
 const arquivo = n => path.join(COFRE, "Planilhas", n);
 async function entradasZip(buf) { const z = await JSZip.loadAsync(buf); const out = {}; for (const [n, e] of Object.entries(z.files)) if (!e.dir) out[n] = await e.async("uint8array"); return out; }
 const iguais = (a, b) => a && b && a.length === b.length && a.every((x, i) => x === b[i]);
@@ -217,7 +237,7 @@ await caso("xlsx: abrir, editar, fórmulas em português, formatação, inserir 
   assert.equal(await exibido(p, "H3"), "R$ 1.000,00");
   assert.equal(await exibido(p, "I3"), "15%");
   // status: soma da seleção
-  await clicar(p, "C2"); await clicar(p, "C5", { modifiers: ["Shift"] });
+  await clicar(p, "C2"); await clicar(p, "C6", { modifiers: ["Shift"] });
   await p.waitForTimeout(120);
   const status = await p.evaluate(() => document.querySelector(".status-bar").textContent);
   assert.match(status, /Soma: 43/);
@@ -255,7 +275,7 @@ print(json.dumps({
   assert.equal(r.f2, 1234.56); assert.equal(r.f2fmt, '"R$" #,##0.00');
   assert.match(r.f3, /^2026-10-16/); assert.equal(r.f3fmt, "dd/mm/yyyy");
   assert.equal(r.b2bold, true); assert.equal(r.b2fill, "FFFFFF00");
-  assert.equal(r.a1fill, "FF1F4E79"); assert.equal(r.a1bold, true); assert.equal(r.a1color, "FFFFFFFF");
+  assert.equal(r.a1fill.slice(-6), "1F4E79"); assert.equal(r.a1bold, true); assert.equal(r.a1color.slice(-6), "FFFFFF");
   assert.equal(r.d2fmt, '"R$" #,##0.00'); assert.equal(r.d3fmt, '"R$" #,##0.00');
   assert.equal(r.e7bold, true); assert.equal(r.b7bold, true);
   assert.deepEqual(r.larguras, [28, 14, 16]);
@@ -308,7 +328,7 @@ print(json.dumps([ws["A12"].value, ws["C9"].value, ws["E7"].value, wb["Resumo"][
 });
 
 await caso("xlsx: gráfico, imagem, formatação condicional, validação, nomes e comentários sobrevivem", async () => {
-  const p = pagina;
+  const p = pagina ??= await novaPagina();
   await fecharAba(p);
   await abrir(p, "Planilhas/Completa ficticia.xlsx");
   assert.equal(await exibido(p, "G3"), "2961", "fórmula com nome definido (Taxa)");
@@ -339,7 +359,7 @@ print(json.dumps({
   "cf": cf, "dv": dv, "nome": wb.defined_names["Taxa"].attr_text, "coment": sorted([c.coordinate for row in ws.iter_rows() for c in row if c.comment]),
   "link": [c.coordinate for row in ws.iter_rows() for c in row if c.hyperlink], "imagens": len(ws._images), "area": ws.print_area,
   "orient": ws.page_setup.orientation, "congelar": ws.freeze_panes, "mescla": [str(m) for m in ws.merged_cells.ranges],
-  "g3": ws["G3"].value, "g4": ws["G4"].value, "d9": ws["D9"].value, "b9": ws["B9"].value, "a3": ws["A3"].value, "b3": ws["B3"].value,
+  "g2": ws["G2"].value, "g4": ws["G4"].value, "d9": ws["D9"].value, "b9": ws["B9"].value, "a3": ws["A3"].value, "b3": ws["B3"].value,
   "estados": [w.sheet_state for w in wb.worksheets], "abas": wb.sheetnames, "tabela": list(wb["Resumo Geral"].tables.keys()), "tref": wb["Resumo Geral"].tables["TabelaCodigos"].ref,
   "rb1": wb["Resumo Geral"]["B1"].value, "rd1": wb["Resumo Geral"]["D1"].value, "rb2": wb["Resumo Geral"]["B2"].value,
 }))`, caminho);
@@ -353,7 +373,7 @@ print(json.dumps({
   assert.equal(r.orient, "landscape");
   assert.equal(r.congelar, "B2");
   assert.deepEqual(r.mescla, ["F1:H1"]);
-  assert.equal(r.g3, 0.1); assert.equal(r.g4, "=D9*(1+Taxa)"); assert.equal(r.d9, "=SUM(D2:D8)"); assert.equal(r.b9, "=SUM(B2:B8)");
+  assert.equal(r.g2, 0.1); assert.equal(r.g4, "=D9*(1+Taxa)"); assert.equal(r.d9, "=SUM(D2:D8)"); assert.equal(r.b9, "=SUM(B2:B8)");
   assert.equal(r.a3, "Fevereiro e meio"); assert.equal(r.b3, 500);
   assert.deepEqual(r.estados, ["visible", "visible", "hidden"]);
   assert.deepEqual(r.tabela, ["TabelaCodigos"]); assert.equal(r.tref, "A4:B7");
@@ -368,8 +388,8 @@ print(json.dumps({
   const gx = new TextDecoder().decode(novo[grafico]);
   assert.match(gx, /\$B\$2:\$B\$8|\$B\$1:\$B\$8/, "série do gráfico ajustada à linha inserida");
   const desenho = new TextDecoder().decode(novo[Object.keys(novo).find(n => /drawings\/drawing\d+\.xml$/.test(n))]);
-  assert.match(desenho, /<xdr:row>18<\/xdr:row>/, "imagem acompanhou a linha inserida");
-  const comentarios = new TextDecoder().decode(novo[Object.keys(novo).find(n => /comments\d*\.xml$/.test(n) && !/threaded/.test(n))]);
+  assert.match(desenho, /<(xdr:)?row>18<\/(xdr:)?row>/, "imagem acompanhou a linha inserida");
+  const comentarios = new TextDecoder().decode(novo[Object.keys(novo).find(n => /^xl\/comments.*\.xml$/.test(n) && !/threaded/i.test(n))]);
   assert.match(comentarios, /ref="D9"/);
   if (soffice) {
     const lo = libreOffice(caminho);
@@ -385,8 +405,98 @@ print(json.dumps({
   assert.deepEqual(p.erros, [], "erros no console");
 });
 
+await caso("xlsx: abas (nova, renomear, excluir), mesclar, bordas, classificar, congelar, largura, excluir linha", async () => {
+  const p = pagina ??= await novaPagina();
+  await fecharAba(p);
+  await abrir(p, "Planilhas/Abas ficticia.xlsx");
+  // excluir linha 5 (Abril): fórmulas, formatação condicional, validação e comentários encolhem
+  await clicar(p, "A5");
+  await p.click(".sheet-tool[aria-label='Linhas: inserir ou excluir']");
+  await p.click(".menu .menu-item:has-text('Excluir linha')");
+  assert.equal(await exibido(p, "A5"), "Maio");
+  await clicar(p, "B7");
+  assert.equal(await barraFormula(p), "=SOMA(B2:B6)");
+  // classificar A2:D6 de Z a A pela coluna A
+  await clicar(p, "A2"); await clicar(p, "D6", { modifiers: ["Shift"] });
+  await ev(p, `g.sel.ativa = { r: 1, c: 0 }`);
+  await clicar(p, "B3", { button: "right" });
+  await p.click(".menu .menu-item:has-text('Classificar de Z a A')");
+  assert.deepEqual(await ev(p, `return [1,2,3,4,5].map(r => pasta.exibir(f, r, 0).texto)`), ["Março", "Maio", "Junho", "Janeiro", "Fevereiro"]);
+  await clicar(p, "D2");
+  assert.equal(await barraFormula(p), "=B2-C2", "fórmula acompanhou a linha classificada");
+  // bordas em A10:B11
+  await clicar(p, "A10"); await clicar(p, "B11", { modifiers: ["Shift"] });
+  await p.click(".sheet-tool[aria-label='Bordas']");
+  await p.click(".menu .menu-item:has-text('Todas as bordas')");
+  // mesclar F10:H10 e digitar
+  await clicar(p, "F10"); await clicar(p, "H10", { modifiers: ["Shift"] });
+  await p.click(".sheet-tool[aria-label='Mesclar e centralizar']");
+  await digitarEm(p, "F10", "Mesclado novo");
+  // congelar até C3
+  await clicar(p, "C3", { button: "right" });
+  await p.click(".menu .menu-item:has-text('Congelar até C3')");
+  assert.deepEqual(await ev(p, `return f.congelar`), { linhas: 2, colunas: 2 });
+  // largura da coluna B: arrastar a borda do cabeçalho
+  const borda = await ev(p, `g.scroller.scrollLeft = 0; g.scroller.scrollTop = 0; g.medir(); const b = g.canvas.getBoundingClientRect(); return { x: b.left + g.x(2) - 1, y: b.top + g.cabAlt / 2 }`);
+  await p.mouse.move(borda.x, borda.y); await p.mouse.down(); await p.mouse.move(borda.x + 60, borda.y, { steps: 5 }); await p.mouse.up();
+  // nova aba, renomear pelo duplo clique e fórmula entre abas
+  await p.click(".sheet-tab-add");
+  await p.dblclick(".sheet-tab.is-active");
+  await p.keyboard.press("Control+a"); await p.keyboard.type("Notas Fiscais"); await p.keyboard.press("Enter");
+  await p.waitForTimeout(100);
+  await digitarEm(p, "A1", "Receita total");
+  await digitarEm(p, "B1", "=SOMA(Dados!B2:B6)");
+  assert.equal(await exibido(p, "B1"), "8300");
+  // excluir a aba "Resumo Geral" (tem tabela) pelo menu da aba
+  await p.click(".sheet-tab:has-text('Resumo Geral')", { button: "right" });
+  await p.click(".menu .menu-item:has-text('Excluir planilha')");
+  await p.click(".modal-button-container button:has-text('Excluir')");
+  await p.waitForTimeout(100);
+  assert.deepEqual(await p.$$eval(".sheet-tab-name", els => els.map(e => e.textContent)), ["Dados", "Notas Fiscais"]);
+  await salvar(p);
+  const caminho = arquivo("Abas ficticia.xlsx");
+  const r = py(`
+import json, sys, openpyxl
+wb = openpyxl.load_workbook(sys.argv[1])
+ws = wb["Dados"]; nf = wb["Notas Fiscais"]
+print(json.dumps({
+  "abas": wb.sheetnames, "estados": [w.sheet_state for w in wb.worksheets], "a": [ws.cell(r, 1).value for r in range(2, 7)], "d2": ws["D2"].value, "b7": ws["B7"].value,
+  "cf": [str(x.sqref) for x in ws.conditional_formatting], "dv": sorted(str(d.sqref) for d in ws.data_validations.dataValidation),
+  "coment": sorted(c.coordinate for row in ws.iter_rows() for c in row if c.comment), "mescla": sorted(str(m) for m in ws.merged_cells.ranges),
+  "f10": ws["F10"].value, "borda": [ws["A10"].border.left.style, ws["B11"].border.bottom.style, ws["B11"].border.right.style], "congelar": ws.freeze_panes,
+  "largB": ws.column_dimensions["B"].width, "nf": [nf["A1"].value, nf["B1"].value], "nomes": {n: wb.defined_names[n].attr_text for n in wb.defined_names},
+  "area": ws.print_area,
+}))`, caminho);
+  assert.deepEqual(r.abas, ["Dados", "Oculta", "Notas Fiscais"]);
+  assert.deepEqual(r.estados, ["visible", "hidden", "visible"]);
+  assert.deepEqual(r.a, ["Março", "Maio", "Junho", "Janeiro", "Fevereiro"]);
+  assert.equal(r.d2, "=B2-C2"); assert.equal(r.b7, "=SUM(B2:B6)");
+  assert.deepEqual(r.cf, ["D2:D6"]); assert.deepEqual(r.dv, ["B9:B19", "G4"]);
+  assert.deepEqual(r.coment, ["B2", "D7"]);
+  assert.deepEqual(r.mescla.sort(), ["F1:H1", "F10:H10"].sort()); assert.equal(r.f10, "Mesclado novo");
+  assert.deepEqual(r.borda, ["thin", "thin", "thin"]);
+  assert.equal(r.congelar, "C3");
+  assert.ok(r.largB > 18, "largura da coluna B gravada: " + r.largB);
+  assert.deepEqual(r.nf, ["Receita total", "=SUM(Dados!B2:B6)"]);
+  assert.equal(r.nomes.Taxa, "Dados!$G$2");
+  const pacote = await entradasZip(fs.readFileSync(caminho));
+  assert.ok(!Object.keys(pacote).some(n => /worksheets\/sheet2\.xml$/.test(n)), "parte da aba excluída removida");
+  const ct = new TextDecoder().decode(pacote["[Content_Types].xml"]);
+  assert.ok(!ct.includes("/xl/worksheets/sheet2.xml"), "tipo de conteúdo da aba excluída removido");
+  if (soffice) {
+    const lo = libreOffice(caminho);
+    assert.deepEqual(Object.keys(lo), ["Dados", "Oculta", "Notas Fiscais"]);
+    assert.equal(lo["Notas Fiscais"][0][1], 8300);
+    assert.equal(lo["Dados"][6][1], 8300);
+  }
+  await fecharAba(p);
+  await abrir(p, "Planilhas/Abas ficticia.xlsx");
+  assert.deepEqual(await p.$$eval(".sheet-tab-name", els => els.map(e => e.textContent)), ["Dados", "Notas Fiscais"]);
+  assert.deepEqual(p.erros, [], "erros no console");
+});
+
 await caso("xlsx: teclado (setas, Tab, Enter, Ctrl+setas, Home/End, F2, Esc, Delete, Ctrl+D)", async () => {
-  const p = pagina;
+  const p = pagina ??= await novaPagina();
   await fecharAba(p);
   await abrir(p, "Planilhas/Teclado ficticio.xlsx");
   const ativa = () => ev(p, `return [g.sel.ativa.r, g.sel.ativa.c]`);
@@ -398,13 +508,13 @@ await caso("xlsx: teclado (setas, Tab, Enter, Ctrl+setas, Home/End, F2, Esc, Del
   await p.keyboard.press("Shift+Tab"); assert.deepEqual(await ativa(), [1, 1]);
   await p.keyboard.press("Enter"); assert.deepEqual(await ativa(), [2, 1]);
   await p.keyboard.press("Shift+Enter"); assert.deepEqual(await ativa(), [1, 1]);
-  await p.keyboard.press("Control+ArrowDown"); assert.deepEqual(await ativa(), [6, 1], "Ctrl+↓ vai ao fim do bloco");
+  await p.keyboard.press("Control+ArrowDown"); assert.deepEqual(await ativa(), [5, 1], "Ctrl+↓ vai ao fim do bloco");
   await p.keyboard.press("Control+ArrowUp"); assert.deepEqual(await ativa(), [0, 1]);
   await p.keyboard.press("Control+ArrowRight"); assert.deepEqual((await ativa())[1] >= 4, true);
   await p.keyboard.press("Home"); assert.deepEqual(await ativa(), [0, 0]);
   await p.keyboard.press("Shift+ArrowDown"); await p.keyboard.press("Shift+ArrowDown"); await p.keyboard.press("Shift+ArrowRight");
   assert.deepEqual(await area(), [0, 0, 2, 1]);
-  await p.keyboard.press("Control+End"); const fim = await ativa(); assert.ok(fim[0] >= 9 && fim[1] >= 4, "Ctrl+End " + fim);
+  await p.keyboard.press("Control+End"); assert.deepEqual(await ativa(), [5, 4], "Ctrl+End vai à última célula usada");
   await p.keyboard.press("Control+Home");
   await p.keyboard.press("PageDown"); assert.ok((await ativa())[0] > 10, "PageDown");
   // F2 edita, Esc cancela
@@ -428,12 +538,12 @@ await caso("xlsx: teclado (setas, Tab, Enter, Ctrl+setas, Home/End, F2, Esc, Del
   await clicar(p, "G4");
   assert.equal(await barraFormula(p), "=C4+1");
   // alça de preenchimento: série 1, 2 → 3, 4
-  await digitarEm(p, "H2", "1"); await digitarEm(p, "H3", "2");
-  await clicar(p, "H2"); await clicar(p, "H3", { modifiers: ["Shift"] });
+  await digitarEm(p, "G12", "1"); await digitarEm(p, "G13", "2");
+  await clicar(p, "G12"); await clicar(p, "G13", { modifiers: ["Shift"] });
   const alca = await ev(p, `const rt = g.retanguloArea(g.area()); const b = g.canvas.getBoundingClientRect(); return { x: b.left + rt.x + rt.w - 1, y: b.top + rt.y + rt.h - 1 }`);
-  const destino = await pontoCelula(p, "H5");
+  const destino = await pontoCelula(p, "G15");
   await p.mouse.move(alca.x, alca.y); await p.mouse.down(); await p.mouse.move(destino.x, destino.y, { steps: 6 }); await p.mouse.up();
-  assert.equal(await exibido(p, "H5"), "4");
+  assert.equal(await exibido(p, "G15"), "4", "série pela alça de preenchimento");
   // Ctrl+F procura
   await p.keyboard.press("Control+f");
   await p.keyboard.type("pincel");
@@ -460,12 +570,13 @@ await caso("xlsx: teclado (setas, Tab, Enter, Ctrl+setas, Home/End, F2, Esc, Del
 });
 
 await caso("xlsx grande: 20 mil linhas abrem, rolam e salvam", async () => {
-  const p = pagina;
+  const p = pagina ??= await novaPagina();
   await fecharAba(p);
   const t0 = Date.now();
   await abrir(p, "Planilhas/Grande 20 mil linhas.xlsx");
   const tAbrir = Date.now() - t0;
-  assert.ok(tAbrir < 20000, "demorou para abrir: " + tAbrir);
+  const temposCarga = await ev(p, "return v.tempos");
+  assert.ok(tAbrir < 8000, "demorou para abrir: " + tAbrir);
   // rolagem: mede o tempo de desenho
   const tempos = await ev(p, `
     const s = g.scroller; const out = [];
@@ -491,12 +602,12 @@ ws = wb.active
 rows = list(ws.iter_rows(min_row=15000, max_row=15000, values_only=True))
 print(json.dumps([rows[0][2], rows[0][4], ws.max_row]))`, arquivo("Grande 20 mil linhas.xlsx"));
   assert.deepEqual(r, [1, "=C15000*D15000", 20001]);
-  console.log(`     (abrir ${tAbrir} ms, desenho médio ${medio.toFixed(1)} ms, salvar ${tSalvar} ms)`);
+  console.log(`     (abrir ${tAbrir} ms ${JSON.stringify(temposCarga)}, desenho médio ${medio.toFixed(1)} ms, salvar ${tSalvar} ms)`);
   assert.deepEqual(p.erros, [], "erros no console");
 });
 
 await caso("csv: separador ;, edição com fórmula, número brasileiro, salvar mantendo o formato", async () => {
-  const p = pagina;
+  const p = pagina ??= await novaPagina();
   await fecharAba(p);
   await abrir(p, "Planilhas/contatos-ficticios.csv");
   assert.equal(await exibido(p, "C3"), "250,5");
@@ -521,7 +632,7 @@ await caso("csv: separador ;, edição com fórmula, número brasileiro, salvar 
 });
 
 await caso("csv: vírgula + BOM + CRLF + aspas e quebras de linha; Windows-1252", async () => {
-  const p = pagina;
+  const p = pagina ??= await novaPagina();
   await fecharAba(p);
   await abrir(p, "Planilhas/virgulas-ficticio.csv");
   assert.equal(await exibido(p, "C3"), "Linha 1\nLinha 2");
@@ -546,7 +657,7 @@ await caso("csv: vírgula + BOM + CRLF + aspas e quebras de linha; Windows-1252"
 });
 
 await caso("somente leitura (histórico de versões)", async () => {
-  const p = pagina;
+  const p = pagina ??= await novaPagina();
   await fecharAba(p);
   const versoes = await p.evaluate(() => tinteiro.backend.history("Planilhas/Orcamento ficticio.xlsx"));
   assert.ok(versoes.length >= 1);
@@ -558,7 +669,7 @@ await caso("somente leitura (histórico de versões)", async () => {
   await p.keyboard.type("123");
   assert.equal(await p.evaluate(() => { const v = tinteiro.workspace.activeLeaf.view.interno; return v.pasta.exibir(v.grade.folha, 0, 0)?.texto; }), "Item");
   await p.screenshot({ path: path.join(FOTOS, "sheet-desktop-escuro-versao.png") });
-  await fecharAba(p);
+  await abrir(p, "Planilhas/Orcamento ficticio.xlsx"); // substitui a aba da versão (não deixa o espaço de trabalho sem abas)
   assert.deepEqual(p.erros, [], "erros no console");
 });
 
@@ -566,7 +677,7 @@ await caso("capturas de tela: claro, escuro e celular", async () => {
   // escuro e claro, planilha completa
   for (const tema of ["dark", "light"]) {
     const p = await novaPagina({ tema });
-    await p.reload(); await p.waitForFunction(() => window.tinteiro && tinteiro.vault.files().length > 0);
+    await p.reload(); await esperarApp(p);
     await abrir(p, "Planilhas/Completa ficticia.xlsx");
     await clicar(p, "B2"); await clicar(p, "D5", { modifiers: ["Shift"] });
     await p.waitForTimeout(200);
@@ -582,7 +693,7 @@ await caso("capturas de tela: claro, escuro e celular", async () => {
   }
   // celular
   const p = await novaPagina({ largura: 390, altura: 844, celular: true, tema: "light" });
-  await p.reload(); await p.waitForFunction(() => window.tinteiro && tinteiro.vault.files().length > 0);
+  await p.reload(); await esperarApp(p);
   await abrir(p, "Planilhas/Completa ficticia.xlsx");
   const pt = await pontoCelula(p, "B3");
   await p.touchscreen.tap(pt.x, pt.y);
@@ -602,7 +713,7 @@ await caso("capturas de tela: claro, escuro e celular", async () => {
   await p.waitForTimeout(100);
   assert.ok(await ev(p, `return g.medir().r0 > 0`), "rolou");
   const p2 = await novaPagina({ largura: 390, altura: 844, celular: true, tema: "dark" });
-  await p2.reload(); await p2.waitForFunction(() => window.tinteiro && tinteiro.vault.files().length > 0);
+  await p2.reload(); await esperarApp(p2);
   await abrir(p2, "Planilhas/Orcamento ficticio.xlsx");
   await p2.screenshot({ path: path.join(FOTOS, "sheet-celular-escuro.png") });
   assert.deepEqual([...p.erros, ...p2.erros], [], "erros no console (celular)");

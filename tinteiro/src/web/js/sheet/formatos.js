@@ -233,34 +233,26 @@ export function casasDecimais(codigo) {
 /** muda as casas decimais de um formato numérico (+1 / −1) */
 export function mudarCasas(codigo, delta) {
   if (!codigo || /^(general|geral)$/i.test(codigo)) return delta > 0 ? "0.0" : "0";
-  const partes = [];
-  let atual = "", i = 0, q = false;
-  // altera cada seção: acha o último bloco de dígitos
+  // altera o primeiro bloco de marcadores numéricos (fora de aspas) de cada seção
   const ajustar = sec => {
-    const m = /([0#?,]*)(\.([0#?]*))?(?![^"]*"(?:[^"]*"[^"]*")*[^"]*$)/;
-    // procura o primeiro grupo de marcadores numéricos fora de aspas
-    let pos = -1, dentroAspas = false;
+    let pos = -1, aspas = false;
     for (let k = 0; k < sec.length; k++) {
       const ch = sec[k];
-      if (ch === '"') dentroAspas = !dentroAspas;
-      else if (!dentroAspas && "0#?".includes(ch)) { pos = k; break; }
-      else if (!dentroAspas && (ch === "\\" || ch === "_" || ch === "*")) k++;
+      if (ch === '"') aspas = !aspas;
+      else if (!aspas && "0#?".includes(ch)) { pos = k; break; }
+      else if (!aspas && (ch === "\\" || ch === "_" || ch === "*")) k++;
     }
     if (pos < 0) return sec;
     let fim = pos; while (fim < sec.length && "0#?,.".includes(sec[fim])) fim++;
-    const bloco = sec.slice(pos, fim);
-    const [int, dec = null] = bloco.split(".");
-    let novoDec;
-    if (delta > 0) novoDec = (dec || "") + "0";
-    else novoDec = dec ? dec.slice(0, -1) : null;
-    const novo = int + (novoDec ? "." + novoDec : "");
-    void m;
-    return sec.slice(0, pos) + novo + sec.slice(fim);
+    const [int, dec = null] = sec.slice(pos, fim).split(".");
+    const novoDec = delta > 0 ? (dec || "") + "0" : dec ? dec.slice(0, -1) : null;
+    return sec.slice(0, pos) + int + (novoDec ? "." + novoDec : "") + sec.slice(fim);
   };
-  for (; i < codigo.length; i++) {
-    const ch = codigo[i];
-    if (ch === '"') q = !q;
-    if (ch === ";" && !q) { partes.push(atual); atual = ""; continue; }
+  const partes = [];
+  let atual = "", aspas = false;
+  for (const ch of codigo) {
+    if (ch === '"') aspas = !aspas;
+    if (ch === ";" && !aspas) { partes.push(atual); atual = ""; continue; }
     atual += ch;
   }
   partes.push(atual);
