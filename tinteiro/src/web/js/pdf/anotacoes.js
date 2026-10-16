@@ -230,6 +230,7 @@ export function dimensionarCamada(el, W, H, R) {
 export function desenharDestaques(camada, anots, { selecionada = null } = {}) {
   const svg = camada.querySelector(":scope > svg");
   const vistos = new Set();
+  let ant = null;
   for (const a of anots) {
     if (a.tipo !== "destaque") continue;
     vistos.add(a.id);
@@ -243,7 +244,8 @@ export function desenharDestaques(camada, anots, { selecionada = null } = {}) {
       while (g.firstChild) g.firstChild.remove();
       for (const r of a.rects) g.appendChild(svgEl("rect", { x: r2(r.x), y: r2(r.y), width: r2(r.w), height: r2(r.h), rx: Math.min(1.5, r.h / 6) }));
     }
-    svg.appendChild(g); // mantém a ordem
+    if ((ant ? ant.nextElementSibling : svg.firstElementChild) !== g) { if (ant) ant.after(g); else svg.prepend(g); }
+    ant = g;
   }
   for (const g of [...svg.children]) if (!vistos.has(g.dataset.id)) g.remove();
 }
@@ -255,6 +257,7 @@ export function desenharDestaques(camada, anots, { selecionada = null } = {}) {
 export function desenharAnotacoes(camada, anots, ctx = {}) {
   const svg = camada.querySelector(":scope > svg");
   const vistosSvg = new Set(), vistosEl = new Set();
+  let antSvg = null, antEl = svg;
   for (const a of anots) {
     if (a.tipo === "tinta" || a.tipo === "retangulo") {
       vistosSvg.add(a.id);
@@ -266,7 +269,9 @@ export function desenharAnotacoes(camada, anots, ctx = {}) {
       if (a.tipo === "tinta") { const d = caminhoSuave(a.pontos); if (e.getAttribute("d") !== d) e.setAttribute("d", d); }
       else { e.setAttribute("x", r2(a.x)); e.setAttribute("y", r2(a.y)); e.setAttribute("width", r2(Math.max(0.1, a.w))); e.setAttribute("height", r2(Math.max(0.1, a.h))); e.setAttribute("stroke-linejoin", "miter"); }
       e.classList.toggle("is-selected", a.id === ctx.selecionada);
-      svg.appendChild(e);
+      // só move o nó se a ordem estiver errada (mover tira o foco de quem está sendo editado)
+      if ((antSvg ? antSvg.nextElementSibling : svg.firstElementChild) !== e) { if (antSvg) antSvg.after(e); else svg.prepend(e); }
+      antSvg = e;
     } else if (a.tipo === "texto" || a.tipo === "imagem") {
       vistosEl.add(a.id);
       let el = camada.querySelector(`:scope > .pdf-anot[data-id="${a.id}"]`);
@@ -304,7 +309,8 @@ export function desenharAnotacoes(camada, anots, ctx = {}) {
           }
         }
       }
-      if (el.parentNode !== camada || el !== camada.lastElementChild) camada.appendChild(el);
+      if (antEl.nextElementSibling !== el) antEl.after(el);
+      antEl = el;
     }
   }
   for (const e of [...svg.children]) if (e.dataset.id && !vistosSvg.has(e.dataset.id)) e.remove();
