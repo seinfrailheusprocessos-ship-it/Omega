@@ -23,7 +23,7 @@ export class SearchView extends View {
     this.input.addEventListener("input", () => this.buscarDeb());
     this.input.addEventListener("keydown", e => { if (e.key === "Enter") this.buscarDeb.flush(); });
   }
-  focus() { this.input?.focus(); this.input?.select(); }
+  focus() { if (document.activeElement !== this.input) { this.input?.focus(); this.input?.select(); } }
   setQuery(q) { this.input.value = q; this.buscar(); }
   async buscar() {
     const q = this.input.value.trim();
@@ -36,7 +36,8 @@ export class SearchView extends View {
     if (meu !== this.seq) return;
     const lista = r.results || [];
     this.info.textContent = "";
-    this.info.append(h("span", { text: lista.length ? `${lista.length} arquivo${lista.length > 1 ? "s" : ""}` : "Nenhum resultado." }), r.ready === false ? h("span.u-faint", { text: "indexando…" }) : null);
+    this.info.append(h("span", { text: lista.length ? `${lista.length} arquivo${lista.length > 1 ? "s" : ""}` : "Nenhum resultado." }));
+    if (r.ready === false) this.info.append(h("span.u-faint", { text: "indexando…" }));
     for (const it of lista) {
       const ext = extname(it.path);
       const titulo = h("div.tree-item-self.search-result-file-title.is-clickable",

@@ -114,6 +114,13 @@ export class App extends Emitter {
     this.workspaceEl.addEventListener("contextmenu", e => { if (!e.target.closest("input,textarea,[contenteditable],.cm-editor,.view-content")) e.preventDefault(); });
     window.addEventListener("resize", debounce(() => this.emit("resize"), 100));
     this.on("resize", () => this.workspace.leaves().forEach(l => l.view?.onResize()));
+    // canto superior direito: botão da barra lateral direita e (no Windows) espaço para minimizar/maximizar/fechar
+    this.botaoLateralDireita = h("div.sidebar-toggle-button.mod-right", iconButton("sidebar-right", "Mostrar/ocultar barra lateral direita", () => this.alternarLateral("direita")));
+    if (!this.isMobile) {
+      const ajustar = debounce(() => this.ajustarControlesJanela(), 30);
+      this.on("resize", ajustar); this.on("layout-changed", ajustar);
+      setTimeout(() => this.ajustarControlesJanela(), 300);
+    }
   }
 
   criarDock(lado) {
@@ -133,7 +140,6 @@ export class App extends Emitter {
     } else {
       grupo.headerEl.appendChild(h("div.workspace-tab-header-spacer"));
       grupo.headerEl.appendChild(h("div.titlebar-controls-spacer"));
-      grupo.el.classList.add("mod-top-right-space");
     }
     const alca = h("div.workspace-leaf-resize-handle");
     el.appendChild(alca);
@@ -175,6 +181,20 @@ export class App extends Emitter {
     this.on("sidebar-tab", (g, l) => localStorage.setItem(g === this.esquerda.grupo ? "tinteiro.lateral.esquerda" : "tinteiro.lateral.direita", l.view?.getViewType() || ""));
   }
 
+  ajustarControlesJanela() {
+    const grupos = [this.direita.grupo, ...this.workspace.grupos()];
+    let alvo = null;
+    for (const g of grupos) {
+      g.el.classList.remove("mod-top-right-space");
+      const r = g.headerEl.getBoundingClientRect();
+      if (!alvo && r.width && r.right >= window.innerWidth - 2 && r.top <= 1) alvo = g;
+    }
+    if (!alvo) return;
+    alvo.el.classList.add("mod-top-right-space");
+    const esp = alvo.headerEl.querySelector(".titlebar-controls-spacer");
+    if (this.botaoLateralDireita.parentNode !== alvo.headerEl || this.botaoLateralDireita.nextSibling !== esp) alvo.headerEl.insertBefore(this.botaoLateralDireita, esp);
+  }
+
   alternarLateral(lado, abrir) {
     const dock = lado === "esquerda" ? this.esquerda : this.direita;
     if (this.isMobile) { this.mobile?.abrirGaveta(lado === "esquerda" ? "left" : "right"); return; }
@@ -183,6 +203,7 @@ export class App extends Emitter {
     if (lado === "esquerda") this.ribbonEl.classList.toggle("is-collapsed", recolher);
     localStorage.setItem(`tinteiro.recolhida.${dock.lado}`, recolher ? "1" : "0");
     this.emit("resize");
+    this.emit("layout-changed");
   }
 
   mostrarPainel(leaf) {
@@ -190,6 +211,7 @@ export class App extends Emitter {
     leaf.group.setActive(leaf);
     if (this.isMobile) this.mobile?.abrirGaveta(dock === "esquerda" ? "left" : "right", leaf);
     else this.alternarLateral(dock, true);
+    leaf.view?.focus();
     setTimeout(() => leaf.view?.focus(), 30);
   }
 

@@ -224,6 +224,30 @@ export class MobileUI {
     this.toolbar.classList.toggle("has-actions", acoes.length > 0);
   }
 
+  // ---------- atualização do app Android (nova versão publicada no GitHub) ----------
+  async procurarAtualizacao() {
+    try {
+      const ultima = Number(localStorage.getItem("tinteiro.apk.verificado") || 0);
+      if (Date.now() - ultima < 6 * 3600 * 1000) return;
+      const r = await fetch("https://api.github.com/repos/seinfrailheusprocessos-ship-it/Omega/releases/latest", { headers: { Accept: "application/vnd.github+json" } });
+      if (!r.ok) return;
+      localStorage.setItem("tinteiro.apk.verificado", String(Date.now()));
+      const j = await r.json();
+      const nova = String(j.tag_name || "").replace(/^v/, "");
+      const atual = typeof __VERSAO__ !== "undefined" ? __VERSAO__ : "0";
+      const n = v => v.split(".").map(x => parseInt(x) || 0);
+      const [a, b] = [n(nova), n(atual)];
+      const maior = a[0] > b[0] || (a[0] === b[0] && (a[1] > b[1] || (a[1] === b[1] && a[2] > b[2])));
+      if (!maior) return;
+      const apk = (j.assets || []).find(x => /\.apk$/i.test(x.name));
+      const url = apk?.browser_download_url || "https://github.com/seinfrailheusprocessos-ship-it/Omega/releases/latest/download/Tinteiro.apk";
+      const faixa = h("div.update-banner", h("span", { text: `Nova versão do Tinteiro (${nova}).` }),
+        h("button.mod-cta", { text: "Atualizar", onclick: () => { window.open(url, "_system"); faixa.remove(); } }),
+        iconButton("x", "Agora não", () => faixa.remove()));
+      document.body.appendChild(faixa);
+    } catch (e) {}
+  }
+
   // ---------- Android: botão voltar, links de pareamento, teclado ----------
   async configurarNativo() {
     if (!window.Capacitor?.isNativePlatform?.()) return;
@@ -247,6 +271,7 @@ export class MobileUI {
       if (lanc?.url) tratarLink(lanc.url);
       App.addListener("resume", () => this.app.backend.sync?.sincronizar());
     } catch (e) {}
+    setTimeout(() => this.procurarAtualizacao(), 6000);
     try {
       const { Keyboard } = await import("@capacitor/keyboard");
       Keyboard.addListener("keyboardWillShow", () => { this.tecladoNativo = true; document.body.classList.add("keyboard-open"); this.atualizarToolbar(); });

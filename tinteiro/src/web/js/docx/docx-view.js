@@ -61,6 +61,7 @@ export class DocxView extends FileView {
     rec.fotografar(this.paginas);
     this.calcularEstrutura();
     this.aplicarZoom();
+    this.atualizarBarra(this.paginas.querySelector("article p span") || this.paginas.querySelector("article p"));
     if (manterRolagem) this.area.scrollTop = rolagem;
     // o observador só anota quais parágrafos foram tocados; "não salvo" vem dos eventos de edição
     this.observador = new MutationObserver(regs => {
@@ -189,11 +190,14 @@ export class DocxView extends FileView {
   aplicarFonte(f) { this.envolverSelecao("fonte", f, { fontFamily: `"${f}"` }); }
   aplicarTamanho(t) { this.envolverSelecao("tam", String(t), { fontSize: t + "pt" }); }
 
-  atualizarBarra() {
+  atualizarBarra(elInicial) {
     if (!this.botoes) return;
     const s = getSelection();
-    if (!s.rangeCount || !this.paginas.contains(s.anchorNode)) return;
-    const el = s.anchorNode.nodeType === 1 ? s.anchorNode : s.anchorNode.parentElement;
+    let el = elInicial;
+    if (!el) {
+      if (!s.rangeCount || !this.paginas.contains(s.anchorNode)) return;
+      el = s.anchorNode.nodeType === 1 ? s.anchorNode : s.anchorNode.parentElement;
+    }
     const cs = getComputedStyle(el);
     this.botoes.b.classList.toggle("is-active", Number(cs.fontWeight) >= 600);
     this.botoes.i.classList.toggle("is-active", cs.fontStyle === "italic");

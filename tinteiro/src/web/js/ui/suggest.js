@@ -16,7 +16,10 @@ export function fuzzy(q, texto) {
   if (termos.length > 1) {
     let total = 0; const ranges = [];
     for (const termo of termos) { const r = fuzzy(termo, texto); if (!r) return null; total += r.score; ranges.push(...r.ranges); }
-    return { score: total / termos.length - 50, ranges: ranges.sort((a, b) => a[0] - b[0]) };
+    ranges.sort((a, b) => a[0] - b[0]);
+    const unidos = [];
+    for (const r of ranges) { const u = unidos[unidos.length - 1]; if (u && r[0] <= u[1]) u[1] = Math.max(u[1], r[1]); else unidos.push([...r]); }
+    return { score: total / termos.length - 50, ranges: unidos };
   }
   let i = 0, score = 0, seq = 0; const ranges = [];
   for (let j = 0; j < t.length && i < q.length; j++) {
@@ -34,7 +37,9 @@ export function fuzzy(q, texto) {
 export function destacar(texto, ranges) {
   const frag = document.createDocumentFragment();
   let ult = 0;
-  for (const [a, b] of ranges || []) {
+  for (let [a, b] of ranges || []) {
+    a = Math.max(a, ult);
+    if (b <= a) continue;
     if (a > ult) frag.appendChild(document.createTextNode(texto.slice(ult, a)));
     frag.appendChild(h("span.suggestion-highlight", { text: texto.slice(a, b) }));
     ult = b;
