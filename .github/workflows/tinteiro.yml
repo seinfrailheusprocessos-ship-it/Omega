@@ -1,0 +1,129 @@
+# Gera o instalador do Windows (.exe) e o app Android (.apk) do Tinteiro e publica em Releases.
+name: Tinteiro
+
+on:
+  push:
+    branches: [claude/obsidian-style-document-editor-jsxzib, main]
+    paths: ["tinteiro/**", ".github/workflows/tinteiro.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tinteiro-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: tinteiro
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tinteiro/package-lock.json
+      - run: npm ci
+      - run: npm run build:web
+      - name: Instalador NSIS
+        run: npx electron-builder --win nsis --x64 --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - name: Cópia com nome fixo (link de download que não muda)
+        shell: bash
+        run: cp out/Tinteiro-Setup-*.exe out/Tinteiro-Setup.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            tinteiro/out/*.exe
+            tinteiro/out/*.blockmap
+            tinteiro/out/latest.yml
+          if-no-files-found: error
+
+  android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tinteiro
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tinteiro/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      - run: npm run build:web
+      - run: npx cap sync android
+      - name: APK
+        working-directory: tinteiro/mobile/android
+        run: chmod +x gradlew && ./gradlew --no-daemon assembleRelease
+      - name: Nome final
+        run: cp mobile/android/app/build/outputs/apk/release/app-release.apk out-Tinteiro.apk && mkdir -p out && mv out-Tinteiro.apk out/Tinteiro.apk && node -e "console.log(require('./package.json').version)" > out/versao-android.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: tinteiro/out/*
+          if-no-files-found: error
+
+  pwa:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tinteiro
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tinteiro/package-lock.json
+      - run: npm ci
+        env:
+          ELECTRON_SKIP_BINARY_DOWNLOAD: "1"
+      - run: npm run build:web
+      - name: Pacote da interface (usado pela atualização do celular)
+        run: cd dist/web && zip -qr ../../tinteiro-web.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: tinteiro/tinteiro-web.zip
+
+  release:
+    needs: [windows, android, pwa]
+    # só publica quando a mensagem do commit tiver [publicar] (ou quando disparado à mão)
+    if: contains(github.event.head_commit.message, '[publicar]') || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: art
+      - name: Publicar versão
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V=$(node -e "console.log(require('./tinteiro/package.json').version)")
+          ls -R art
+          NOTAS="Tinteiro $V
+
+          • Computador (Windows): baixe Tinteiro-Setup.exe e dê dois cliques.
+          • Android: baixe Tinteiro.apk no celular e toque para instalar.
+          • iPhone: use o QR mostrado no computador (Configurações → Celular e sincronização)."
+          if gh release view "v$V" >/dev/null 2>&1; then
+            echo "Versão v$V já existe: substituindo os arquivos."
+            gh release upload "v$V" art/windows/* art/android/Tinteiro.apk art/web/tinteiro-web.zip --clobber
+          else
+            gh release create "v$V" art/windows/* art/android/Tinteiro.apk art/web/tinteiro-web.zip --target "$GITHUB_SHA" --title "Tinteiro $V" --notes "$NOTAS" --latest
+          fi

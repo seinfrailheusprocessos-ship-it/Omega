@@ -1,0 +1,18 @@
+{
+  "appId": "app.tinteiro.editor",
+  "appName": "Tinteiro",
+  "webDir": "dist/web",
+  "android": {
+    "path": "mobile/android",
+    "allowMixedContent": true,
+    "backgroundColor": "#1e1e1e"
+  },
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true
+  },
+  "plugins": {
+    "Keyboard": { "resize": "native", "resizeOnFullScreen": true },
+    "CapacitorHttp": { "enabled": false }
+  }
+}
