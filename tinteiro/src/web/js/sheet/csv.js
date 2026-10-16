@@ -126,3 +126,40 @@ export function detectarDecimalVirgula(linhas, sep) {
   }
   return false;
 }
+
+import { chave } from "./enderecos.js";
+import { paraIngles, paraMotor } from "./formula.js";
+import { lerNumeroBR, lerNumeroEN } from "./formatos.js";
+
+/** bytes do CSV → dados para o modelo da pasta (uma planilha) */
+export function dadosCsv(bytes, nome = "Planilha1") {
+  const { texto, codificacao, bom } = decodificar(bytes);
+  const sep = detectarSeparador(texto);
+  const { linhas, fimDeLinha, terminaComQuebra, aspasSempre } = analisar(texto, sep);
+  const decimalVirgula = detectarDecimalVirgula(linhas, sep);
+  const celulas = new Map();
+  const hf = new Array(linhas.length);
+  let maxC = -1;
+  linhas.forEach((l, r) => {
+    const out = new Array(l.campos.length);
+    l.campos.forEach((t, c) => {
+      if (t === "") { out[c] = null; return; }
+      const cel = { s: 0, raw: t };
+      if (t.startsWith("=") && t.length > 1) {
+        try { cel.f = paraIngles(t.slice(1)); out[c] = "=" + paraMotor(cel.f); } catch (e) { out[c] = "'" + t; delete cel.f; }
+      } else {
+        const n = decimalVirgula ? lerNumeroBR(t, { pontoDecimal: false }) : lerNumeroEN(t);
+        out[c] = n ? n.valor : "'" + t;
+      }
+      celulas.set(chave(r, c), cel);
+      if (c > maxC) maxC = c;
+    });
+    hf[r] = out;
+  });
+  return {
+    tipo: "csv",
+    csv: { sep, decimalVirgula, codificacao, bom, fimDeLinha, terminaComQuebra, aspasSempre, camposPorLinha: linhas.map(l => l.campos.length) },
+    folhas: [{ nome, celulas, hf, maxR: linhas.length - 1, maxC, linhas: new Map(), colunas: [], mesclas: [] }],
+    abaAtiva: 0,
+  };
+}

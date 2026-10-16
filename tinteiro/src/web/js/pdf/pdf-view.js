@@ -85,6 +85,17 @@ function lerFaixas(txt, n) {
   }
   return out.length ? out : null;
 }
+/** bolinha de cor (a variável CSS precisa de setProperty) */
+export function bolinha(cor, nome, ativa, onclick) {
+  const b = h("button.pdf-cor-bolinha" + (ativa ? ".is-active" : ""), { type: "button", title: nome, "aria-label": "Cor " + nome, onclick });
+  b.style.setProperty("--cor", cor);
+  return b;
+}
+/** libera um documento do pdf.js (na versão 6 isso é feito pela tarefa de carregamento) */
+function destruir(doc) {
+  try { return Promise.resolve(doc?.loadingTask ? doc.loadingTask.destroy() : doc?.destroy?.()).catch(() => {}); }
+  catch (e) { return Promise.resolve(); }
+}
 function carregarOpcoes() {
   try { const o = JSON.parse(localStorage.getItem(CHAVE_OPCOES) || "{}"); return { ...structuredClone(PADRAO), ...o, caneta: { ...PADRAO.caneta, ...o.caneta }, retangulo: { ...PADRAO.retangulo, ...o.retangulo }, destaque: { ...PADRAO.destaque, ...o.destaque }, texto: { ...PADRAO.texto, ...o.texto } }; }
   catch (e) { return structuredClone(PADRAO); }
@@ -99,6 +110,7 @@ export class PdfView extends FileView {
   // =================================================================== abrir
   async onLoadFile(dados) {
     this.fechado = false;
+    this.senhaCancelada = false;
     this.ro = !!this.somenteLeitura;
     this.mobile = !!this.app.isMobile;
     this.fontes = []; this.paginas = []; this.imagens = new Map();
@@ -114,22 +126,29 @@ export class PdfView extends FileView {
     try { await this.abrirBytes(new Uint8Array(dados)); }
     catch (e) {
       if (this.fechado) return;
-      vazio(this.paginasEl).appendChild(h("div.view-error", h("p", { text: "Não foi possível abrir este PDF." }), h("p.u-muted", { text: e?.name === "PasswordException" ? "Senha não informada." : (e.message || String(e)) })));
-      console.error(e);
+      const senha = this.senhaCancelada || e?.name === "PasswordException";
+      vazio(this.paginasEl).appendChild(h("div.view-error",
+        h("p", { text: senha ? "Este PDF é protegido por senha." : "Não foi possível abrir este PDF." }),
+        h("p.u-muted", { text: senha ? "A senha não foi informada." : (e.message || String(e)) }),
+        senha ? h("button.mod-cta", { text: "Digitar a senha", onclick: () => this.recarregar() }) : null));
+      if (!senha) console.error(e);
     }
   }
 
   async abrirBytes(bytes, { manterPosicao = null } = {}) {
     const { protegido, assinado } = examinarBytes(bytes);
     const fonte = await this.carregarFonte(bytes, basename(this.file.path));
-    if (this.fechado) { fonte.doc.destroy(); return; }
+    if (this.fechado) { destruir(fonte.doc); return; }
     // libera o documento anterior (depois de salvar ele é recarregado a partir do arquivo novo)
     for (const st of this.est.values()) this.descartarPagina(st);
     for (const m of this.minis.values()) { m.el.remove(); this.obsMini?.unobserve(m.el); }
     this.est.clear(); this.minis.clear();
-    for (const f of this.fontes) { try { f.doc.destroy(); } catch (e) {} }
+    for (const f of this.fontes) destruir(f.doc);
     this.pdfPaginas = new Map([...this.pdfPaginas].filter(([k]) => k.startsWith(fonte.id + ":")));
     this.textos.clear(); this.lru = [];
+    // as anotações já foram gravadas no arquivo: as imagens em memória não são mais usadas
+    for (const im of this.imagens.values()) URL.revokeObjectURL(im.url);
+    this.imagens.clear();
     this.fontes = [fonte];
     this.bloqueado = !this.ro && (protegido || fonte.senha);
     this.assinadoDigital = assinado; this.avisouAssinado = false;
@@ -153,8 +172,8 @@ export class PdfView extends FileView {
   pedirSenha(motivo) {
     return new Promise(res => {
       const m = new Modal({ titulo: "PDF protegido por senha" });
-      const inp = h("input", { type: "password", placeholder: "Senha", autocomplete: "off" });
-      m.contentEl.append(h("p", { text: motivo === pdfjs.PasswordResponses.INCORRECT_PASSWORD ? "Senha incorreta. Tente de novo." : "Este arquivo pede uma senha para abrir." }), inp);
+      const inp = h("input", { type: "password", placeholder: "Senha", autocomplete: "current-password", style: { width: "100%" } });
+      m.contentEl.append(h("p", { text: motivo === pdfjs.PasswordResponses.INCORRECT_PASSWORD ? "Senha incorreta. Tente de novo." : "Este arquivo pede uma senha para abrir." }), h("form", { onsubmit: e => e.preventDefault() }, inp));
       let feito = false;
       const fim = v => { if (!feito) { feito = true; res(v); m.close(); } };
       m.aoFechar.push(() => fim(null));
@@ -170,7 +189,7 @@ export class PdfView extends FileView {
     let senha = false;
     tarefa.onPassword = (atualizar, motivo) => {
       senha = true;
-      this.pedirSenha(motivo).then(s => (s == null ? tarefa.destroy() : atualizar(s)));
+      this.pedirSenha(motivo).then(s => { if (s == null) { this.senhaCancelada = true; tarefa.destroy(); } else atualizar(s); });
     };
     const doc = await tarefa.promise;
     const id = novoId("f");
@@ -207,7 +226,7 @@ export class PdfView extends FileView {
     this.buscaEl = this.criarBusca();
     this.corpo = h("div.pdf-corpo", this.miniPainel, this.miniFundo, this.rolagem, this.buscaEl);
     this.raiz.append(this.criarBarra(), this.corpo);
-    if (this.mobile && !ro) this.raiz.appendChild(h("div.pdf-barra-inferior", this.criarFerramentas()));
+    if (this.mobile && !ro) this.raiz.appendChild(h("div.pdf-barra-inferior.pdf-so-edicao", this.criarFerramentas()));
     this.contentEl.appendChild(this.raiz);
     this.alternarMiniaturas(this.mobile ? false : this.opcoes.miniaturas !== false, { guardar: false });
 
@@ -270,7 +289,7 @@ export class PdfView extends FileView {
     const zoom = h("div.pdf-zoom", this.botao("zoom-out", "Diminuir zoom (Ctrl −)", () => this.zoomPasso(-1)), this.zoomBtn, this.botao("zoom-in", "Aumentar zoom (Ctrl +)", () => this.zoomPasso(1)));
     this.btnDesfazer = this.botao("undo", "Desfazer (Ctrl+Z)", () => this.desfazer());
     this.btnRefazer = this.botao("redo", "Refazer (Ctrl+Y)", () => this.refazer());
-    this.btnSalvar = this.botao("save", "Salvar (Ctrl+S)", () => this.save(), "pdf-btn-salvar");
+    this.btnSalvar = this.botao("save", "Salvar (Ctrl+S)", () => this.save(), "pdf-btn-salvar pdf-so-edicao");
     const busca = this.botao("search", "Procurar no PDF (Ctrl+F)", () => this.abrirBusca());
     const mais = this.botao("more-horizontal", "Mais opções do PDF", e => this.menuMais(e));
     const paginas = ro ? [] : [
@@ -281,23 +300,27 @@ export class PdfView extends FileView {
     ];
     const barra = h("div.pdf-toolbar");
     if (this.mobile) {
-      barra.append(this.btnMini, navegacao, h("div.pdf-toolbar-espaco"), ro ? null : this.btnDesfazer, ro ? null : this.btnRefazer, busca, mais, ro ? null : this.btnSalvar);
+      barra.append(this.btnMini, navegacao, h("div.pdf-toolbar-espaco"), ro ? null : h("div.pdf-so-edicao.pdf-contents", this.btnDesfazer, this.btnRefazer), busca, mais, ro ? null : this.btnSalvar);
     } else {
       this.ferramentasEl = ro ? null : this.criarFerramentas();
       barra.append(
         h("div.pdf-toolbar-grupo.mod-esquerda", this.btnMini, sep(), zoom, sep(), navegacao),
-        this.ferramentasEl ? h("div.pdf-toolbar-grupo.mod-centro", this.ferramentasEl) : h("div.pdf-toolbar-espaco"),
-        h("div.pdf-toolbar-grupo.mod-direita", ro ? null : [this.btnDesfazer, this.btnRefazer, sep(), ...paginas, sep()], busca, ro ? null : this.btnSalvar, mais));
+        this.ferramentasEl ? h("div.pdf-toolbar-grupo.mod-centro.pdf-so-edicao", this.ferramentasEl) : h("div.pdf-toolbar-espaco"),
+        h("div.pdf-toolbar-grupo.mod-direita", ro ? null : h("div.pdf-so-edicao.pdf-contents", this.btnDesfazer, this.btnRefazer, sep(), ...paginas, sep()), busca, ro ? null : this.btnSalvar, mais));
     }
     this.barraEl = barra;
     return barra;
   }
 
+  /** ferramentas na mesma linha quando cabem; senão vão para uma segunda linha */
   medirBarra() {
     if (this.mobile || !this.barraEl) return;
     const w = this.raiz.clientWidth;
-    this.raiz.classList.toggle("is-estreita", w > 0 && w < 1060);
-    this.raiz.classList.toggle("is-muito-estreita", w > 0 && w < 640);
+    if (!w) return;
+    this.raiz.classList.remove("is-estreita");
+    const b = this.barraEl;
+    this.raiz.classList.toggle("is-estreita", b.scrollWidth > b.clientWidth + 1);
+    this.raiz.classList.toggle("is-muito-estreita", w < 640);
   }
 
   criarFerramentas() {
@@ -320,10 +343,10 @@ export class PdfView extends FileView {
     this.miniLista = h("div.pdf-mini-lista", { tabindex: "0", role: "listbox", "aria-label": "Miniaturas das páginas", "aria-multiselectable": "true" });
     this.miniContagem = h("span.pdf-mini-contagem");
     const cab = h("div.pdf-mini-cabecalho", h("span.pdf-mini-titulo", { text: "Páginas" }), this.miniContagem, h("div.pdf-toolbar-espaco"),
-      this.ro ? null : this.botao("merge", "Inserir páginas de outro PDF", e => this.menuJuntar(e)),
-      this.ro ? null : this.botao("scissors", "Extrair páginas para um novo PDF", () => this.extrairPaginas()),
+      this.ro ? null : this.botao("merge", "Inserir páginas de outro PDF", e => this.menuJuntar(e), "pdf-so-edicao"),
+      this.ro ? null : this.botao("scissors", "Extrair páginas para um novo PDF", () => this.extrairPaginas(), "pdf-so-edicao"),
       this.mobile ? this.botao("x", "Fechar", () => this.alternarMiniaturas(false)) : null);
-    this.miniDica = this.ro ? null : h("div.pdf-mini-dica", { text: this.mobile ? "Toque e segure para arrastar" : "Arraste para reordenar" });
+    this.miniDica = this.ro ? null : h("div.pdf-mini-dica.pdf-so-edicao", { text: this.mobile ? "Toque e segure para arrastar" : "Arraste para reordenar" });
     this.miniIndicador = h("div.pdf-mini-indicador.is-hidden");
     this.miniLista.appendChild(this.miniIndicador);
     this.miniLista.addEventListener("touchmove", e => { if (this.arrastoMini && e.cancelable) e.preventDefault(); }, { passive: false });
@@ -365,7 +388,8 @@ export class PdfView extends FileView {
     if (vistas.includes(id)) return;
     vistas.push(id);
     try { localStorage.setItem("tinteiro.pdf.dicas", JSON.stringify(vistas)); } catch (e) {}
-    notice(DICAS[id], { tempo: 5000 });
+    this.avisoDica?.hide();
+    this.avisoDica = notice(DICAS[id], { tempo: 4500 });
   }
 
   // =================================================================== páginas (DOM)
@@ -662,7 +686,12 @@ export class PdfView extends FileView {
     if (!this.paginas.length) return PX_POR_PT;
     let s;
     if (modo === "pagina") { const g = this.geo(this.paginas[this.atual] || this.paginas[0]); s = Math.min(larg / g.dw, alt / g.dh); }
-    else s = larg / Math.max(...this.paginas.map(p => this.geo(p).dw));
+    else {
+      // no computador: largura mais comum (mediana) — uma página deitada no meio não deixa as outras pequenas;
+      // no celular: a página mais larga, para nunca precisar arrastar para os lados
+      const ws = this.paginas.map(p => this.geo(p).dw).sort((a, b) => a - b);
+      s = larg / (this.mobile ? ws[ws.length - 1] : ws[Math.floor((ws.length - 1) / 2)]);
+    }
     return limitar(s, 0.1 * PX_POR_PT, 5 * PX_POR_PT);
   }
 
@@ -672,7 +701,8 @@ export class PdfView extends FileView {
     if (Math.abs(s - this.escala) < 1e-4) { this.atualizarBarra(); return; }
     const r = this.rolagem, rr = r.getBoundingClientRect();
     const fx = foco ? foco.clientX - rr.left : r.clientWidth / 2;
-    const fy = foco ? foco.clientY - rr.top : r.clientHeight * 0.35;
+    // com ponto de foco (roda/pinça) ele fica parado; ao ajustar à tela, fica parado o topo do que se está lendo
+    const fy = foco ? foco.clientY - rr.top : modo ? 0 : r.clientHeight * 0.35;
     const cy = r.scrollTop + fy, cx = r.scrollLeft + fx;
     // âncora: página sob o foco e a posição relativa dentro dela
     let ancora = null;
@@ -729,7 +759,7 @@ export class PdfView extends FileView {
       if (alvo) {
         this.btnCor.querySelector(".pdf-cor-amostra").style.background = alvo.cor;
         const temTam = alvo.tam != null || alvo.esp != null;
-        this.btnTam.classList.toggle("is-hidden", !temTam);
+        this.btnTam.classList.toggle("is-hidden", !temTam || this.mobile);
         this.btnTam.querySelector(".pdf-tam-rotulo").textContent = alvo.tam != null ? `${alvo.tam}` : alvo.esp != null ? `${String(alvo.esp).replace(".", ",")} pt` : "";
         const tt = alvo.tam != null ? "Tamanho da letra" : "Espessura do traço";
         this.btnTam.title = tt; this.btnTam.setAttribute("aria-label", tt);
@@ -749,8 +779,26 @@ export class PdfView extends FileView {
     const a = this.anotSelecionada();
     const ehDestaque = alvo === this.opcoes.destaque || a?.tipo === "destaque";
     const cores = ehDestaque ? CORES_DESTAQUE : CORES_TINTA;
-    this.popover(ancora, fechar => h("div.pdf-paleta", cores.map(([c, nome]) =>
-      h("button.pdf-cor-bolinha" + (alvo.cor === c ? ".is-active" : ""), { type: "button", title: nome, "aria-label": "Cor " + nome, style: { "--cor": c }, onclick: () => { this.aplicarOpcao({ cor: c }); fechar(); } }))));
+    this.popover(ancora, fechar => {
+      const box = h("div.pdf-popover-opcoes", h("div.pdf-paleta", cores.map(([c, nome]) =>
+        bolinha(c, nome, alvo.cor === c, () => { this.aplicarOpcao({ cor: c }); fechar(); }))));
+      // no celular a cor e o tamanho ficam juntos (a barra de baixo não tem espaço para os dois)
+      if (this.mobile && (alvo.tam != null || alvo.esp != null)) {
+        const ehTexto = alvo.tam != null, lista = ehTexto ? TAMANHOS : ESPESSURAS;
+        const atual = () => (ehTexto ? alvo.tam : alvo.esp);
+        const rot = () => (ehTexto ? `${atual()} pt` : `${String(atual()).replace(".", ",")} pt`);
+        const valor = h("span.pdf-popover-valor", { text: rot() });
+        const passo = d => {
+          const v = atual();
+          const novo = d > 0 ? lista.find(t => t > v) ?? v : [...lista].reverse().find(t => t < v) ?? v;
+          if (novo !== v) this.aplicarOpcao(ehTexto ? { tam: novo } : { esp: novo });
+          valor.textContent = rot();
+        };
+        box.appendChild(h("div.pdf-popover-tam", h("span.pdf-popover-rotulo", { text: ehTexto ? "Tamanho da letra" : "Espessura" }),
+          this.botao("minus", ehTexto ? "Letra menor" : "Traço mais fino", () => passo(-1)), valor, this.botao("plus", ehTexto ? "Letra maior" : "Traço mais grosso", () => passo(1))));
+      }
+      return box;
+    });
   }
 
   menuTamanho(ancora) {
@@ -1356,8 +1404,10 @@ export class PdfView extends FileView {
     if (!this.editando && (a.tipo === "imagem" || a.tipo === "retangulo")) {
       alca("no", b.x, b.y); alca("ne", b.x + b.w, b.y); alca("so", b.x, b.y + b.h); alca("se", b.x + b.w, b.y + b.h);
     } else if (a.tipo === "texto") {
-      const [x1, y1] = pontoDaCaixa(a, a.cw, a.ch / 2), [x0, y0] = pontoDaCaixa(a, 0, a.ch / 2);
-      alca("fim", x1, y1); alca("inicio", x0, y0);
+      const fora = (this.mobile ? 13 : 7) / this.escala;
+      const [x1, y1] = pontoDaCaixa(a, a.cw + fora, a.ch / 2), [x0, y0] = pontoDaCaixa(a, -fora, a.ch / 2);
+      alca("fim", x1, y1);
+      if (!this.mobile) alca("inicio", x0, y0);
     }
     if (a.tipo === "texto" || a.tipo === "imagem") caixa.classList.add("mod-sem-borda");
     st.anot.appendChild(sel);
@@ -1635,9 +1685,9 @@ export class PdfView extends FileView {
     let fonte;
     try { fonte = await this.carregarFonte(dados.bytes, dados.nome || "PDF"); }
     catch (e) { erro("Não foi possível ler esse PDF.", e); return; }
-    if (fonte.senha) { fonte.doc.destroy(); notice("Esse PDF é protegido por senha e não pode ser juntado."); return; }
+    if (fonte.senha) { destruir(fonte.doc); notice("Esse PDF é protegido por senha e não pode ser juntado."); return; }
     const escolha = await this.perguntarInsercao(fonte, posicao);
-    if (!escolha || this.fechado) { fonte.doc.destroy(); return; }
+    if (!escolha || this.fechado) { destruir(fonte.doc); return; }
     this.fontes.push(fonte);
     this.registrar();
     const novas = escolha.indices.map(i => ({ uid: novoId("p"), fonte: fonte.id, indice: i, rot: 0, anots: [] }));
@@ -2155,7 +2205,7 @@ export class PdfView extends FileView {
       aviso.hide();
       urls.forEach(u => URL.revokeObjectURL(u));
       erro("Não foi possível preparar a impressão.", e);
-    } finally { doc?.destroy(); }
+    } finally { destruir(doc); }
   }
 
   // =================================================================== integração com o app
@@ -2261,7 +2311,7 @@ export class PdfView extends FileView {
     this.obs?.disconnect(); this.obsMini?.disconnect(); this.obsTamanho?.disconnect();
     for (const st of this.est?.values() || []) this.descartarPagina(st);
     this.est?.clear(); this.minis?.clear();
-    for (const f of this.fontes || []) { try { await f.doc.destroy(); } catch (e) {} }
+    for (const f of this.fontes || []) await destruir(f.doc);
     this.fontes = [];
     for (const im of this.imagens?.values() || []) URL.revokeObjectURL(im.url);
     this.imagens?.clear();

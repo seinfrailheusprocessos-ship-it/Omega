@@ -78,6 +78,25 @@ export class Pasta extends Emitter {
     this.pilhaRefazer = [];
     this.alteracoesPasta = false; // nomes de planilhas, novas planilhas…
     this.construirMotor(dados.folhas);
+    if (this.tipo === "csv") {
+      // textos que começam com "=" mas não são fórmulas válidas ficam como texto
+      for (const f of this.folhas) for (const [k, cel] of f.celulas) {
+        if (cel.f == null) continue;
+        if (!this.hf.validateFormula("=" + paraMotor(cel.f))) { delete cel.f; this.hf.setCellContents({ sheet: f.hfId, row: linhaDaChave(k), col: colunaDaChave(k) }, [["'" + cel.raw]]); }
+      }
+      this.hf.clearUndoStack();
+    }
+  }
+
+  /** junta as últimas n ações de desfazer numa só */
+  agrupar(n, nome) {
+    if (n < 2 || this.pilhaDesfazer.length < n) return;
+    const partes = this.pilhaDesfazer.splice(this.pilhaDesfazer.length - n, n);
+    this.pilhaDesfazer.push({
+      nome: nome || partes[partes.length - 1].nome, folha: partes[0].folha, hf: false, estrutura: partes.some(p => p.estrutura),
+      desfazer: () => { for (let i = partes.length - 1; i >= 0; i--) { if (partes[i].hf) this.hf.undo(); partes[i].desfazer(); } },
+      refazer: () => { for (const p of partes) { if (p.hf) this.hf.redo(); p.refazer(); } },
+    });
   }
 
   construirMotor(folhasDados) {
@@ -270,6 +289,7 @@ export class Pasta extends Emitter {
       if ("texto" in it) {
         p = this.prepararTexto(folha, it.r, it.c, it.texto, antes);
         if (p.erro) return { erro: p.erro };
+        if (it.quebra && p.cel && this.estilos?.doc) p.cel = { ...p.cel, s: this.estilos.comMudanca(p.cel.s || 0, { quebra: true }) };
       } else p = { cel: it.cel, hf: it.hf };
       let depois = p.cel ? { ...p.cel } : null;
       if (depois && !depois.s && depois.f == null && depois.raw == null && p.hf == null) depois = null;
@@ -402,6 +422,31 @@ export class Pasta extends Emitter {
         folha.colunasSujas = true;
       }
     };
+    aplicar("depois");
+    this.registrar({ nome, folha, hf: false, desfazer: () => aplicar("antes"), refazer: () => aplicar("depois") });
+    this.emit("mudou", { folha, estilo: true });
+    return { ok: true };
+  }
+
+  /** formata cada célula do intervalo com uma mudança própria: fn(r, c) → mudança ou null */
+  formatarPorCelula(folha, g, fn, { nome = "Formatar" } = {}) {
+    if (!this.estilos || !this.estilos.doc) return { erro: "Arquivos CSV não guardam formatação." };
+    if ((g.r2 - g.r1 + 1) * (g.c2 - g.c1 + 1) > 250000) return { erro: "Selecione uma área menor para formatar (no máximo 250 mil células)." };
+    const cache = new Map();
+    const itens = [];
+    for (let r = g.r1; r <= g.r2; r++) for (let c = g.c1; c <= g.c2; c++) {
+      const m = fn(r, c);
+      if (!m) continue;
+      const k = chave(r, c);
+      const cel = folha.celulas.get(k);
+      const s0 = cel ? cel.s : folha.estiloNovo(r, c);
+      const ck = s0 + "|" + JSON.stringify(m);
+      if (!cache.has(ck)) cache.set(ck, this.estilos.comMudanca(s0, m));
+      const s1 = cache.get(ck);
+      if ((cel && s1 === cel.s) || (!cel && s1 === 0)) continue;
+      itens.push({ k, r, c, antes: cel || null, depois: cel ? { ...cel, s: s1 } : { s: s1 } });
+    }
+    const aplicar = lado => { for (const it of itens) { const cel = it[lado]; if (cel) folha.celulas.set(it.k, cel); else folha.celulas.delete(it.k); folha.sujas.add(it.k); if (cel) folha.estender(it.r, it.c); } };
     aplicar("depois");
     this.registrar({ nome, folha, hf: false, desfazer: () => aplicar("antes"), refazer: () => aplicar("depois") });
     this.emit("mudou", { folha, estilo: true });

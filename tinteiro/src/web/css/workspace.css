@@ -608,3 +608,4 @@ body.is-mobile .view-header .view-header-left { min-width: 36px; }
 body.is-mobile .view-header-mobile-left { --icon-size: 22px; }
 .update-banner { position: fixed; left: 12px; right: 12px; bottom: calc(64px + env(safe-area-inset-bottom)); z-index: 90; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--radius-l); background: var(--background-secondary); border: 1px solid var(--background-modifier-border-hover); box-shadow: var(--shadow-l); font-size: 14px; animation: notice-in 0.3s var(--anim-motion-swing); }
 .update-banner span { flex: 1 1 auto; }
+body.is-mobile .workspace-drawer:not(.is-open):not(.is-dragging) { box-shadow: none; }

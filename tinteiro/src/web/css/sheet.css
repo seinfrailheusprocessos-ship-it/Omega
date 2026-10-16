@@ -1,0 +1,112 @@
+/* ---------- planilhas (.xlsx / .csv) ---------- */
+.view-content.sheet-view-content { overflow: hidden; display: flex; flex-direction: column; user-select: none; -webkit-user-select: none; }
+.sheet-view { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; width: 100%; height: 100%; background-color: var(--background-primary); position: relative; }
+.version-body > .sheet-view { height: calc(100vh - 150px); flex: 0 0 auto; }
+
+/* barra de ferramentas */
+.sheet-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 1px; row-gap: 2px; padding: 4px var(--size-4-2); border-bottom: 1px solid var(--background-modifier-border); background-color: var(--background-primary); flex: 0 0 auto; scrollbar-width: none; }
+.sheet-view.is-mobile .sheet-toolbar { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; }
+.sheet-toolbar::-webkit-scrollbar { display: none; }
+.sheet-tool { --icon-size: 16px; --icon-stroke: 2px; position: relative; flex: 0 0 auto; height: 28px; min-width: 28px; padding: 0 6px; border-radius: var(--radius-s); }
+.sheet-tool.is-active { background-color: var(--background-modifier-hover); color: var(--text-accent); opacity: 1; }
+.sheet-tool-sep { flex: 0 0 auto; width: 1px; height: 18px; margin: 0 5px; background-color: var(--background-modifier-border); }
+.sheet-tool-text { display: flex; align-items: center; justify-content: center; font-size: var(--font-ui-smaller); color: var(--text-muted); cursor: var(--cursor); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sheet-tool-text:hover { background-color: var(--background-modifier-hover); color: var(--text-normal); }
+.sheet-tool-text.mod-dropdown { gap: 4px; padding: 0 6px 0 8px; border: 1px solid var(--background-modifier-border); height: 24px; margin: 0 2px; }
+.sheet-tool-text.mod-dropdown::after { content: ""; width: 0; height: 0; border-left: 3.5px solid transparent; border-right: 3.5px solid transparent; border-top: 4px solid currentColor; opacity: 0.7; }
+.sheet-tool-text.mod-size { min-width: 46px; justify-content: space-between; }
+.sheet-tool-text.mod-format { min-width: 98px; justify-content: space-between; }
+.sheet-tool-text.mod-decimal { font-family: var(--font-monospace); font-size: 11px; letter-spacing: -0.02em; min-width: 34px; }
+.sheet-tool.mod-color .svg-icon { margin-top: -3px; }
+.sheet-color-bar { position: absolute; left: 50%; bottom: 3px; width: 14px; height: 3px; margin-left: -7px; border-radius: 1px; box-shadow: 0 0 0 0.5px rgba(var(--mono-rgb-100), 0.25); }
+.sheet-toolbar-note { margin-left: auto; padding-left: 12px; font-size: var(--font-ui-smaller); color: var(--text-faint); white-space: nowrap; }
+
+/* barra de fórmulas */
+.sheet-formula-bar { display: flex; align-items: stretch; flex: 0 0 auto; height: 30px; border-bottom: 1px solid var(--background-modifier-border); background-color: var(--background-primary); }
+.sheet-namebox { flex: 0 0 auto; width: 96px; height: 100% !important; border: none !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important; padding: 0 10px !important; font-size: var(--font-ui-small) !important; font-variant-numeric: tabular-nums; color: var(--text-normal); }
+.sheet-namebox:focus { background-color: var(--background-modifier-hover) !important; }
+.sheet-formula-sep { width: 1px; margin: 6px 0; background-color: var(--background-modifier-border); }
+.sheet-fx { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; width: 34px; font-family: Georgia, "Times New Roman", serif; font-style: italic; font-weight: 600; font-size: 14px; color: var(--text-faint); cursor: var(--cursor); }
+.sheet-fx:hover { color: var(--text-accent); background-color: var(--background-modifier-hover); }
+.sheet-formula-input { flex: 1 1 auto; min-width: 0; height: 100% !important; resize: none; border: none !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important; padding: 6px 8px 0 !important; font-size: var(--font-ui-small) !important; line-height: 18px !important; white-space: pre; overflow: hidden; color: var(--text-normal); font-family: var(--font-interface); }
+.sheet-formula-input::placeholder { color: var(--text-faint); }
+.sheet-view.is-editing .sheet-formula-input { background-color: hsla(var(--interactive-accent-hsl), 0.06) !important; }
+.sheet-view.is-readonly .sheet-formula-input { color: var(--text-muted); }
+
+/* busca */
+.sheet-findbar { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; padding: 6px var(--size-4-2); border-bottom: 1px solid var(--background-modifier-border); background-color: var(--background-secondary); }
+.sheet-find-row { display: flex; align-items: center; gap: 4px; }
+.sheet-find-input { flex: 0 1 280px; min-width: 120px; }
+.sheet-find-row.mod-replace button { flex: 0 0 auto; }
+.sheet-find-count { font-size: var(--font-ui-smaller); color: var(--text-muted); min-width: 92px; padding: 0 6px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sheet-find-count.mod-empty { color: var(--text-error); }
+.sheet-find-option { display: flex; align-items: center; gap: 4px; font-size: var(--font-ui-smaller); color: var(--text-muted); padding: 0 6px; white-space: nowrap; cursor: var(--cursor); }
+
+/* grade */
+.sheet-grid { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; background-color: var(--background-primary); }
+.sheet-scroller { position: absolute; inset: 0; overflow: auto; outline: none; touch-action: pan-x pan-y; overscroll-behavior: contain; cursor: cell; }
+.sheet-spacer { position: relative; min-width: 1px; min-height: 1px; }
+.sheet-canvas { position: absolute; top: 0; left: 0; pointer-events: none; display: block; }
+.sheet-editor {
+  position: absolute; z-index: 4; margin: 0; resize: none; overflow: hidden; outline: none;
+  border: 2px solid var(--interactive-accent) !important; border-radius: 0 !important; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18) !important;
+  padding: 0 3px !important; height: auto; min-height: 0; white-space: pre; background-color: var(--background-primary); color: var(--text-normal);
+  user-select: text; -webkit-user-select: text; tab-size: 4;
+}
+.sheet-editor.is-idle { opacity: 0; caret-color: transparent; pointer-events: none; box-shadow: none !important; z-index: 0; }
+.sheet-editor.is-offscreen { opacity: 0; pointer-events: none; }
+.sheet-resize-guide { position: absolute; z-index: 5; background-color: var(--interactive-accent); pointer-events: none; height: 2px; width: 100%; margin-top: -1px; }
+.sheet-resize-guide.mod-vertical { width: 2px; height: 100%; margin: 0 0 0 -1px; }
+.sheet-touch-handle { position: absolute; z-index: 5; width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%; touch-action: none; display: flex; align-items: center; justify-content: center; }
+.sheet-touch-handle::after { content: ""; width: 12px; height: 12px; border-radius: 50%; background-color: var(--background-primary); border: 2.5px solid var(--interactive-accent); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+.sheet-special { position: absolute; z-index: 3; left: 50%; top: 40%; transform: translate(-50%, -50%); max-width: 420px; text-align: center; color: var(--text-muted); font-size: var(--font-ui-small); background-color: var(--background-secondary); padding: 16px 20px; border-radius: var(--radius-m); border: 1px solid var(--background-modifier-border); }
+
+/* sugestões de funções e dica */
+.sheet-autocomplete { position: absolute; z-index: 20; min-width: 240px; max-width: 420px; max-height: 236px; overflow-y: auto; padding: 4px; background-color: var(--menu-background, var(--background-secondary)); border: 1px solid var(--background-modifier-border-hover); border-radius: var(--radius-m); box-shadow: var(--shadow-s); font-size: var(--font-ui-small); }
+.sheet-autocomplete-item { display: flex; align-items: baseline; gap: 10px; padding: 4px 8px; border-radius: var(--radius-s); cursor: var(--cursor); white-space: nowrap; }
+.sheet-autocomplete-item.is-selected, .sheet-autocomplete-item:hover { background-color: var(--background-modifier-hover); }
+.sheet-autocomplete-item.is-selected .sheet-autocomplete-name { color: var(--text-accent); }
+.sheet-autocomplete-name { font-weight: 600; font-family: var(--font-monospace); font-size: 12px; }
+.sheet-autocomplete-desc { color: var(--text-faint); font-size: var(--font-ui-smaller); overflow: hidden; text-overflow: ellipsis; }
+.sheet-func-hint { position: absolute; z-index: 19; max-width: 460px; padding: 4px 8px; font-size: var(--font-ui-smaller); color: var(--text-muted); background-color: var(--background-secondary); border: 1px solid var(--background-modifier-border); border-radius: var(--radius-s); box-shadow: var(--shadow-s); pointer-events: none; white-space: normal; }
+
+/* abas das planilhas */
+.sheet-tabs { display: flex; align-items: stretch; flex: 0 0 auto; height: 32px; border-top: 1px solid var(--background-modifier-border); background-color: var(--background-secondary); padding-left: 4px; }
+.sheet-tab-add { --icon-size: 16px; align-self: center; margin-right: 4px; }
+.sheet-tabs-list { display: flex; align-items: stretch; overflow-x: auto; overflow-y: hidden; min-width: 0; scrollbar-width: thin; }
+.sheet-tabs-list::-webkit-scrollbar { height: 4px; }
+.sheet-tab { position: relative; display: flex; align-items: center; flex: 0 0 auto; padding: 0 14px; max-width: 220px; font-size: var(--font-ui-small); color: var(--text-muted); border-right: 1px solid var(--background-modifier-border); cursor: var(--cursor); white-space: nowrap; }
+.sheet-tab:hover { color: var(--text-normal); background-color: var(--background-modifier-hover); }
+.sheet-tab.is-active { background-color: var(--background-primary); color: var(--text-normal); font-weight: var(--font-semibold); box-shadow: inset 0 2px 0 var(--interactive-accent); margin-top: -1px; }
+.sheet-tab-name { overflow: hidden; text-overflow: ellipsis; }
+.sheet-tab-color { position: absolute; left: 6px; right: 6px; bottom: 3px; height: 3px; border-radius: 2px; }
+.sheet-tab-input { height: 22px !important; width: 140px; font-size: var(--font-ui-small) !important; padding: 0 6px !important; }
+.sheet-tabs-note { align-self: center; margin-left: auto; padding: 0 12px; font-size: var(--font-ui-smaller); color: var(--text-faint); white-space: nowrap; }
+
+/* paleta de cores */
+.sheet-popover { position: fixed; z-index: 250; padding: 8px; background-color: var(--menu-background, var(--background-secondary)); border: 1px solid var(--background-modifier-border-hover); border-radius: var(--radius-m); box-shadow: var(--shadow-s); }
+.sheet-palette { width: 236px; }
+.sheet-palette-none { font-size: var(--font-ui-small); padding: 5px 8px; border-radius: var(--radius-s); cursor: var(--cursor); color: var(--text-normal); margin-bottom: 6px; border: 1px solid var(--background-modifier-border); text-align: center; }
+.sheet-palette-none:hover { background-color: var(--background-modifier-hover); }
+.sheet-palette-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
+.sheet-palette-swatch { aspect-ratio: 1; border-radius: 3px; cursor: var(--cursor); box-shadow: inset 0 0 0 1px rgba(var(--mono-rgb-100), 0.12); transition: transform 0.08s; }
+.sheet-palette-swatch:hover { transform: scale(1.18); box-shadow: 0 0 0 2px var(--interactive-accent); position: relative; z-index: 1; }
+.sheet-palette-more { display: flex; align-items: center; gap: 6px; margin-top: 8px; padding: 5px 6px; font-size: var(--font-ui-small); color: var(--text-muted); border-radius: var(--radius-s); cursor: var(--cursor); --icon-size: 16px; }
+.sheet-palette-more:hover { background-color: var(--background-modifier-hover); color: var(--text-normal); }
+.sheet-palette-more input[type=color] { margin-left: auto; width: 28px; height: 22px; padding: 0; border: none; background: none; cursor: var(--cursor); }
+
+/* celular */
+.sheet-view.is-mobile .sheet-toolbar { padding: 4px 6px; gap: 2px; }
+.sheet-view.is-mobile .sheet-tool { height: 38px; min-width: 38px; --icon-size: 19px; }
+.sheet-view.is-mobile .sheet-tool-text.mod-dropdown { height: 32px; }
+.sheet-view.is-mobile .sheet-formula-bar { height: 40px; }
+.sheet-view.is-mobile .sheet-namebox { width: 68px; font-size: 14px !important; padding: 0 8px !important; }
+.sheet-view.is-mobile .sheet-formula-input { font-size: 15px !important; padding-top: 10px !important; }
+.sheet-view.is-mobile .sheet-tabs { height: 44px; }
+.sheet-view.is-mobile .sheet-tab { padding: 0 18px; font-size: 14px; }
+.sheet-view.is-mobile .sheet-tab-add { --icon-size: 20px; padding: 8px 10px; }
+.sheet-view.is-mobile .sheet-toolbar-note { display: none; }
+.sheet-view.is-mobile .sheet-find-input { flex: 1 1 auto; min-width: 0; }
+.sheet-view.is-mobile .sheet-find-option { display: none; }
+.sheet-view.is-mobile .sheet-scroller { cursor: default; }
+.sheet-view.is-mobile .sheet-editor { font-size: 16px; }

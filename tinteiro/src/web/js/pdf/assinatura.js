@@ -114,7 +114,8 @@ export function abrirAssinatura({ mobile = false } = {}) {
     let cor = "#1b2a6b", esp = 2.6, atual = null;
     const cores = [["#111111", "Preto"], ["#1b2a6b", "Azul"], ["#0b57d0", "Azul claro"]];
     const corBtns = cores.map(([c, nome]) => {
-      const b = h("button.pdf-cor-bolinha", { type: "button", title: nome, "aria-label": "Cor " + nome, style: { "--cor": c }, onclick: () => { cor = c; corBtns.forEach(x => x.classList.toggle("is-active", x === b)); for (const t of tracos) t.cor = c; desenhar(); } });
+      const b = h("button.pdf-cor-bolinha", { type: "button", title: nome, "aria-label": "Cor " + nome, onclick: () => { cor = c; corBtns.forEach(x => x.classList.toggle("is-active", x === b)); for (const t of tracos) t.cor = c; desenhar(); } });
+      b.style.setProperty("--cor", c);
       if (c === cor) b.classList.add("is-active");
       return b;
     });

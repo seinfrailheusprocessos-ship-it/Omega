@@ -276,6 +276,9 @@ export function desenharAnotacoes(camada, anots, ctx = {}) {
       vistosEl.add(a.id);
       let el = camada.querySelector(`:scope > .pdf-anot[data-id="${a.id}"]`);
       if (!el) { el = document.createElement("div"); el.className = "pdf-anot pdf-anot-" + a.tipo; el.dataset.id = a.id; }
+      // coloca no lugar antes de montar o conteúdo (o editor de texto precisa estar na página para receber o foco)
+      if (antEl.nextElementSibling !== el) antEl.after(el);
+      antEl = el;
       el.style.left = px(a.x); el.style.top = px(a.y); el.style.width = px(a.cw); el.style.height = px(a.ch);
       el.style.transform = a.rot ? `rotate(${-a.rot}deg)` : "";
       el.classList.toggle("is-selected", a.id === ctx.selecionada);
@@ -309,8 +312,6 @@ export function desenharAnotacoes(camada, anots, ctx = {}) {
           }
         }
       }
-      if (antEl.nextElementSibling !== el) antEl.after(el);
-      antEl = el;
     }
   }
   for (const e of [...svg.children]) if (e.dataset.id && !vistosSvg.has(e.dataset.id)) e.remove();

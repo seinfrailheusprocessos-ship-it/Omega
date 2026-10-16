@@ -138,7 +138,7 @@ try {
   m = await modelo(p);
   const txt = m[0].anots.find(a => a.tipo === "texto");
   ok(txt?.texto === TEXTO, "caixa de texto criada com o texto digitado", txt);
-  ok(await p.locator(".pdf-anot-texto .pdf-anot-linhas").first().innerText() === TEXTO, "texto aparece na página");
+  ok(await p.locator(".pdf-rolagem .pdf-anot-texto .pdf-anot-linhas").first().innerText() === TEXTO, "texto aparece na página");
   // aumentar a letra pela barra flutuante (anotação continua selecionada)
   const tam0 = await V(p, v => v.paginas[0].anots.find(a => a.tipo === "texto").tam);
   await clicarBotao(p, "Letra maior");
@@ -156,22 +156,45 @@ try {
   await arrastar(p, [[sx + 40, sy + 30], [sx + 300, sy + 22]], { passos: 8 });
   await p.screenshot({ path: path.join(SHOTS, "pdf-assinatura-dialogo.png") });
   await p.locator(".modal-button-container button", { hasText: /^Usar assinatura$/ }).click();
-  await p.waitForSelector(".pdf-anot-imagem img");
+  await p.waitForSelector(".pdf-rolagem .pdf-anot-imagem img");
   m = await modelo(p);
   ok(m[0].anots.some(a => a.tipo === "imagem"), "imagem da assinatura colocada na página 1");
   const guardadas = await p.evaluate(() => JSON.parse(localStorage.getItem("tinteiro.assinaturas") || "[]").length);
   ok(guardadas === 1, "assinatura guardada para reutilizar (tinteiro.assinaturas)", guardadas);
   // arrasta a assinatura para dentro do quadro
-  const ai = await caixa(p, ".pdf-anot-imagem");
+  const ai = await caixa(p, ".pdf-rolagem .pdf-anot-imagem");
   pg = await caixa(p, ".pdf-pagina", 0);
   await arrastar(p, [[ai.x + ai.width / 2, ai.y + ai.height / 2], [pg.x + pg.width * 0.32, pg.y + pg.height * 0.80]], { passos: 10 });
   const posImg = await V(p, v => { const a = v.paginas[0].anots.find(x => x.tipo === "imagem"); return { x: a.x, y: a.y, cw: a.cw, ch: a.ch }; });
   ok(posImg.y > 841.89 * 0.65, "assinatura arrastada para o quadro", posImg);
   // redimensiona pelo canto
-  const alca = await caixa(p, '.pdf-alca[data-alca="se"]');
+  const alca = await caixa(p, '.pdf-rolagem .pdf-alca[data-alca="se"]');
   await arrastar(p, [[alca.x + alca.width / 2, alca.y + alca.height / 2], [alca.x + 40, alca.y + 15]], { passos: 6 });
   const posImg2 = await V(p, v => { const a = v.paginas[0].anots.find(x => x.tipo === "imagem"); return { cw: a.cw, ch: a.ch }; });
   ok(posImg2.cw > posImg.cw && Math.abs(posImg2.cw / posImg2.ch - posImg.cw / posImg.ch) < 0.02, "assinatura redimensionada mantendo a proporção", [posImg, posImg2]);
+
+  // carimbo: imagem escolhida no computador (seletor de arquivos); depois apaga com Delete
+  const nImgs = async () => (await modelo(p))[0].anots.filter(a => a.tipo === "imagem").length;
+  const antes = await nImgs();
+  await clicarBotao(p, "Inserir imagem ou carimbo");
+  const [seletor] = await Promise.all([p.waitForEvent("filechooser"), p.locator(".menu-item", { hasText: "Imagem do computador…" }).click()]);
+  await seletor.setFiles(path.join(COFRE, "Imagens/brasao-ficticio.png"));
+  await p.waitForFunction(n => tinteiro.workspace.activeLeaf.view.paginas[0].anots.filter(a => a.tipo === "imagem").length > n, antes);
+  ok(await nImgs() === antes + 1, "imagem do computador inserida como carimbo");
+  await p.keyboard.press("Delete");
+  ok(await nImgs() === antes, "tecla Delete apaga a anotação selecionada");
+  // seleciona de novo a assinatura (para a barra flutuante)
+  const ass = await caixa(p, ".pdf-rolagem .pdf-anot-imagem");
+  await p.mouse.click(ass.x + ass.width / 2, ass.y + ass.height / 2);
+  await p.waitForSelector(".pdf-barra-anot");
+
+  // rubrica: repetir a imagem em todas as páginas (e desfazer)
+  await clicarBotao(p, "Repetir em todas as páginas (rubrica)");
+  m = await modelo(p);
+  ok(m.every(q => q.anots.some(a => a.tipo === "imagem")), "“Repetir em todas as páginas” coloca a imagem nas 4 páginas", m.map(q => q.anots.length));
+  await p.keyboard.press("Control+z");
+  m = await modelo(p);
+  ok(m.slice(1).every(q => !q.anots.length) && m[0].anots.some(a => a.tipo === "imagem"), "Ctrl+Z desfaz a repetição");
 
   secao("Marca-texto sobre texto selecionado");
   await clicarBotao(p, "Marca-texto");
@@ -188,7 +211,7 @@ try {
   await clicarBotao(p, "Selecionar e mover");
   await p.screenshot({ path: path.join(SHOTS, "pdf-desktop-escuro.png") });
   // selecionado: barra flutuante
-  const tx = await caixa(p, ".pdf-anot-texto");
+  const tx = await caixa(p, ".pdf-rolagem .pdf-anot-texto");
   await p.mouse.click(tx.x + 10, tx.y + tx.height / 2);
   await p.waitForSelector(".pdf-barra-anot");
   await p.screenshot({ path: path.join(SHOTS, "pdf-desktop-escuro-selecao.png") });
@@ -225,6 +248,11 @@ try {
   await p.waitForTimeout(300);
   m = await modelo(p);
   ok(m.length === 3 && m.map(x => x.indice).join() === "0,1,3", "página 3 excluída", m.map(x => x.indice));
+  await p.keyboard.press("Control+z");
+  ok((await modelo(p)).length === 4, "Ctrl+Z traz a página excluída de volta");
+  await p.keyboard.press("Control+y");
+  m = await modelo(p);
+  ok(m.length === 3 && m[1].rot === 90, "Ctrl+Y exclui de novo (e a rotação da página 2 continua)", m.map(x => [x.indice, x.rot]));
   // arrastar a última miniatura para o início
   const ult = await caixa(p, ".pdf-miniatura", 2), pri = await caixa(p, ".pdf-miniatura", 0);
   await arrastar(p, [[ult.x + ult.width / 2, ult.y + ult.height / 2], [ult.x + ult.width / 2, ult.y + ult.height / 2 - 30], [pri.x + pri.width / 2, pri.y + 15]], { passos: 8 });
@@ -235,8 +263,9 @@ try {
   await clicarBotao(p, "Juntar: inserir páginas de outro PDF");
   await p.locator(".menu-item", { hasText: "PDF do cofre…" }).click();
   await p.waitForSelector(".prompt-input");
-  await p.keyboard.type("Anexo");
-  await p.waitForTimeout(200);
+  await p.waitForTimeout(100);
+  await p.locator(".prompt-input").fill("Anexo");
+  await p.waitForFunction(() => document.querySelector(".suggestion-item.is-selected")?.textContent.includes("Anexo ficticio.pdf"));
   await p.keyboard.press("Enter");
   await p.waitForSelector(".pdf-modal-inserir");
   ok((await p.locator(".pdf-modal-inserir").innerText()).includes("tem 2 páginas"), "janela de inserção mostra o número de páginas");
@@ -261,7 +290,8 @@ for pg in r.pages:
     res = pg.get("/Resources") or {}
     gs = res.get("/ExtGState") or {}
     bms = [str(g.get_object().get("/BM")) for g in gs.values()] if gs else []
-    dados = pg.get_contents().get_data() if pg.get_contents() else b""
+    cs = pg.get_contents()
+    dados = cs.get_data() if cs is not None else b""
     paginas.append({"rot": pg.rotation, "texto": pg.extract_text(), "imagens": len(pg.images), "bm": bms, "curvas": dados.count(b" c\\n") + dados.count(b" c "), "mediabox": [float(x) for x in pg.mediabox]})
 todo = "\\n".join(p["texto"] for p in paginas)
 print(json.dumps({"n": len(r.pages), "paginas": paginas, "todo": todo}))`);
@@ -292,6 +322,18 @@ print(json.dumps({"n": len(r.pages), "paginas": paginas, "todo": todo}))`);
   await V(p, v => v.irParaPagina(1));
   await p.waitForTimeout(600);
   await p.screenshot({ path: path.join(SHOTS, "pdf-desktop-escuro-salvo.png") });
+
+  secao("Extrair páginas para um novo PDF");
+  await p.locator(".pdf-miniatura").nth(3).click();
+  await p.locator(".pdf-miniatura").nth(4).click({ modifiers: ["Control"] });
+  ok(await p.locator(".pdf-miniatura.is-selected").count() === 2, "Ctrl+clique seleciona várias miniaturas");
+  await clicarBotao(p, "Extrair páginas para um novo PDF");
+  const novo = "PDFs/Relatorio ficticio - páginas 4-5.pdf";
+  await p.waitForFunction(a => tinteiro.workspace.activeLeaf?.view?.file?.path === a && tinteiro.workspace.activeLeaf.view.paginas?.length, novo, { timeout: 15000 });
+  const r3 = pypdf(path.join(COFRE, novo), `print(json.dumps({"n": len(r.pages), "t": [pg.extract_text() for pg in r.pages]}))`);
+  ok(r3.n === 2 && r3.t.every(t => t.includes("ANEXO FICTÍCIO")), "novo PDF com as 2 páginas selecionadas foi criado e aberto", r3.n);
+  await p.evaluate(() => tinteiro.workspace.activeLeaf.fechar());
+  await abrir(p, RELATORIO);
 
   secao("Imprimir");
   await p.evaluate(() => { window.__printChamado = 0; const orig = HTMLIFrameElement.prototype; const d = Object.getOwnPropertyDescriptor(orig, "contentWindow"); Object.defineProperty(orig, "contentWindow", { configurable: true, get() { const w = d.get.call(this); if (w && !w.__stub) { w.__stub = true; w.print = () => { window.__printChamado++; }; } return w; } }); });
