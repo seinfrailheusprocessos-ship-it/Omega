@@ -23,9 +23,9 @@
     'Nossa Senhora': ['de loreto', 'assuncao', 'rosario', 'piedade', 'perpetuo socorro', 'nossa senhora da vitoria', 'n s rainha dos anjos', 'mae rainha', 'fatima', 'coracao de maria', 'conceicao', 'aparecida', 'divina pastora', 'lourdes', 'guadalupe', 'carmo', 'penha', 'desatadora dos nos', 'auxiliadora', 'nazare'],
     'Santas': ['clara', 'santas maes', 'santana', 'rita de cassia', 'rita', 'madre teresa', 'luzia', 'dulce', 'catarina', 'barbara', 'teresinha', 'edwiges', 'cecilia', 'filomena', 'efigenia', 'paulina', 'josefina', 'monica', 'helena', 'ines', 'joana', 'faustina', 'zelia', 'rosa'],
     'Anjos e Arcanjos': ['anjos', 'rafael', 'miguel arcanjo', 'gabriel', 'anjo da guarda', 'querubins'],
-    'Jesus, Família e Natal': ['sagrada familia', 'presepio', 'menino', 'jesus', 'divino', 'menino jesus', 'cristo', 'bom jesus', 'senhor do bonfim', 'santa ceia', 'crucifixo', 'natal', 'sagrado coracao de jesus'],
+    'Jesus, Família e Natal': ['sagrada familia', 'presepio', 'menino', 'jesus', 'divino', 'do sagrado coracao', 'menino jesus', 'cristo', 'bom jesus', 'senhor do bonfim', 'santa ceia', 'crucifixo', 'natal', 'sagrado coracao de jesus'],
     'Oratórios': ['oratorios', 'oratorio'],
-    'Orixás e tradição afro': ['orixas', 'sereias', 'iemanja', 'oxum', 'ogum', 'oxossi', 'iansa', 'xango', 'oxala', 'nana', 'obaluae', 'omulu', 'preto velho', 'caboclo', 'ibeji'],
+    'Orixás e tradição afro': ['orixas', 'sereias', 'santos negros', 'iemanja', 'oxum', 'ogum', 'oxossi', 'iansa', 'xango', 'oxala', 'nana', 'obaluae', 'omulu', 'preto velho', 'caboclo', 'ibeji'],
     'Pronta entrega': ['pecas para pronta entrega', 'pronta entrega']
   };
   A.grupoSugerido = function (pasta) {

@@ -26,7 +26,6 @@
     var pessoas = ['Todos'].concat(A.S.cfg.pessoas);
     var h = '<div class="chips" id="lp">' + pessoas.map(function (p) { return '<button class="chip" data-pa="' + A.esc(p) + '" aria-pressed="' + (p === para) + '">' + (p === 'Todos' ? 'Para todos' : 'Para ' + A.esc(p)) + '</button>'; }).join('') +
       '<button class="chip" data-vf aria-pressed="' + verFeitos + '">' + A.ic('check') + 'Feitos</button></div>';
-    if (A.S.cfg.pessoas.indexOf('Ela') > -1) h += '<div class="xbox"><b>X</b> Nome da assistente ainda não informado (aparece como "Ela"). Ajuste em Mais › Ateliê e timbre.</div>';
     function filtro(x) { return x.tipo === 'lembrete' && !x.arquivado && (verFeitos || !x.feito) && (para === 'Todos' || x.para === para || x.para === 'Os dois'); }
     var todos = A.S.cx.filter(filtro).sort(function (a, b) { return (a.quando || '9') < (b.quando || '9') ? -1 : 1; });
     function bloco(l, pre) { return l.length ? '<div class="items">' + l.map(function (x, i) { return A.cxHTML(x, pre + '.' + (i + 1)); }).join('') + '</div>' : '<div class="empty">Nenhum lembrete. Use + Novo › Lembrete.</div>'; }

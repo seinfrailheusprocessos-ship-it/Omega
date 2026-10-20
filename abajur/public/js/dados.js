@@ -13,15 +13,15 @@
       v: 1,
       atelie: { nome: 'Ateliê Osmundo', slogan: 'Esculturas sacras em argila', tel: '', cidade: '', instagram: '', assinatura: 'Osmundo', logo: null, exemplo: true },
       cfg: { tema: 'auto', prazo: 25, sinal: 50, validade: 7, fotosLinha: 3, modeloPdf: 'refinado', seqOrc: 1, followDias: 3,
-        gestos: { dir: ['fixar', 'estrela'], esq: ['arquivar', 'alarme', 'excluir'] }, pessoas: ['Lucas', 'Ela'], pastaNome: '', mostrarDevocionais: true },
+        gestos: { dir: ['fixar', 'estrela'], esq: ['arquivar', 'alarme', 'excluir'] }, pessoas: ['Lucas', 'Ju'], pastaNome: '', mostrarDevocionais: true },
       // catálogo real: montado pela carga da pasta Santos (dados/carga-santos.json) em carga.js
       grupos: JSON.parse(JSON.stringify(A.GRUPOS_SUGERIDOS || [])),
       itens: [],
       etiquetas: ['com Menino Jesus', 'sem Menino Jesus', 'com anjo', 'sem anjo', 'cabeça de anjo', 'com lírio', 'com lança', 'com dragão', 'com base', 'liso', 'detalhado', 'pintado', 'cru (sem pintura)'],
       pagamentos: [
-        { id: 'pg1', txt: '50% de sinal via Pix e 50% antes do envio', on: true },
-        { id: 'pg2', txt: 'À vista no Pix', on: false },
-        { id: 'pg3', txt: 'Cartão de crédito em até 6x', on: false }
+        { id: 'pg1', txt: '50% de sinal via Pix e 50% antes do envio', on: true, exemplo: true },
+        { id: 'pg2', txt: 'À vista no Pix', on: false, exemplo: true },
+        { id: 'pg3', txt: 'Cartão de crédito em até 6x', on: false, exemplo: true }
       ],
       textos: [
         { id: 'tx1', titulo: 'Nota fiscal', txt: 'Emitimos nota fiscal mediante solicitação.', on: true, exemplo: true },
@@ -51,7 +51,7 @@
       notaCats: ['Geral', 'Ideias', 'Compras'],
       cx: [
         { id: 'x1', cat: 'k1', tipo: 'demanda', titulo: 'Responder Maria sobre o oratório (EXEMPLO)', quando: hoje, cliente: 'c-exemplo-1' },
-        { id: 'x2', cat: 'k1', tipo: 'lembrete', titulo: 'Conferir sinal do João (EXEMPLO)', quando: hoje + 'T16:00', para: 'Ela', area: 'Clientes', cliente: 'c-exemplo-2' },
+        { id: 'x2', cat: 'k1', tipo: 'lembrete', titulo: 'Conferir sinal do João (EXEMPLO)', quando: hoje + 'T16:00', para: 'Ju', area: 'Clientes', cliente: 'c-exemplo-2' },
         { id: 'x3', cat: 'k2', tipo: 'cliente', titulo: 'Maria S. (EXEMPLO)', ref: 'c-exemplo-1' },
         { id: 'x4', cat: 'k4', tipo: 'lembrete', titulo: 'Pagar argila e tintas (EXEMPLO)', quando: hoje, para: 'Lucas', area: 'Financeiro' },
         { id: 'x5', cat: 'k5', tipo: 'nota', titulo: 'Ideia: foto dos bastidores da pintura (EXEMPLO)', notaCat: 'Ideias' },

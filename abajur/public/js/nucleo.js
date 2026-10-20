@@ -139,6 +139,7 @@ var A = window.A = {};
     Object.keys(b).forEach(function (k) { if (s[k] === undefined) s[k] = b[k]; });
     Object.keys(b.cfg).forEach(function (k) { if (s.cfg[k] === undefined) s.cfg[k] = b.cfg[k]; });
     Object.keys(b.atelie).forEach(function (k) { if (s.atelie[k] === undefined) s.atelie[k] = b.atelie[k]; });
+    if (s.cfg.pessoas && s.cfg.pessoas[1] === 'Ela') s.cfg.pessoas[1] = 'Ju';
     return s;
   };
 
