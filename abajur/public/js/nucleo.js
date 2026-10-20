@@ -86,7 +86,11 @@ var A = window.A = {};
   A.ic = function (n, cls) { return '<svg class="i' + (cls ? ' ' + cls : '') + '" viewBox="0 0 24 24" aria-hidden="true">' + (P[n] || '') + '</svg>'; };
   A.CHEV = '<svg class="chev" viewBox="0 0 24 24" aria-hidden="true">' + P.chev + '</svg>';
   A.LOGO = '';
-  A.logo = function (cls) { return '<span class="lg ' + (cls || '') + '" aria-hidden="true">' + A.LOGO + '</span>'; };
+  var nLogo = 0; // cada cópia do logo recebe ids próprios (degradê e recortes)
+  A.logo = function (cls) { return '<span class="lg atl ' + (cls || '') + '" aria-hidden="true">' + A.LOGO.replace(/__U__/g, ++nLogo) + '</span>'; };
+  A.lampada = function () { return '<button class="lg atl" data-lampada aria-label="ATÊLI">' + A.LOGO.replace(/__U__/g, ++nLogo) + '</button>'; };
+  /* abajur animado: reinicia as animações CSS do logo */
+  A.acender = function (el) { el.classList.remove('roda'); void el.offsetWidth; el.classList.add('roda'); };
   A.X = function (t) { return '<span class="xp">' + A.esc(t) + '</span>'; };
 
   /* ---------- IndexedDB ---------- */
@@ -229,7 +233,7 @@ var A = window.A = {};
 
   /* ---------- topo padrão ---------- */
   A.topo = function (titulo, sub, extra, voltar) {
-    return '<header class="top">' + (voltar ? '<button class="back" data-back aria-label="Voltar">' + A.ic('left') + '</button>' : A.logo()) +
+    return '<header class="top">' + (voltar ? '<button class="back" data-back aria-label="Voltar">' + A.ic('left') + '</button>' : A.lampada()) +
       '<h1>' + A.esc(titulo) + (sub ? '<small>' + sub + '</small>' : '') + '</h1>' + (extra || '') +
       '<button class="ib" data-tema aria-label="Alternar tema claro e escuro">' + A.ic(A.escuro() ? 'sun' : 'moon') + '</button></header>';
   };

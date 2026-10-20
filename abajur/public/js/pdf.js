@@ -129,7 +129,7 @@
     function linha(cor, esp) { pg.drawLine({ start: { x: M, y: y }, end: { x: W - M, y: y }, thickness: esp || 0.5, color: cor || LINE }); }
     var hoje = A.hoje(), val = a.validade || A.S.cfg.validade, ate = A.iso(new Date(Date.now() + val * 864e5));
     return L.PDFDocument.create().then(function (d) {
-      doc = d; doc.setTitle('Orçamento ' + A.numeroAt() + ' · ' + at.nome); doc.setCreator('Abajur'); doc.setProducer('Abajur');
+      doc = d; doc.setTitle('Orçamento ' + A.numeroAt() + ' · ' + at.nome); doc.setCreator('ATÊLI'); doc.setProducer('ATÊLI');
       return Promise.all([doc.embedFont(L.StandardFonts.Helvetica), doc.embedFont(L.StandardFonts.HelveticaBold), doc.embedFont(L.StandardFonts.HelveticaOblique), doc.embedFont(L.StandardFonts.TimesRomanItalic)]);
     }).then(function (fs) {
       F.r = fs[0]; F.b = fs[1]; F.i = fs[2]; F.s = fs[3];

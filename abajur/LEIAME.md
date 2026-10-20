@@ -1,5 +1,7 @@
 # Abajur (E1, protótipo instalável)
 
+Nome visível do app: **ATÊLI** (título, ícone, tela inicial, cabeçalho, PDF). A pasta `abajur/` e o código interno mantêm o nome atual.
+
 App da assistente do ateliê: atender pelo WhatsApp, reconhecer santos e medidas, escolher fotos, montar orçamento com desconto por peça e geral, gerar PDF e texto, clientes com código, lembretes, notas e calendário. Tudo fica no aparelho (IndexedDB); sem servidor, sem IA paga.
 
 ## Rodar no computador
@@ -31,9 +33,8 @@ Abrir http://localhost:8080 (no celular, mesma rede: http://IP-do-PC:8080; para 
 - Ímã (`public/js/ima.js`, `receber.js`): toda imagem recebida é comparada pelo hash com o catálogo (inclui recortes sem barras e bordas de prints do Instagram). Casou / dúvida / não casou pelos limites calibrados em Ativação inicial › Ímã.
 
 ## Logo
-`public/icons/logo.svg` é provisório até chegar `abajur_logo.jpg`. Com o arquivo na mão:
-`bash ferramentas/vetorizar-logo.sh caminho/abajur_logo.jpg` (potrace + ImageMagick) vetoriza sem redesenhar,
-põe o traço em `currentColor` (claro no tema escuro) e regenera todos os ícones (`ferramentas/gerar-icones.mjs`).
+Oficial: `public/logo-atelie.svg` (abajur em traços + facho amarelo, animado). `node ferramentas/gerar-icones.mjs` gera os ícones PNG e o `icons/logo.svg` parado a partir do estado final.
+No app o logo fica parado (sem animação na abertura); tocar no abajur do cabeçalho roda a animação. Depois de 30 min sem uso (`OCIOSO_MIN` em `js/app.js`), o primeiro toque mostra a animação em tela cheia (~1,3 s) e não aciona o botão de baixo.
 
 ## Pendências marcadas com X no app
-Logo do Abajur, planilha das 65 pastas/735 fotos, logo do ateliê (timbre), tabela de preços, textos fixos, fotos reais, nome da assistente.
+Hashes da carga (carga-santos.json), calibrar o ímã, logo do ateliê (timbre), tabela de preços, textos fixos, dados de pagamento, ID do Firebase.

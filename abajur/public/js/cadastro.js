@@ -222,8 +222,8 @@
       A.toast('Lembrete: ' + x.titulo);
       try {
         if (window.Notification && Notification.permission === 'granted') {
-          if (navigator.serviceWorker && navigator.serviceWorker.ready) navigator.serviceWorker.ready.then(function (r) { r.showNotification('Abajur', { body: x.titulo, icon: 'icons/icone-192.png', badge: 'icons/icone-96.png', tag: x.id }); });
-          else new Notification('Abajur', { body: x.titulo });
+          if (navigator.serviceWorker && navigator.serviceWorker.ready) navigator.serviceWorker.ready.then(function (r) { r.showNotification('ATÊLI', { body: x.titulo, icon: 'icons/icone-192.png', badge: 'icons/icone-96.png', tag: x.id }); });
+          else new Notification('ATÊLI', { body: x.titulo });
         }
       } catch (e) {}
     });
