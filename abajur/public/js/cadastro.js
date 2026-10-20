@@ -159,7 +159,7 @@
     function r() {
       var q = A.norm(A.$('#iq', o.el).value.trim()), h = '';
       A.S.grupos.forEach(function (g) {
-        var l = A.S.itens.filter(function (e) { return e.grupo === g.nome && (!q || A.norm(e.nome).indexOf(q) > -1 || e.syn.some(function (s) { return s.indexOf(q) > -1; })); });
+        var l = A.S.itens.filter(function (e) { return !e.fora && e.grupo === g.nome && (!q || A.norm(e.nome).indexOf(q) > -1 || e.syn.some(function (s) { return s.indexOf(q) > -1; })); });
         if (!l.length) return;
         h += '<div class="h4">' + A.esc(g.nome) + '</div>' + l.map(function (e) { return '<button class="ev" data-k="' + A.esc(e.id) + '"><span class="grow">' + A.esc(e.nome) + '</span><small class="lead">' + A.tamanhos(e).map(function (t) { return t + ' cm'; }).join(' · ') + '</small></button>'; }).join('');
       });

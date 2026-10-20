@@ -2,7 +2,7 @@
    sinônimo mais longo primeiro, medidas em cm associadas ao item, quantidade antes do item, "santo"/"santa" sozinhos abrem o grupo. */
 (function () {
   'use strict';
-  var ABREV = { sto: 'santo', sta: 'santa', s: 'sao', sra: 'senhora', sr: 'senhor', nsa: 'nossa', ns: 'nossa', nssa: 'nossa', n: 'nossa', cms: 'cm', centimetro: 'cm', centimetros: 'cm', centimetos: 'cm' };
+  var ABREV = { sto: 'santo', sta: 'santa', s: 'sao', sra: 'senhora', sr: 'senhor', nsa: 'nossa', ns: 'nossa senhora', nssa: 'nossa', n: 'nossa', sr: 'senhor', sant: 'santa', cms: 'cm', centimetro: 'cm', centimetros: 'cm', centimetos: 'cm' };
   var NUM = { um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9, dez: 10 };
 
   function tokens(texto) {
@@ -11,11 +11,17 @@
       var si = spans.length; spans.push({ a: m.index, b: m.index + m[0].length });
       A.norm(m[0]).split(/(?<=\d)(?=[a-z])|(?<=[a-z])(?=\d)/).forEach(function (p) {
         if (!p) return;
-        out.push({ t: ABREV[p] || p, span: si });
+        var v = ABREV[p] || p;
+        String(v).split(' ').forEach(function (w) { out.push({ t: w, raw: p, span: si }); });
       });
     }
-    // "n senhora" / "n sra" -> nossa senhora (o "n" sozinho só vira "nossa" antes de "senhora")
-    out.forEach(function (x, i) { if (x.t === 'nossa' && /^(n)$/.test(A.norm(texto.slice(spans[x.span].a, spans[x.span].b))) && !(out[i + 1] && out[i + 1].t === 'senhora')) x.t = 'n'; });
+    // "N S", "N. Sra." -> nossa senhora; o "n" sozinho só vira "nossa" antes de "s"/"sra"/"senhora"
+    out.forEach(function (x, i) {
+      if (x.raw !== 'n') return;
+      var nx = out[i + 1];
+      if (nx && nx.raw === 's') nx.t = 'senhora';
+      else if (!(nx && nx.t === 'senhora')) x.t = 'n';
+    });
     return { tk: out, spans: spans };
   }
   A.tokens = tokens;
@@ -38,6 +44,7 @@
     var T = tokens(texto), tk = T.tk.map(function (x) { return x.t; }), used = tk.map(function () { return false; });
     var pares = [];
     S.itens.forEach(function (e) {
+      if (e.fora) return;
       var lista = e.syn.concat([e.nome]);
       lista.forEach(function (sy) { var w = palavras(sy); if (w.length) pares.push({ k: e.id, w: w }); });
     });

@@ -40,6 +40,7 @@
     var ab = A.S.cfg.abertas || {};
     var hoje = A.S.cx.filter(function (x) { return !x.arquivado && !x.feito && x.quando && x.quando.slice(0, 10) <= A.hoje() && (x.tipo === 'lembrete' || x.tipo === 'demanda'); }).length;
     var h = A.topo('Abajur', hoje ? hoje + ' para hoje ou atrasado' + (hoje > 1 ? 's' : '') : 'Tudo em dia', '<button class="ib" data-all aria-label="Recolher ou expandir tudo">' + A.ic('all') + '</button>');
+    if (!A.S.cfg.ativado) h += '<button class="card row" data-ativ style="width:100%;text-align:left;border-color:var(--accent)"><span class="ico" style="width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center">' + A.ic('folder') + '</span><span class="grow"><b>Ativação inicial</b><br><small class="lead">' + (A.F.length ? A.F.length + ' fotos lidas · revisar e concluir' : 'carregar o catálogo e ler a pasta Santos uma vez') + '</small></span>' + A.ic('chev') + '</button>';
     if (A.S.clientes.some(function (c) { return c.exemplo; })) h += '<div class="xbox"><b>X</b> Dados de exemplo (clientes, preços, textos e fotos) até chegarem os reais. Apague em Mais › Dados.</div>';
     A.S.categorias.forEach(function (k, i) {
       var l = lista(k.id);
@@ -61,6 +62,7 @@
       if (e.target.closest('[data-arq]')) return listaSheet('Arquivados', function (x) { return x.arquivado; });
       if (e.target.closest('[data-soltas]')) return listaSheet('Fora do Início', function (x) { return !x.arquivado && !x.cat; });
       if (e.target.closest('[data-novacat]')) return A.novo('categoria');
+      if (e.target.closest('[data-ativ]')) return A.ir('ativacao');
     }, true);
     v.addEventListener('click', function (e) {
       var sh = e.target.closest('.sh'); if (!sh) return;

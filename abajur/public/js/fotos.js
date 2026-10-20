@@ -1,4 +1,4 @@
-/* Fotos: lê a pasta do aparelho (2 níveis: grupo e santo), guarda só índice e miniaturas; etiquetas por foto. */
+/* Fotos: lê a pasta Santos do aparelho (subpasta = categoria), guarda só índice, hashes e miniaturas; etiquetas por foto. */
 (function () {
   'use strict';
   A.F = [];            // índice: {id,item,grupo,pasta,nome,caminho,tags}
@@ -7,7 +7,7 @@
 
   A.carregarFotos = function () {
     return A.fotoAll().then(function (l) {
-      A.F = (l || []).map(function (f) { blobs[f.id] = f.thumb; var m = Object.assign({}, f); delete m.thumb; return m; });
+      A.F = (l || []).map(function (f) { blobs[f.id] = f.thumb; var m = Object.assign({}, f); delete m.thumb; if (m.h && typeof m.h !== 'object') { m.h0 = m.h; delete m.h; } return m; });
     }).catch(function () { A.F = []; });
   };
   function svgExemplo(nome, t) {
@@ -26,7 +26,7 @@
   };
   A.fotosDoGrupo = function (g) {
     var r = [];
-    A.S.itens.forEach(function (e) { if (e.grupo === g) r = r.concat(A.fotosDo(e.id).slice(0, 3)); });
+    A.S.itens.forEach(function (e) { if (e.grupo === g && !e.fora) r = r.concat(A.fotosDo(e.id).slice(0, 3)); });
     return r;
   };
   A.fotoPorId = function (id) {
@@ -61,58 +61,61 @@
       '<img loading="lazy" alt="" src="' + A.fotoUrl(f) + '">' + (f.exemplo ? '<span class="ex">EXEMPLO</span>' : '') + '<em>' + A.esc(f.nome) + '</em></button>';
   };
 
-  /* ---------- leitura da pasta ---------- */
+  /* ---------- leitura da pasta Santos: subpasta = categoria; casa pelo nome da carga e confirma pelo hash ---------- */
   function ehImagem(n) { return /\.(jpe?g|png|webp|heic|heif|gif|bmp)$/i.test(n); }
-  function miniatura(file) {
-    var MAX = 640;
-    var p = window.createImageBitmap ? createImageBitmap(file) : new Promise(function (ok, no) { var i = new Image(); i.onload = function () { ok(i); }; i.onerror = no; i.src = URL.createObjectURL(file); });
-    return p.then(function (bm) {
-      var w = bm.width, h = bm.height, k = Math.min(1, MAX / Math.max(w, h));
-      var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
-      c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
-      if (bm.close) bm.close();
-      return new Promise(function (ok) { c.toBlob(function (b) { ok({ blob: b, w: c.width, h: c.height }); }, 'image/jpeg', 0.82); });
-    });
+  function miniatura(bm) {
+    var MAX = 640, w = bm.width, h = bm.height, k = Math.min(1, MAX / Math.max(w, h));
+    var c = document.createElement('canvas'); c.width = Math.round(w * k); c.height = Math.round(h * k);
+    c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
+    return new Promise(function (ok) { c.toBlob(function (b) { ok({ blob: b, w: c.width, h: c.height }); }, 'image/jpeg', 0.82); });
   }
-  function acharItem(nomePasta, grupo) {
-    var n = A.norm(nomePasta).replace(/[^a-z0-9]+/g, ' ').trim();
-    var best = null;
-    A.S.itens.forEach(function (e) {
-      var cands = [e.nome].concat(e.syn).map(function (s) { return A.norm(s).replace(/[^a-z0-9]+/g, ' ').trim(); });
-      if (cands.indexOf(n) > -1 || cands.some(function (c) { return c.length >= 5 && A.fz(c, n); })) best = best || e;
-    });
-    if (best) { best.pasta = grupo + '/' + nomePasta; return best; }
-    var novo = { id: n.replace(/ /g, '-') || A.uid(), nome: nomePasta, grupo: grupo, syn: [n], precos: {}, pasta: grupo + '/' + nomePasta };
-    while (A.item(novo.id)) novo.id += '-2';
-    A.S.itens.push(novo);
-    return novo;
-  }
-  function garantirGrupo(g) {
-    if (!A.S.grupos.some(function (x) { return x.nome === g; })) A.S.grupos.push({ nome: g, termos: [] });
-  }
-  A.indexar = function (lista, nomeRaiz, prog) {
-    // lista: [{file, partes:[grupo?, santo?, arquivo]}]
-    var antigas = {}; A.F.forEach(function (f) { antigas[f.caminho] = f.tags || []; });
-    var novas = [], i = 0;
-    return A.fotoClear().then(function () {
-      blobs = {}; Object.keys(urls).forEach(function (k) { URL.revokeObjectURL(urls[k]); }); urls = {};
-      function prox() {
-        if (i >= lista.length) return Promise.resolve();
-        var x = lista[i++]; prog(i, lista.length);
-        var rel = x.partes, grupo, santo;
-        if (rel.length >= 3) { grupo = rel[0]; santo = rel[1]; } else if (rel.length === 2) { grupo = rel[0]; santo = rel[0]; } else { grupo = 'Sem grupo'; santo = nomeRaiz || 'Fotos'; }
-        garantirGrupo(grupo);
-        var e = acharItem(santo, grupo);
-        var cam = rel.join('/');
-        return miniatura(x.file).then(function (m) {
-          var f = { id: A.uid(), item: e.id, grupo: grupo, pasta: santo, nome: rel[rel.length - 1].replace(/\.[^.]+$/, ''), caminho: cam, tags: antigas[cam] || [], w: m.w, h: m.h };
-          novas.push(f); blobs[f.id] = m.blob;
-          var g = Object.assign({ thumb: m.blob }, f);
-          return A.fotoPut(g);
-        }).catch(function () {}).then(prox);
+  A.porPasta = function (pasta) {
+    var k = A.norm(pasta);
+    for (var i = 0; i < A.S.itens.length; i++) { var e = A.S.itens[i]; if ((e.pastas || []).some(function (p) { return A.norm(p) === k; })) return e; }
+    return null;
+  };
+  A.limitesIma = function () { return A.S.cfg.ima || { casa: 10, duvida: 18 }; };
+  A.indexar = function (lista, nomeRaiz, prog, completo) {
+    var exist = {}; A.F.forEach(function (f) { exist[f.caminho] = f; });
+    var vistos = {}, novas = 0, i = 0, res = { total: lista.length, novas: 0, confirmadas: 0, divergentes: 0, soNome: 0, foraCarga: 0, categoriasNovas: [] };
+    var casa = A.limitesIma().casa;
+    function prox() {
+      if (i >= lista.length) return Promise.resolve();
+      var x = lista[i++]; prog(i, lista.length);
+      var partes = x.partes, cam = partes.join('/'), pasta = partes.length >= 2 ? partes[0] : '', nome = partes[partes.length - 1];
+      vistos[cam] = 1;
+      var ja = exist[cam];
+      if (ja && ja.tam === x.file.size && ja.mod === x.file.lastModified && ja.h) return prox();
+      var e = A.porPasta(pasta);
+      if (!e) { e = A.novaCategoria(pasta, 0); e.novo = true; A.S.itens.push(e); A.garantirGrupo(e.grupo); res.categoriasNovas.push(e.nome); }
+      return A.abrirBitmap(x.file).then(function (bm) {
+        var hs = A.hashCatalogo(bm);
+        return miniatura(bm).then(function (m) {
+          if (bm.close) bm.close();
+          var c = A.naCarga(pasta, nome), st = 'nova';
+          if (c) st = c.h && c.h.f ? (A.distHash(c.h.f, hs.f) <= casa ? 'confirmada' : 'divergente') : 'nome';
+          res[{ nova: 'foraCarga', confirmada: 'confirmadas', divergente: 'divergentes', nome: 'soNome' }[st]]++;
+          var f = { id: ja ? ja.id : A.uid(), item: e.id, pasta: pasta, nome: nome.replace(/\.[^.]+$/, ''), arquivo: nome, caminho: cam, tags: ja ? ja.tags || [] : [], w: m.w, h0: m.h, tam: x.file.size, mod: x.file.lastModified, h: hs, st: st };
+          if (ja) A.F.splice(A.F.indexOf(ja), 1);
+          A.F.push(f); blobs[f.id] = m.blob; if (urls[f.id]) { URL.revokeObjectURL(urls[f.id]); delete urls[f.id]; }
+          novas++;
+          return A.fotoPut(Object.assign({ thumb: m.blob }, f));
+        });
+      }).catch(function (er) { res.erros = (res.erros || 0) + 1; console.error('indexar', cam, er && er.message); }).then(prox);
+    }
+    return prox().then(function () {
+      if (completo) A.F.slice().forEach(function (f) { if (!vistos[f.caminho]) { A.F.splice(A.F.indexOf(f), 1); A.fotoDel(f.id); } });
+      A.S.itens.forEach(function (e) { e.n = A.F.filter(function (f) { return f.item === e.id; }).length || e.n || 0; });
+      res.novas = novas;
+      res.faltando = [];
+      if (A.carga && completo) {
+        A.carga.categorias.forEach(function (c) { c.arquivos.forEach(function (a) { if (!vistos[c.pasta + '/' + a.nome]) res.faltando.push(c.pasta + '/' + a.nome); }); });
+        (A.carga.soltas || []).forEach(function (a) { if (!vistos[a.nome]) res.faltando.push(a.nome); });
       }
-      return prox();
-    }).then(function () { A.F = novas; A.S.cfg.pastaNome = nomeRaiz; A.save(); return novas.length; });
+      if (nomeRaiz) A.S.cfg.pastaNome = nomeRaiz;
+      A.S.cfg.ultimaLeitura = res; A.save();
+      return res;
+    });
   };
   function lerHandle(dir) {
     var lista = [];
@@ -123,7 +126,7 @@
           if (r.done) return Promise.all(arr);
           var e = r.value;
           if (e.kind === 'file' && ehImagem(e.name)) arr.push(e.getFile().then(function (f) { lista.push({ file: f, partes: partes.concat([e.name]) }); }));
-          else if (e.kind === 'directory' && nivel < 2) arr.push(rec(e, partes.concat([e.name]), nivel + 1));
+          else if (e.kind === 'directory' && nivel < 3) arr.push(rec(e, partes.concat([e.name]), nivel + 1));
           return passo();
         });
       }
@@ -135,33 +138,61 @@
     return new Promise(function (ok) {
       var inp = document.createElement('input'); inp.type = 'file'; inp.multiple = true; inp.setAttribute('webkitdirectory', ''); inp.setAttribute('directory', '');
       inp.addEventListener('change', function () {
-        var fs = Array.prototype.slice.call(inp.files || []), raiz = '';
-        var lista = fs.filter(function (f) { return ehImagem(f.name); }).map(function (f) {
-          var p = (f.webkitRelativePath || f.name).split('/'); raiz = p[0]; return { file: f, partes: p.slice(1, 4).length ? p.slice(1) : [f.name] };
-        }).filter(function (x) { return x.partes.length <= 3; });
+        var raiz = '';
+        var lista = Array.prototype.slice.call(inp.files || []).filter(function (f) { return ehImagem(f.name); }).map(function (f) {
+          var p = (f.webkitRelativePath || f.name).split('/'); raiz = p.length > 1 ? p[0] : ''; return { file: f, partes: p.length > 1 ? p.slice(1) : [f.name] };
+        });
         ok({ lista: lista, raiz: raiz });
       });
       inp.click();
     });
   }
+  function resumo(r) {
+    return '<div class="tot"><span>Fotos lidas</span><span>' + r.total + '</span></div><div class="tot"><span>Novas ou atualizadas</span><span>' + r.novas + '</span></div>' +
+      '<div class="tot"><span>Confirmadas pelo hash</span><span>' + r.confirmadas + '</span></div><div class="tot"><span>Casadas só pelo nome (carga sem hash)</span><span>' + r.soNome + '</span></div>' +
+      '<div class="tot"><span>Nome igual, imagem diferente</span><span>' + r.divergentes + '</span></div><div class="tot"><span>Fora da carga (novas)</span><span>' + r.foraCarga + '</span></div>' +
+      (r.faltando && r.faltando.length ? '<div class="tot"><span>Da carga e não achadas no aparelho</span><span>' + r.faltando.length + '</span></div>' : '') +
+      (r.categoriasNovas.length ? '<p class="lead">Categorias novas: ' + A.esc(r.categoriasNovas.join(', ')) + '</p>' : '');
+  }
+  A.resumoLeitura = resumo;
   A.escolherPasta = function (atualizar) {
     var p;
     if (window.showDirectoryPicker) {
       p = (atualizar ? A.kvGet('pastaHandle') : Promise.resolve(null)).then(function (h) {
-        if (h) return h.requestPermission({ mode: 'read' }).then(function (st) { return st === 'granted' ? h : window.showDirectoryPicker({ mode: 'read' }); });
-        return window.showDirectoryPicker({ mode: 'read' });
+        if (h) return h.requestPermission({ mode: 'read' }).then(function (st) { return st === 'granted' ? h : window.showDirectoryPicker({ mode: 'read', id: 'santos' }); });
+        return window.showDirectoryPicker({ mode: 'read', id: 'santos' });
       }).then(function (h) {
         A.kvSet('pastaHandle', h).catch(function () {});
         return lerHandle(h).then(function (l) { return { lista: l, raiz: h.name }; });
       });
     } else p = pedirPorInput();
     return p.then(function (r) {
-      if (!r.lista.length) { A.toast('Nenhuma foto encontrada nessa pasta'); return 0; }
-      var o = A.sheet('Lendo a pasta', '<p class="lead">' + r.lista.length + ' fotos em "' + A.esc(r.raiz) + '". Só o índice e as miniaturas ficam no app.</p><div class="prog"><i id="pg"></i></div><p class="lead" id="pgt"></p>');
+      if (!r.lista.length) { A.toast('Nenhuma foto encontrada nessa pasta'); return null; }
+      var o = A.sheet('Lendo a pasta ' + (r.raiz || ''), '<p class="lead">' + r.lista.length + ' fotos. Só o índice, os hashes e as miniaturas ficam no app; as fotos continuam na pasta.</p><div class="prog"><i id="pg"></i></div><p class="lead" id="pgt"></p><div id="pres"></div>');
       return A.indexar(r.lista, r.raiz, function (i, n) {
         var b = A.$('#pg', o.el), t = A.$('#pgt', o.el); if (b) b.style.width = (i / n * 100) + '%'; if (t) t.textContent = i + ' de ' + n;
-      }).then(function (n) { o.close(); A.toast(n + ' fotos no catálogo'); A.render(); return n; });
-    }).catch(function (e) { if (e && e.name !== 'AbortError') A.toast('Não foi possível ler a pasta'); });
+      }, true).then(function (res) {
+        var d = A.$('#pres', o.el); if (d) d.innerHTML = '<div class="card">' + resumo(res) + '</div><button class="btn p full" data-x>Concluir</button>';
+        var bx = A.$('#pres [data-x]', o.el); if (bx) bx.addEventListener('click', o.close);
+        A.render(); return res;
+      });
+    }).catch(function (e) { if (e && e.name !== 'AbortError') A.toast('Não foi possível ler a pasta'); return null; });
+  };
+  /* ao abrir o app: se a permissão da pasta continua valendo, indexa sozinho as fotos novas */
+  A.verificarPastaNova = function () {
+    if (!window.showDirectoryPicker || !A.S.cfg.ativado) return Promise.resolve();
+    return A.kvGet('pastaHandle').then(function (h) {
+      if (!h || !h.queryPermission) return;
+      return h.queryPermission({ mode: 'read' }).then(function (st) {
+        if (st !== 'granted') return;
+        return lerHandle(h).then(function (l) {
+          var ex = {}; A.F.forEach(function (f) { ex[f.caminho] = f; });
+          var novas = l.filter(function (x) { var f = ex[x.partes.join('/')]; return !f || f.tam !== x.file.size || f.mod !== x.file.lastModified; });
+          if (!novas.length) return;
+          return A.indexar(novas, h.name, function () {}, false).then(function (r) { A.toast(r.novas + ' foto(s) nova(s) no catálogo' + (r.categoriasNovas.length ? ' e ' + r.categoriasNovas.length + ' categoria(s) nova(s)' : '')); if (A.rota.tela === 'catalogo' || A.rota.tela === 'inicio') A.render(); });
+        });
+      });
+    }).catch(function () {});
   };
 
   /* ---------- detalhe e etiquetas ---------- */

@@ -6,11 +6,12 @@
   A.PENDENCIAS = function () {
     var p = [];
     if (/PROVISÓRIO/.test(A.LOGO_SRC || '')) p.push(['Logo do Abajur', 'abajur_logo.jpg não chegou ao ambiente; o ícone atual é provisório. Rodar ferramentas/vetorizar-logo.sh quando o arquivo estiver na pasta.']);
-    if (A.S.itens.some(function (e) { return e.exemplo; })) p.push(['Lista das 65 pastas e 735 fotos', 'Relatorio_Santos_pastas_e_fotos.xlsx não chegou; o catálogo usa 28 itens de exemplo. Ao escolher a pasta de fotos, o catálogo se monta pelas pastas reais.']);
+    if (!A.carga || !A.carga.hashes) p.push(['Hashes da carga inicial', 'A carga tem as 65 categorias e os 735 nomes, sem hashes. Rodar ferramentas/gerar-carga.html no computador do Lucas (pasta Santos) e importar em Ativação inicial; até lá o celular calcula os hashes sozinho.']);
+    if (!A.F.length) p.push(['Pasta Santos no celular', 'Ler uma vez em Mais › Ativação inicial.']);
+    if (A.F.length && !A.S.cfg.imaCalibrado) p.push(['Calibrar o ímã', 'Com as fotos reais lidas: Ativação inicial › Ímã › Calibrar.']);
     if (!A.S.atelie.logo) p.push(['Logo do ateliê Osmundo (timbre do PDF)', 'Enviar em Mais › Ateliê e timbre.']);
     if (A.S.itens.some(function (e) { return e.exemplo; })) p.push(['Tabela de preços e tamanhos', 'Preços de exemplo; ajustar em Catálogo.']);
     if (A.S.textos.some(function (e) { return e.exemplo; }) || A.S.respostas.some(function (e) { return e.exemplo; })) p.push(['Textos fixos e respostas rápidas', 'Textos de exemplo; ajustar aqui em Mais.']);
-    if (!A.F.length) p.push(['Fotos de exemplo', 'Cerca de 10 fotos reais; até lá aparecem silhuetas marcadas EXEMPLO.']);
     if (A.S.cfg.pessoas.indexOf('Ela') > -1) p.push(['Nome da assistente', 'Aparece como "Ela" nos lembretes.']);
     if (A.S.clientes.some(function (c) { return c.exemplo; })) p.push(['Dados de exemplo', 'Clientes, caixinhas e evento de exemplo; apagar em Dados e backup.']);
     return p;
@@ -20,6 +21,7 @@
     var h = A.topo('Mais', 'Catálogo, textos e configurações');
     var n = 0, pend = A.PENDENCIAS();
     h += A.secao(++n, 'Pendências', pend.length ? pend.map(function (x) { return '<div class="xbox"><b>X ' + A.esc(x[0]) + '</b><br>' + A.esc(x[1]) + '</div>'; }).join('') : '<div class="empty">Nada pendente.</div>', { ct: pend.length, aberta: pend.length > 0 });
+    h += '<button class="card row" data-go="ativacao" style="width:100%;text-align:left"><span class="ico" style="width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center">' + A.ic('zap') + '</span><span class="grow"><b>Ativação inicial e ímã</b><br><small class="lead">' + (A.S.cfg.ativado ? 'concluída' : 'pendente') + ' · carga, pasta Santos, uniões, grupos, calibração</small></span>' + A.ic('chev') + '</button>';
     h += '<button class="card row" data-go="catalogo" style="width:100%;text-align:left"><span class="ico" style="width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center">' + A.ic('image') + '</span><span class="grow"><b>Catálogo e fotos</b><br><small class="lead">' + A.S.itens.length + ' itens · ' + (A.F.length || 'sem') + ' fotos' + (A.S.cfg.pastaNome ? ' · pasta ' + A.esc(A.S.cfg.pastaNome) : '') + '</small></span>' + A.ic('chev') + '</button>';
     h += A.secao(++n, 'Respostas rápidas', A.S.respostas.map(function (r) { return '<button class="ev" data-rr="' + r.id + '"><span class="bar" style="background:var(--accent-bg)"></span><span class="grow"><b>' + A.esc(r.titulo) + '</b>' + (r.exemplo ? ' <span class="tag wa">exemplo</span>' : '') + '<br><small class="lead">' + A.esc(r.txt.slice(0, 90)) + '</small></span><span class="ib" data-cp="' + r.id + '" role="button" aria-label="Copiar">' + A.ic('copy') + '</span></button>'; }).join('') + '<p class="lead">Nova resposta: + Novo › Resposta rápida.</p>', { ct: A.S.respostas.length });
     h += A.secao(++n, 'Textos fixos do orçamento', '<p class="lead">Ligados por padrão entram em todo orçamento novo.</p>' + A.S.textos.map(function (t) { return '<div class="card row"><div class="grow" data-tx="' + t.id + '" style="cursor:pointer"><b>' + A.esc(t.titulo) + '</b>' + (t.exemplo ? ' <span class="tag wa">exemplo</span>' : '') + '<br><small class="lead">' + A.esc(t.txt) + '</small></div><input type="checkbox" data-txon="' + t.id + '"' + (t.on ? ' checked' : '') + ' aria-label="Ligado por padrão"></div>'; }).join(''), { ct: A.S.textos.length });
@@ -122,7 +124,7 @@
   function htmlCat() {
     var h = A.topo('Catálogo', A.S.itens.length + ' itens · ' + (A.F.length ? A.F.length + ' fotos' : 'fotos de exemplo'), '', true);
     h += '<div class="btns" style="margin-top:0"><button class="btn p" data-pasta>' + A.ic('folder') + (A.S.cfg.pastaNome ? 'Atualizar pasta' : 'Escolher pasta de fotos') + '</button></div>';
-    h += '<p class="lead">Dois níveis: grupo (Santos, Santas…) e santo. O app guarda só o índice e as miniaturas; as fotos continuam na pasta do celular.' + (A.S.cfg.pastaNome ? ' Pasta atual: <b>' + A.esc(A.S.cfg.pastaNome) + '</b>.' : '') + '</p>';
+    h += '<p class="lead">Uma categoria por subpasta da pasta Santos; grupos editáveis. O app guarda só índice, hashes e miniaturas; as fotos continuam na pasta do celular.' + (A.S.cfg.pastaNome ? ' Pasta atual: <b>' + A.esc(A.S.cfg.pastaNome) + '</b>.' : '') + '</p>';
     h += '<input class="inp" id="kq" placeholder="Buscar santo ou sinônimo" value="' + A.esc(cbusca) + '" style="margin-bottom:10px"><div id="kl"></div>';
     return h;
   }
@@ -130,7 +132,7 @@
     function r() {
       var q = A.norm(cbusca.trim()), h = '', n = 0;
       A.S.grupos.forEach(function (g) {
-        var l = A.S.itens.filter(function (e) { return e.grupo === g.nome && (!q || A.norm(e.nome).indexOf(q) > -1 || e.syn.some(function (s) { return s.indexOf(q) > -1; })); });
+        var l = A.S.itens.filter(function (e) { return !e.fora && e.grupo === g.nome && (!q || A.norm(e.nome).indexOf(q) > -1 || e.syn.some(function (s) { return s.indexOf(q) > -1; })); });
         if (!l.length && q) return;
         n++;
         var corpo = l.map(function (e, i) {
@@ -138,10 +140,12 @@
           return '<button class="card row" data-k="' + A.esc(e.id) + '" style="width:100%;text-align:left"><span class="num" style="font-family:var(--mono);font-size:11.5px;color:var(--mut);min-width:28px">' + n + '.' + (i + 1) + '</span>' +
             (f0 ? '<img alt="" src="' + A.fotoUrl(f0) + '" style="width:40px;height:46px;object-fit:cover;border-radius:7px">' : '') +
             '<span class="grow"><b>' + A.esc(e.nome) + '</b><br><small class="lead">' + A.esc(e.syn.slice(0, 4).join(', ')) + '</small></span>' +
-            '<span class="tag ' + (real ? 'ok' : 'wa') + '">' + (real ? fs.length + ' fotos' : 'exemplo') + '</span></button>';
+            '<span class="tag ' + (real ? 'ok' : 'wa') + '">' + (real ? fs.length + ' fotos' : (e.n ? e.n + ' na carga' : 'exemplo')) + '</span></button>';
         }).join('') || '<div class="empty">Sem itens.</div>';
         h += A.secao(n, g.nome, corpo, { ct: l.length, aberta: !!q, more: '<span class="more" role="button" tabindex="0" data-g="' + A.esc(g.nome) + '" aria-label="Opções do grupo">' + A.ic('dots') + '</span>' });
       });
+      var fora = A.S.itens.filter(function (e) { return e.fora; });
+      if (fora.length && !q) h += A.secao(++n, A.GRUPO_FORA, fora.map(function (e) { return '<button class="card row" data-k="' + A.esc(e.id) + '" style="width:100%;text-align:left"><span class="grow"><b>' + A.esc(e.nome) + '</b><br><small class="lead">até confirmação · incluir em Ativação inicial</small></span><span class="tag">' + (e.n || 0) + '</span></button>'; }).join(''), { ct: fora.length });
       $('#kl', v).innerHTML = h || '<div class="empty">Nada encontrado.</div>';
     }
     $('#kq', v).addEventListener('input', function (e) { cbusca = e.target.value; r(); });
@@ -163,7 +167,7 @@
   }
   function verItem(id) {
     var e = A.item(id), fs = A.fotosDo(id);
-    var h = '<div class="row" style="margin-bottom:8px"><span class="grow lead" style="margin:0">' + A.esc(e.grupo) + (e.pasta ? ' · pasta ' + A.esc(e.pasta) : '') + '</span><button class="btn sm" data-ed>' + A.ic('edit') + 'Editar</button></div>' +
+    var h = '<div class="row" style="margin-bottom:8px"><span class="grow lead" style="margin:0">' + A.esc(e.grupo) + ((e.pastas || []).filter(Boolean).length ? ' · pasta ' + A.esc(e.pastas.join(', ')) : '') + '</span><button class="btn sm" data-ed>' + A.ic('edit') + 'Editar</button></div>' +
       '<div class="card"><div class="h4" style="margin-top:0">Tamanhos e preços</div>' + (A.tamanhos(e).length ? A.tamanhos(e).map(function (t) { return '<div class="tot"><span>' + t + ' cm</span><span>' + A.brl(e.precos[t]) + '</span></div>'; }).join('') : A.X('sem preços cadastrados')) +
       '<div class="h4">Reconhece</div><div class="chips">' + e.syn.map(function (s) { return '<span class="chip">' + A.esc(s) + '</span>'; }).join('') + '</div></div>' +
       '<div class="h4">Fotos (toque para etiquetar)</div><div class="pgrid">' + fs.map(function (f) { return A.fotoHTML(f, false); }).join('') + '</div>';

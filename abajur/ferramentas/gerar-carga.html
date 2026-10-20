@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carga do Abajur</title>
+<style>
+  :root{--bg:#ecebe8;--surface:#f6f5f2;--line:#d2cfc8;--fg:#1e1d24;--mut:#6a6872;--accent:#6b4fe0;color-scheme:light}
+  @media (prefers-color-scheme:dark){:root{--bg:#1c1c1e;--surface:#262629;--line:#3a3a40;--fg:#dcddde;--mut:#8f8f99;--accent:#7c5cf0;color-scheme:dark}}
+  body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;padding:24px 16px}
+  main{max-width:560px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}
+  p{color:var(--mut);margin:0 0 14px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  button,label.b{display:inline-block;background:var(--accent);color:#fff;border:0;border-radius:11px;padding:11px 16px;font:inherit;font-weight:600;cursor:pointer}
+  .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:10px 0 4px}.bar i{display:block;height:100%;width:0;background:var(--accent)}
+  code{background:var(--line);border-radius:5px;padding:1px 5px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Carga inicial do Abajur</h1>
+  <p>Roda no Chrome do computador, sem internet e sem instalar nada. Lê a pasta <code>C:\CL\12_Pessoal\Fotos_Camera\Santos</code>, gera as categorias (uma por subpasta), os nomes e os hashes perceptuais (dHash e pHash) de cada foto. As fotos não saem do computador; o arquivo gerado tem só nomes e hashes.</p>
+  <div class="card">
+    <label class="b" for="pasta">Escolher a pasta Santos</label>
+    <input type="file" id="pasta" webkitdirectory directory multiple hidden>
+    <div class="bar"><i id="pg"></i></div><p id="st">Aguardando a pasta.</p>
+    <button id="baixar" hidden>Baixar carga-santos.json</button>
+  </div>
+  <p>Depois: copie o arquivo para <code>abajur/public/dados/carga-santos.json</code> no repositório (publicar de novo no Firebase) ou importe no celular em Mais › Ativação inicial › Importar carga.</p>
+</main>
+<script>window.A = {};</script>
+<script src="../public/js/ima.js"></script>
+<script>
+(function () {
+  'use strict';
+  var inp = document.getElementById('pasta'), st = document.getElementById('st'), pg = document.getElementById('pg'), bt = document.getElementById('baixar'), saida = null;
+  function img(n) { return /\.(jpe?g|png|webp|heic|heif|gif|bmp)$/i.test(n); }
+  inp.addEventListener('change', function () {
+    var fs = Array.prototype.slice.call(inp.files || []).filter(function (f) { return img(f.name); });
+    if (!fs.length) { st.textContent = 'Nenhuma foto encontrada.'; return; }
+    var raiz = (fs[0].webkitRelativePath || '').split('/')[0] || 'Santos';
+    var cats = {}, soltas = [], i = 0, t0 = Date.now();
+    function prox() {
+      if (i >= fs.length) return Promise.resolve();
+      var f = fs[i++], p = (f.webkitRelativePath || f.name).split('/').slice(1);
+      pg.style.width = (i / fs.length * 100) + '%';
+      st.textContent = i + ' de ' + fs.length + ' · ' + Math.round((Date.now() - t0) / 1000) + ' s';
+      return A.abrirBitmap(f).then(function (bm) {
+        var reg = { nome: p[p.length - 1], tam: f.size, h: A.hashCatalogo(bm) };
+        if (bm.close) bm.close();
+        if (p.length >= 2) { (cats[p[0]] = cats[p[0]] || []).push(reg); } else soltas.push(reg);
+      }).catch(function () { st.textContent = 'Não abriu: ' + f.name; }).then(prox);
+    }
+    prox().then(function () {
+      var categorias = Object.keys(cats).sort(function (a, b) { return a.toLowerCase() < b.toLowerCase() ? -1 : 1; }).map(function (k) {
+        return { pasta: k, n: cats[k].length, arquivos: cats[k].sort(function (a, b) { return a.nome < b.nome ? -1 : 1; }) };
+      });
+      var d = new Date(), v = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + '-hash';
+      saida = { versao: v, fonte: raiz, origem: 'computador', hashes: true, categorias: categorias, soltas: soltas };
+      var n = categorias.reduce(function (s, c) { return s + c.n; }, 0);
+      st.textContent = categorias.length + ' categorias, ' + n + ' fotos nas subpastas e ' + soltas.length + ' soltas na raiz. Pronto.';
+      bt.hidden = false;
+    });
+  });
+  bt.addEventListener('click', function () {
+    var b = new Blob([JSON.stringify(saida)], { type: 'application/json' }), u = URL.createObjectURL(b), a = document.createElement('a');
+    a.href = u; a.download = 'carga-santos.json'; document.body.appendChild(a); a.click(); a.remove();
+  });
+})();
+</script>
+</body>
+</html>

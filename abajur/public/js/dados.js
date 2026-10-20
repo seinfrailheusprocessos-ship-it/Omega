@@ -1,8 +1,6 @@
-/* Dados iniciais. Tudo marcado como EXEMPLO até chegarem a lista real das 65 pastas, a tabela de preços e os textos do ateliê. */
+/* Dados iniciais. Clientes, textos e preços marcados como EXEMPLO até chegarem os reais; o catálogo vem da carga da pasta Santos. */
 (function () {
   'use strict';
-  function it(nome, grupo, syn, precos) { return { id: A.norm(nome).replace(/[^a-z0-9]+/g, '-'), nome: nome, grupo: grupo, syn: syn, precos: precos, exemplo: true }; }
-  var P1 = { 20: 250, 30: 450, 40: 700 }, P2 = { 20: 260, 30: 470, 40: 720 }, P3 = { 30: 480, 40: 760 };
   A.semente = function () {
     var hoje = A.hoje();
     var cli1 = { id: 'c-exemplo-1', codigo: 'M7KQ', tel: '73999990000', telCodigo: '73999990000', nome: 'Maria S. (EXEMPLO)', email: 'maria@exemplo.com', cidade: 'Salvador/BA', obs: '', criado: hoje, exemplo: true,
@@ -16,44 +14,9 @@
       atelie: { nome: 'Ateliê Osmundo', slogan: 'Esculturas sacras em argila', tel: '', cidade: '', instagram: '', assinatura: 'Osmundo', logo: null, exemplo: true },
       cfg: { tema: 'auto', prazo: 25, sinal: 50, validade: 7, fotosLinha: 3, modeloPdf: 'refinado', seqOrc: 1, followDias: 3,
         gestos: { dir: ['fixar', 'estrela'], esq: ['arquivar', 'alarme', 'excluir'] }, pessoas: ['Lucas', 'Ela'], pastaNome: '', mostrarDevocionais: true },
-      grupos: [
-        { nome: 'Santos', termos: ['santo', 'santos'] },
-        { nome: 'Santas', termos: ['santa', 'santas'] },
-        { nome: 'Nossa Senhora', termos: ['nossa senhora', 'virgem maria', 'nossa sra'] },
-        { nome: 'Oratórios', termos: ['oratorios'] },
-        { nome: 'Menino Jesus', termos: [] },
-        { nome: 'Orixás', termos: ['orixa', 'orixas'] }
-      ],
-      itens: [
-        it('Santo Antônio', 'Santos', ['santo antonio', 'antonio', 'santo antonio de padua'], P1),
-        it('São Jorge', 'Santos', ['sao jorge', 'jorge'], P2),
-        it('São Francisco', 'Santos', ['sao francisco', 'francisco', 'francisco de assis'], { 20: 250, 30: 440, 40: 690 }),
-        it('São José', 'Santos', ['sao jose', 'jose'], P1),
-        it('São Miguel Arcanjo', 'Santos', ['sao miguel arcanjo', 'sao miguel', 'miguel arcanjo', 'arcanjo miguel'], P2),
-        it('São Benedito', 'Santos', ['sao benedito', 'benedito'], P1),
-        it('São Judas Tadeu', 'Santos', ['sao judas tadeu', 'sao judas', 'judas tadeu'], P1),
-        it('São Cosme e Damião', 'Santos', ['sao cosme e damiao', 'cosme e damiao', 'cosme damiao', 'cosme'], { 20: 320, 30: 560 }),
-        it('São Sebastião', 'Santos', ['sao sebastiao', 'sebastiao'], P1),
-        it('Santa Clara', 'Santas', ['santa clara', 'clara'], { 20: 240, 30: 430 }),
-        it('Santa Luzia', 'Santas', ['santa luzia', 'luzia'], { 20: 240, 30: 430 }),
-        it('Santa Bárbara', 'Santas', ['santa barbara', 'barbara'], P1),
-        it('Santa Rita', 'Santas', ['santa rita', 'rita de cassia', 'rita'], P1),
-        it('Sant\'Ana', 'Santas', ['santa ana', 'santana', 'sant ana', 'sant anna'], P1),
-        it('Nossa Senhora Aparecida', 'Nossa Senhora', ['nossa senhora aparecida', 'senhora aparecida', 'aparecida'], { 20: 260, 30: 460, 40: 720 }),
-        it('Nossa Senhora da Conceição', 'Nossa Senhora', ['nossa senhora da conceicao', 'imaculada conceicao', 'conceicao', 'imaculada'], { 20: 260, 30: 460, 40: 720 }),
-        it('Nossa Senhora de Fátima', 'Nossa Senhora', ['nossa senhora de fatima', 'fatima'], { 20: 260, 30: 460, 40: 720 }),
-        it('Nossa Senhora das Graças', 'Nossa Senhora', ['nossa senhora das gracas', 'das gracas'], { 20: 260, 30: 460 }),
-        it('Oratório', 'Oratórios', ['oratorio', 'capelinha'], { 25: 380, 40: 620 }),
-        it('Menino Jesus', 'Menino Jesus', ['menino jesus', 'menino deus', 'menino'], { 15: 150, 20: 210, 30: 330 }),
-        it('Presépio', 'Menino Jesus', ['presepio', 'presepe'], { 20: 520, 30: 890 }),
-        it('Iemanjá', 'Orixás', ['iemanja', 'yemanja', 'janaina'], P3),
-        it('Oxum', 'Orixás', ['oxum'], P3),
-        it('Ogum', 'Orixás', ['ogum', 'ogun'], P3),
-        it('Oxóssi', 'Orixás', ['oxossi', 'oxosse'], P3),
-        it('Iansã', 'Orixás', ['iansa', 'oya'], P3),
-        it('Xangô', 'Orixás', ['xango'], P3),
-        it('Oxalá', 'Orixás', ['oxala'], P3)
-      ],
+      // catálogo real: montado pela carga da pasta Santos (dados/carga-santos.json) em carga.js
+      grupos: JSON.parse(JSON.stringify(A.GRUPOS_SUGERIDOS || [])),
+      itens: [],
       etiquetas: ['com Menino Jesus', 'sem Menino Jesus', 'com anjo', 'sem anjo', 'cabeça de anjo', 'com lírio', 'com lança', 'com dragão', 'com base', 'liso', 'detalhado', 'pintado', 'cru (sem pintura)'],
       pagamentos: [
         { id: 'pg1', txt: '50% de sinal via Pix e 50% antes do envio', on: true },

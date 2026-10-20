@@ -29,13 +29,17 @@
   /* conversa exportada (.txt ou .zip) -> {nome, msgs:[{data,hora,autor,txt}]} */
   A.lerConversa = function (file) {
     var nomeArq = file.name || '';
+    var imagens = [];
     var p = /\.zip$/i.test(nomeArq) ? file.arrayBuffer().then(function (buf) {
-      var l = A.zipListar(buf).filter(function (e) { return /\.txt$/i.test(e.nome); });
+      var todos = A.zipListar(buf), l = todos.filter(function (e) { return /\.txt$/i.test(e.nome); });
       if (!l.length) throw new Error('sem txt');
       l.sort(function (a, b) { return (/_chat|conversa|chat/i.test(b.nome) ? 1 : 0) - (/_chat|conversa|chat/i.test(a.nome) ? 1 : 0); });
-      return A.zipLer(buf, l[0]).then(function (u) { return new TextDecoder().decode(u); });
+      // imagens da conversa (as 40 mais recentes) para o ímã
+      var im = todos.filter(function (e) { return /\.(jpe?g|png|webp)$/i.test(e.nome); }).sort(function (a, b) { return a.nome < b.nome ? -1 : 1; }).slice(-40);
+      return Promise.all(im.map(function (e) { return A.zipLer(buf, e).then(function (u) { imagens.push(new File([u], e.nome.split('/').pop(), { type: /png$/i.test(e.nome) ? 'image/png' : 'image/jpeg' })); }).catch(function () {}); }))
+        .then(function () { return A.zipLer(buf, l[0]); }).then(function (u) { return new TextDecoder().decode(u); });
     }) : file.text();
-    return p.then(function (txt) { return A.parseConversa(txt, nomeArq); });
+    return p.then(function (txt) { var cv = A.parseConversa(txt, nomeArq); cv.imagens = imagens; return cv; });
   };
   A.parseConversa = function (txt, nomeArq) {
     var nome = (nomeArq || '').replace(/\.(txt|zip)$/i, '').replace(/^(Conversa do WhatsApp com|WhatsApp Chat with|WhatsApp Chat -)\s*/i, '').trim();

@@ -83,7 +83,7 @@
     var h = A.topo('Atender', sub, '<button class="ib" data-novo-at aria-label="Novo atendimento">' + A.ic('edit') + '</button>');
     h += '<div class="steps" id="stp"></div>';
     h += A.secao('1', 'Mensagem do cliente', '<div class="card"><textarea class="inp" id="msg" placeholder="Cole aqui a mensagem do cliente">' + A.esc(a.texto) + '</textarea>' +
-      '<div class="g2" style="grid-template-columns:repeat(4,1fr);margin-top:8px"><button class="btn sm" data-in="colar">' + A.ic('paste') + 'Colar</button><button class="btn sm" data-in="print">' + A.ic('image') + 'Print</button><button class="btn sm" data-in="audio" id="bAud">' + A.ic('mic') + 'Áudio</button><button class="btn sm" data-in="conversa">' + A.ic('chat') + 'Conversa</button></div>' +
+      '<div class="g2" style="grid-template-columns:repeat(4,1fr);margin-top:8px"><button class="btn sm" data-in="colar">' + A.ic('paste') + 'Colar</button><button class="btn sm" data-in="print">' + A.ic('image') + 'Imagem</button><button class="btn sm" data-in="audio" id="bAud">' + A.ic('mic') + 'Áudio</button><button class="btn sm" data-in="conversa">' + A.ic('chat') + 'Conversa</button></div>' +
       '<div id="inSt" class="lead" style="margin:8px 0 0"></div><button class="btn p full" id="go" style="margin-top:8px">Analisar mensagem</button></div>', { aberta: true, attr: ' data-s="1"' });
     h += A.secao('2', 'O app entendeu', '<div class="card" id="ent"></div>', { aberta: true, attr: ' data-s="2"' });
     h += A.secao('3', 'Escolher fotos', '<div class="card"><div class="tabs" id="tabs" role="tablist"></div><div class="chips" id="tags"></div><div class="pgrid" id="pg"></div><p class="lead" style="margin:8px 0 0">Toque para marcar. Toque longo abre a foto e as etiquetas.</p></div>', { aberta: true, attr: ' data-s="3"', ct: '<span id="nsel"></span>' });
@@ -116,6 +116,7 @@
       if (!a.res.hits.length && !a.res.grupos.length) h += '<div class="empty">' + (a.texto ? 'Nada reconhecido. Escreva o nome de um santo, como "Santo Antônio", "Clara" ou "oratório", ou acrescente o sinônimo no Catálogo.' : 'Cole a mensagem e toque em Analisar.') + '</div>';
       h += '<div class="h4" style="margin-top:12px">Cliente</div><button class="ev" id="cli"><span class="bar" style="background:var(--accent-bg)"></span><span class="grow">' +
         (c ? '<b>' + A.esc(c.nome) + '</b> <span class="code">' + c.codigo + '</span><br><small class="lead">' + A.telBR(c.tel) + '</small>' : '<b>Vincular cliente</b><br><small class="lead">buscar na lista ou cadastrar pelo + Novo</small>') + '</span>' + A.ic('chev') + '</button>';
+      h += A.recebidasHTML();
       $('#ent', v).innerHTML = h;
     }
     function abas() {
@@ -188,6 +189,11 @@
       a.res = A.analisar(a.texto);
       a.sel = {}; a.L = {}; a.extras = []; a.tag = 'todas'; a.orcId = null; a.num = null;
       a.res.hits.forEach(function (h) { a.L[h.k] = linhaPadrao(h.k, h.cm, h.qtd); });
+      // o que o ímã já casou continua marcado
+      (a.recebidas || []).forEach(function (rc) {
+        if (rc.escolhido && A.fotoPorId(rc.escolhido)) a.sel[rc.escolhido] = 1;
+        if (rc.item && A.item(rc.item) && a.extras.indexOf(rc.item) < 0 && !a.res.hits.some(function (h) { return h.k === rc.item; })) a.extras.push(rc.item);
+      });
       a.tab = null; A.save(); r();
       if (a.res.hits.length || a.res.grupos.length) setTimeout(function () { var s = $('[data-s="3"]', v); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120);
     }
@@ -200,6 +206,8 @@
       if (b.hasAttribute('data-novo-at')) return A.confirmar('Começar um atendimento novo?', function () { A.novoAtendimento(); A.render(); }, 'Novo atendimento');
       if (b.hasAttribute('data-in')) return entrada(b.getAttribute('data-in'), b);
       if (b.hasAttribute('data-hit')) return menuHit(+b.getAttribute('data-hit'));
+      if (b.hasAttribute('data-rec')) return A.revisarRecebida(b.getAttribute('data-rec'), function () { r(); });
+      if (b.hasAttribute('data-rec-limpar')) { a.recebidas = []; A.save(); rEnt(); return; }
       if (b.id === 'cli') return A.escolherCliente(function (id) { a.cliente = id; A.save(); A.render(); });
       if (b.hasAttribute('data-tab')) { a.tab = b.getAttribute('data-tab'); a.tag = 'todas'; rTabs(); rFotos(); return; }
       if (b.hasAttribute('data-tag')) { a.tag = b.getAttribute('data-tag'); rFotos(); return; }
@@ -295,7 +303,7 @@
       else { $('#msg').focus(); A.toast('Toque e segure na caixa e escolha Colar'); }
       return;
     }
-    if (tipo === 'print') return escolherArquivo('image/*', function (f) { A.lerPrint(f); });
+    if (tipo === 'print') return escolherArquivo('image/*', function (fs) { A.entradaImagens(fs, 'imagem'); }, true);
     if (tipo === 'conversa') return escolherArquivo('.txt,.zip,text/plain,application/zip', function (f) { A.importarConversa(f); });
     if (tipo === 'audio') {
       A.menu('Áudio', [
@@ -304,10 +312,19 @@
       ]);
     }
   }
-  function escolherArquivo(accept, fn) {
-    var i = document.createElement('input'); i.type = 'file'; i.accept = accept;
-    i.addEventListener('change', function () { if (i.files && i.files[0]) fn(i.files[0]); }); i.click();
+  function escolherArquivo(accept, fn, varios) {
+    var i = document.createElement('input'); i.type = 'file'; i.accept = accept; if (varios) i.multiple = true;
+    i.addEventListener('change', function () { if (i.files && i.files[0]) fn(varios ? Array.prototype.slice.call(i.files) : i.files[0]); }); i.click();
   }
+  /* imagem recebida: primeiro o ímã (identidade com o catálogo); a que não casar pode ser print de conversa e vai para a leitura de texto */
+  A.entradaImagens = function (fs, origem) {
+    status('Ímã: comparando com o catálogo…');
+    return A.receberImagens(fs, origem).then(function (semPar) {
+      status('');
+      var s = $('[data-s="2"]'); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (semPar.length && origem !== 'conversa') semPar.slice(0, 3).forEach(function (f) { A.lerPrint(f); });
+    });
+  };
   var rec = null;
   function ditado(b) {
     var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -338,7 +355,7 @@
     status('Preparando leitor de print…');
     carregarOcr().then(function (w) { return w.recognize(file); }).then(function (r) {
       var t = (r.data.text || '').replace(/\n{3,}/g, '\n\n').trim();
-      status(''); if (!t) { A.toast('Não achei texto no print'); return; }
+      status(''); if (t.replace(/[^A-Za-zÀ-ÿ]/g, '').length < 12) return;
       A.analisarTexto(t, true); A.toast('Texto do print lido');
     }).catch(function () { status(A.X('não foi possível ler o print neste aparelho')); });
   };
@@ -351,13 +368,15 @@
       var o = A.sheet('Conversa: ' + cv.nome, '<p class="lead">' + cv.msgs.length + ' mensagens · ' + cv.autores.length + ' pessoas. As últimas ' + doCliente.length + ' mensagens de <b>' + A.esc(cv.cliente) + '</b> vão para a análise.</p>' +
         '<div class="fld"><label class="f">Quem é o cliente nesta conversa?</label><select class="inp" id="qc">' + cv.autores.map(function (x) { return '<option' + (x === cv.cliente ? ' selected' : '') + '>' + A.esc(x) + '</option>'; }).join('') + '</select></div>' +
         '<div class="switch"><span>Guardar a conversa na pasta do cliente</span><input type="checkbox" id="gc" checked></div>' +
+        (cv.imagens.length ? '<div class="switch"><span>Passar as ' + cv.imagens.length + ' imagens mais recentes pelo ímã</span><input type="checkbox" id="gi" checked></div>' : '') +
         '<div class="btns"><button class="btn p" id="ok">Analisar</button></div>');
       A.$('#ok', o.el).addEventListener('click', function () {
-        var quem = A.$('#qc', o.el).value, guardar = A.$('#gc', o.el).checked;
+        var quem = A.$('#qc', o.el).value, guardar = A.$('#gc', o.el).checked, gi = A.$('#gi', o.el), comIma = gi && gi.checked;
         var msgs = cv.msgs.filter(function (m) { return m.autor === quem; }).slice(-40);
         o.close();
         A.analisarTexto(msgs.map(function (m) { return m.txt; }).join('\n'));
         if (guardar) A.vincularConversa(quem, cv);
+        if (comIma) setTimeout(function () { A.entradaImagens(cv.imagens, 'conversa'); }, 200);
       });
     }).catch(function () { status(''); A.toast('Não consegui abrir esse arquivo'); });
   };

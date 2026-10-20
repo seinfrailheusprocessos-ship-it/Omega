@@ -105,7 +105,7 @@ var A = window.A = {};
     return db().then(function (d) {
       return new Promise(function (ok, no) {
         var t = d.transaction(store, mode); var s = t.objectStore(store); var res = fn(s);
-        t.oncomplete = function () { ok(res && res.result !== undefined ? res.result : res); };
+        t.oncomplete = function () { ok(res instanceof IDBRequest ? res.result : res); };
         t.onerror = function () { no(t.error); };
       });
     });

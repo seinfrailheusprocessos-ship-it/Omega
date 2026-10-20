@@ -41,9 +41,11 @@
             return Promise.all(ks.map(function (k) { return c.match(k).then(function (r) { return r.blob().then(function (b) { c.delete(k); var nome = decodeURIComponent(k.url.split('/').pop()); return new File([b], nome, { type: b.type }); }); }); }));
           });
         }).then(function (fs) {
+          var imgs = fs.filter(function (f) { return /^image\//.test(f.type); });
+          if (imgs.length) A.entradaImagens(imgs, 'compartilhada');
           fs.forEach(function (f) {
             if (/^text\//.test(f.type) && !/\.txt$/i.test(f.name)) f.text().then(function (t) { A.analisarTexto(t, true); });
-            else if (/^image\//.test(f.type)) A.lerPrint(f);
+            else if (/^image\//.test(f.type)) return;
             else if (/\.(zip|txt)$/i.test(f.name) || /zip/.test(f.type)) A.importarConversa(f);
             else if (/^audio\//.test(f.type)) A.toast('Transcrição de áudio chega no APK (E2)');
           });
@@ -55,7 +57,7 @@
   }
 
   function iniciar() {
-    Promise.all([A.load(), lerLogo()]).then(function () { return A.carregarFotos(); }).then(function () {
+    Promise.all([A.load(), lerLogo()]).then(function () { return A.carregarFotos(); }).then(function () { return A.carregarCarga(); }).then(function () {
       A.aplicarTema();
       $('#splashLogo').innerHTML = A.LOGO;
       var h = location.hash.replace(/^#/, '').split('/');
@@ -65,6 +67,7 @@
       A.render();
       setTimeout(function () { $('#splash').classList.add('out'); }, 650);
       A.verificarAlarmes(); setInterval(A.verificarAlarmes, 30000);
+      setTimeout(A.verificarPastaNova, 1500);
     }).catch(function (e) { console.error(e); $('#splash').classList.add('out'); A.toast('Erro ao abrir os dados do aparelho'); });
     if ('serviceWorker' in navigator && location.protocol !== 'file:' && !window.ABAJUR_SEM_SW) navigator.serviceWorker.register('sw.js').catch(function () {});
   }
