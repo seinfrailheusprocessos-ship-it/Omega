@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+  <!-- PROVISÓRIO: substituir pela vetorização de abajur_logo.jpg (ferramentas/vetorizar-logo.sh) -->
+  <path d="M22 12h20l8 20H14z"/>
+  <path d="M32 32v20"/>
+  <path d="M24 54h16"/>
+  <path d="M26 52c0-1.5 2.7-2.5 6-2.5s6 1 6 2.5"/>
+  <path d="M40 32v5"/>
+  <circle cx="40" cy="38.5" r="1.2"/>
+</svg>

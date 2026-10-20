@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Abajur</title>
+<meta name="description" content="Abajur: atendimento, orçamentos com fotos, clientes e agenda do ateliê.">
+<meta name="theme-color" content="#1c1c1e">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/logo.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icone-192.png">
+<link rel="apple-touch-icon" href="icons/icone-180.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="splash" aria-hidden="true"><div><span class="lg" id="splashLogo"></span><b>Abajur</b><small>ateliê na palma da mão</small></div></div>
+<div class="col"><main id="view" class="view"></main></div>
+<button class="fab" id="fab" aria-label="Novo cadastro"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Novo</button>
+<div class="tabbar"><nav>
+  <button data-go="inicio"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-6h4v6"/></svg>Início</button>
+  <button data-go="atender"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4V5z"/></svg>Atender</button>
+  <button data-go="clientes"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-5.5 6-5.5s6 2 6 5.5"/><path d="M16 5.5a3 3 0 010 5.6M18 15c2 .7 3 2.3 3 5"/></svg>Clientes</button>
+  <button data-go="agenda"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Agenda</button>
+  <button data-go="mais"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Mais</button>
+</nav></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="js/nucleo.js"></script>
+<script src="js/dados.js"></script>
+<script src="js/deteccao.js"></script>
+<script src="js/fotos.js"></script>
+<script src="js/zip.js"></script>
+<script src="js/inicio.js"></script>
+<script src="js/cadastro.js"></script>
+<script src="js/atender.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/clientes.js"></script>
+<script src="js/agenda.js"></script>
+<script src="js/mais.js"></script>
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
