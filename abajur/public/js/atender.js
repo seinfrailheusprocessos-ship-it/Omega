@@ -324,10 +324,11 @@
   var ocrP = null;
   function carregarOcr() {
     if (ocrP) return ocrP;
-    ocrP = new Promise(function (ok, no) { var s = document.createElement('script'); s.src = 'vendor/ocr/tesseract.min.js'; s.onload = ok; s.onerror = no; document.head.appendChild(s); })
+    var base = new URL('vendor/ocr/', location.href).href;
+    var cfg = window.ABAJUR_OCR || { script: base + 'tesseract.min.js', worker: base + 'worker.min.js', core: base + 'core', lang: base + 'lang' };
+    ocrP = new Promise(function (ok, no) { var s = document.createElement('script'); s.src = cfg.script; s.onload = ok; s.onerror = no; document.head.appendChild(s); })
       .then(function () {
-        var base = new URL('vendor/ocr/', location.href).href;
-        return Tesseract.createWorker('por', 1, { workerPath: base + 'worker.min.js', corePath: base + 'core', langPath: base + 'lang', gzip: true,
+        return Tesseract.createWorker('por', 1, { workerPath: cfg.worker, corePath: cfg.core, langPath: cfg.lang, gzip: true,
           logger: function (m) { if (m.status === 'recognizing text') status('Lendo o print… ' + Math.round(m.progress * 100) + '%'); else status('Preparando leitor de print…'); } });
       });
     ocrP.catch(function () { ocrP = null; });

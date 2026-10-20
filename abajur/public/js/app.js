@@ -66,7 +66,7 @@
       setTimeout(function () { $('#splash').classList.add('out'); }, 650);
       A.verificarAlarmes(); setInterval(A.verificarAlarmes, 30000);
     }).catch(function (e) { console.error(e); $('#splash').classList.add('out'); A.toast('Erro ao abrir os dados do aparelho'); });
-    if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(function () {});
+    if ('serviceWorker' in navigator && location.protocol !== 'file:' && !window.ABAJUR_SEM_SW) navigator.serviceWorker.register('sw.js').catch(function () {});
   }
   iniciar();
 })();
