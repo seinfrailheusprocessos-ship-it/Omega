@@ -1,7 +1,7 @@
 /* Abajur: funciona sem internet (casca do app em cache) e recebe o que for compartilhado pelo WhatsApp. */
-var VERSAO = 'abajur-e1-3';
+var VERSAO = 'abajur-e1-4';
 var CASCA = ['./', 'index.html', 'manifest.webmanifest', 'css/app.css', 'fonts/figtree.woff2', 'icons/logo.svg', 'logo-atelie.svg', 'icons/icone-192.png', 'icons/icone-96.png',
-  'js/nucleo.js', 'js/carga.js', 'js/dados.js', 'js/ima.js', 'js/receber.js', 'js/ativacao.js', 'dados/carga-santos.json', 'js/deteccao.js', 'js/fotos.js', 'js/zip.js', 'js/inicio.js', 'js/cadastro.js', 'js/atender.js', 'js/pdf.js',
+  'js/nucleo.js', 'js/carga.js', 'js/dados.js', 'js/ima.js', 'js/receber.js', 'js/ativacao.js', 'js/deteccao.js', 'js/fotos.js', 'js/zip.js', 'js/inicio.js', 'js/cadastro.js', 'js/atender.js', 'js/pdf.js',
   'js/clientes.js', 'js/agenda.js', 'js/mais.js', 'js/app.js', 'vendor/pdf-lib.min.js'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(VERSAO).then(function (c) { return c.addAll(CASCA); }).then(function () { return self.skipWaiting(); })); });
 self.addEventListener('activate', function (e) {

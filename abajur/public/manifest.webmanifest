@@ -1,6 +1,6 @@
 {
-  "name": "ATÊLI",
-  "short_name": "ATÊLI",
+  "name": "App",
+  "short_name": "App",
   "description": "Atendimento, orçamentos com fotos, clientes e agenda do ateliê.",
   "lang": "pt-BR",
   "start_url": "./#inicio",

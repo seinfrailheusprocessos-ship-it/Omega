@@ -5,7 +5,6 @@
 
   A.PENDENCIAS = function () {
     var p = [];
-    if (!A.carga || !A.carga.hashes) p.push(['Hashes da carga inicial', 'A carga tem as 65 categorias e os 735 nomes, sem hashes. Rodar ferramentas/gerar-carga.html no computador do Lucas (pasta Santos) e importar em Ativação inicial; até lá o celular calcula os hashes sozinho.']);
     if (!A.F.length) p.push(['Pasta Santos no celular', 'Ler uma vez em Mais › Ativação inicial.']);
     if (A.F.length && !A.S.cfg.imaCalibrado) p.push(['Calibrar o ímã', 'Com as fotos reais lidas: Ativação inicial › Ímã › Calibrar.']);
     if (!A.S.atelie.logo) p.push(['Logo do ateliê Osmundo (timbre do PDF)', 'Enviar em Mais › Ateliê e timbre.']);
@@ -39,7 +38,7 @@
     h += A.secao(++n, 'Dados e backup', '<p class="lead">Tudo fica no aparelho. O backup é um arquivo .json: salve na pasta do OneDrive ou do Syncthing.</p>' +
       '<div class="btns"><button class="btn" data-exp>' + A.ic('save') + 'Exportar backup</button><button class="btn" data-imp>' + A.ic('share') + 'Importar backup</button></div>' +
       '<div class="btns"><button class="btn d" data-limpex>Apagar dados de exemplo</button></div><div class="btns"><button class="btn d" data-zerar>Apagar tudo</button></div>');
-    h += A.secao(++n, 'Sobre', '<div class="card row">' + A.logo() + '<div class="grow"><b>ATÊLI</b> · versão E1 (protótipo)<br><small class="lead">Código aberto, sem custo, tudo no aparelho. pdf-lib (MIT), Tesseract.js (Apache-2.0), fonte Figtree (OFL).</small></div></div>');
+    h += A.secao(++n, 'Sobre', '<div class="card row"><div class="grow">Versão E1 (protótipo)<br><small class="lead">Código aberto, sem custo, tudo no aparelho. pdf-lib (MIT), Tesseract.js (Apache-2.0), fonte Figtree (OFL).</small></div></div>');
     return h;
   }
   function init(v) {
